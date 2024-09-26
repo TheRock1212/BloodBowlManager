@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import it.unipi.controller.*;
 
 public class App extends Application {
 
@@ -18,11 +19,11 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException, SQLException, ClassNotFoundException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("hello-view.fxml"));
+       //FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/league/league-dashboard.fxml"));
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection co = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/bblm", "root", "root");
         setConnection(co);
-        scene = new Scene(fxmlLoader.load(), 600, 400);
+        scene = new Scene(loadFXML("league/league-dashboard"), 600, 400);
         stage.setTitle("Blood Bowl League Manager");
         stage.setScene(scene);
         stage.show();

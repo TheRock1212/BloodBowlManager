@@ -10,6 +10,7 @@ module it.unipi.bloodbowlmanager {
     //requires eu.hansolo.tilesfx;
     requires java.sql;
 
+    opens it.unipi.controller to javafx.fxml;
     opens it.unipi.bloodbowlmanager to javafx.fxml;
     exports it.unipi.bloodbowlmanager;
 }

@@ -3,7 +3,9 @@ package it.unipi.dataset;
 import it.unipi.bloodbowlmanager.App;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class League {
     private Integer id;
@@ -146,5 +148,11 @@ public class League {
         ps.setBoolean(8, isPtsTDConceded());
         ps.setInt(9, getTreasury());
         ps.executeUpdate();
+    }
+
+    public ResultSet getLeagues() throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM league");
+        return rs;
     }
 }
