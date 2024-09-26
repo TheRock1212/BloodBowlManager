@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.controller.DashboardController">
+   <tabs>
+      <Tab closable="false" text="Standings">
+         <content>
+            <TableView fx:id="rankingTable" prefHeight="335.0" prefWidth="600.0" />
+         </content>
+      </Tab>
+      <Tab closable="false" text="Rosters">
+         <content>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <TableView fx:id="teamList" prefHeight="336.0" prefWidth="599.0">
+                     <contextMenu>
+                        <ContextMenu>
+                           <items>
+                              <MenuItem fx:id="EditTeam" mnemonicParsing="false" text="Edit" />
+                              <MenuItem fx:id="removeItem" mnemonicParsing="false" text="Remove" />
+                           </items>
+                        </ContextMenu>
+                     </contextMenu>
+                  </TableView>
+                  <Pane prefHeight="32.0" prefWidth="600.0">
+                     <children>
+                        <Button fx:id="addTeam" contentDisplay="CENTER" layoutX="256.0" layoutY="5.0" mnemonicParsing="false" text="Create Team" />
+                        <Button fx:id="Groups" contentDisplay="CENTER" layoutX="65.0" layoutY="5.0" mnemonicParsing="false" text="Set Groups" />
+                        <Button fx:id="setPlayoff" contentDisplay="CENTER" layoutX="449.0" layoutY="5.0" mnemonicParsing="false" text="Set Playoff" />
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </content>
+      </Tab>
+      <Tab text="Results">
+         <content>
+            <TableView fx:id="resultList" prefHeight="191.0" prefWidth="445.0">
+               <contextMenu>
+                  <ContextMenu>
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Add Result" />
+                     </items>
+                  </ContextMenu>
+               </contextMenu>
+            </TableView>
+         </content>
+      </Tab>
+   </tabs>
+</TabPane>

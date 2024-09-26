@@ -1,5 +1,6 @@
 package it.unipi.bloodbowlmanager;
 
+import it.unipi.dataset.League;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,20 +17,22 @@ public class App extends Application {
 
     private static Connection connection;
     private static Scene scene;
+    private static boolean newTeam = false;
+    private static League league;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException, ClassNotFoundException {
-       //FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/league/league-dashboard.fxml"));
+       //FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/league/league_dashboard.fxml"));
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection co = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/bblm", "root", "root");
         setConnection(co);
-        scene = new Scene(loadFXML("league/league-dashboard"), 600, 400);
+        scene = new Scene(loadFXML("league/league_dashboard"), 600, 400);
         stage.setTitle("Blood Bowl League Manager");
         stage.setScene(scene);
         stage.show();
     }
 
-    static void setRoot(String fxml) throws IOException {
+    public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
@@ -44,6 +47,22 @@ public class App extends Application {
 
     public static void setConnection(Connection connection) {
         App.connection = connection;
+    }
+
+    public static boolean isNewTeam() {
+        return newTeam;
+    }
+
+    public static void setNewTeam(boolean newTeam) {
+        App.newTeam = newTeam;
+    }
+
+    public static League getLeague() {
+        return league;
+    }
+
+    public static void setLeague(League league) {
+        App.league = league;
     }
 
     public static void main(String[] args) {

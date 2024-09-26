@@ -28,10 +28,14 @@ public class League {
 
     private int treasury;
 
+    private int groups;
+
+    private int playoff;
+
     public League() {
     }
 
-    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury) {
+    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff) {
         this.id = id;
         this.name = name;
         this.nTeams = nTeams;
@@ -42,9 +46,11 @@ public class League {
         this.ptsCAS = ptsCAS;
         this.ptsTDConceded = ptsTDConceded;
         this.treasury = treasury;
+        this.groups = groups;
+        this.playoff = playoff;
     }
 
-    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury) {
+    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff) {
         this.name = name;
         this.nTeams = nTeams;
         this.ptsWin = ptsWin;
@@ -54,6 +60,8 @@ public class League {
         this.ptsCAS = ptsCAS;
         this.ptsTDConceded = ptsTDConceded;
         this.treasury = treasury;
+        this.groups = groups;
+        this.playoff = playoff;
     }
 
     public Integer getId() {
@@ -72,11 +80,11 @@ public class League {
         this.name = name;
     }
 
-    public Integer getnTeams() {
+    public Integer getNTeams() {
         return nTeams;
     }
 
-    public void setnTeams(Integer nTeams) {
+    public void setNTeams(Integer nTeams) {
         this.nTeams = nTeams;
     }
 
@@ -136,10 +144,30 @@ public class League {
         this.treasury = treasury;
     }
 
+    public int getGroups() {
+        return groups;
+    }
+
+    public void setGroups(int groups) {
+        this.groups = groups;
+    }
+
+    public int getPlayoff() {
+        return playoff;
+    }
+
+    public void setPlayoff(int playoff) {
+        this.playoff = playoff;
+    }
+
+    /**
+     * Aggiunge la lega al database
+     * @throws SQLException
+     */
     public void addLeague() throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO league(name, nteams, pts_win, pts_tie, pts_loss, pts_td, pts_cas, pts_td_conceded, treasury) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO league(name, nteams, pts_win, pts_tie, pts_loss, pts_td, pts_cas, pts_td_conceded, treasury, round, playoff) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, getName());
-        ps.setInt(2, getnTeams());
+        ps.setInt(2, getNTeams());
         ps.setInt(3, getPtsWin());
         ps.setInt(4, getPtsTie());
         ps.setInt(5, getPtsLose());
@@ -147,12 +175,35 @@ public class League {
         ps.setBoolean(7, isPtsCAS());
         ps.setBoolean(8, isPtsTDConceded());
         ps.setInt(9, getTreasury());
+        ps.setInt(10, getGroups());
+        ps.setInt(11, getPlayoff());
         ps.executeUpdate();
     }
 
-    public ResultSet getLeagues() throws SQLException {
+    /**
+     * Seleziona dal database la/e lega/ghe selezionate
+     * @param id identifcatore della lega. Se è 0 allora indica l'elenco di leghe
+     * @return
+     * @throws SQLException
+     */
+    public ResultSet getLeagues(int id) throws SQLException {
         Statement st = App.getConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM league");
+        ResultSet rs;
+        if(id != 0)
+            rs = st.executeQuery("SELECT * FROM league WHERE id = " + id);
+        else
+            rs = st.executeQuery("SELECT * FROM league");
         return rs;
+    }
+
+    /**
+     * Elimina le lega selezionata
+     * @param id Identificatore della lega
+     * @throws SQLException
+     */
+    public void removeLeague(int id) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM league WHERE id = ?");
+        ps.setInt(1, id);
+        ps.executeUpdate();
     }
 }
