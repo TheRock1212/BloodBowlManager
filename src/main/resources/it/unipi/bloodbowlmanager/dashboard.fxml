@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -32,9 +35,9 @@
                   </TableView>
                   <Pane prefHeight="32.0" prefWidth="600.0">
                      <children>
-                        <Button fx:id="addTeam" contentDisplay="CENTER" layoutX="256.0" layoutY="5.0" mnemonicParsing="false" text="Create Team" />
-                        <Button fx:id="Groups" contentDisplay="CENTER" layoutX="65.0" layoutY="5.0" mnemonicParsing="false" text="Set Groups" />
-                        <Button fx:id="setPlayoff" contentDisplay="CENTER" layoutX="449.0" layoutY="5.0" mnemonicParsing="false" text="Set Playoff" />
+                        <Button fx:id="addTeam" contentDisplay="CENTER" layoutX="256.0" layoutY="5.0" mnemonicParsing="false" onAction="#createTeam" text="Create Team" />
+                        <Button fx:id="playoff" contentDisplay="CENTER" layoutX="65.0" layoutY="5.0" mnemonicParsing="false" text="Set Groups" visible="false" />
+                        <Button fx:id="playoff" contentDisplay="CENTER" layoutX="449.0" layoutY="5.0" mnemonicParsing="false" text="Set Playoff" visible="false" />
                      </children>
                   </Pane>
                </children>
@@ -53,6 +56,17 @@
                </contextMenu>
             </TableView>
          </content>
+      </Tab>
+      <Tab text="Statistic Players">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TableView layoutY="26.0" prefHeight="343.0" prefWidth="600.0" />
+                  <ComboBox layoutX="450.0" prefWidth="150.0" />
+                  <Label layoutX="377.0" layoutY="6.0" text="Choose One:" />
+               </children>
+            </AnchorPane>
+        </content>
       </Tab>
    </tabs>
 </TabPane>

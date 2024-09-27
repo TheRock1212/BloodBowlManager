@@ -1,5 +1,11 @@
 package it.unipi.dataset;
 
+import it.unipi.bloodbowlmanager.App;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class Team {
     private int id;
     private String coach;
@@ -19,8 +25,10 @@ public class Team {
     private int l;
     private int tdScored;
     private int tdConceded;
+    private int tdNet;
     private int casInflicted;
     private int casSuffered;
+    private int casNet;
     private int points;
     private int value;
     private int round;
@@ -48,8 +56,10 @@ public class Team {
         this.l = l;
         this.tdScored = tdScored;
         this.tdConceded = tdConceded;
+        this.tdNet = tdScored - tdConceded;
         this.casInflicted = casInflicted;
         this.casSuffered = casSuffered;
+        this.casNet = casInflicted - casSuffered;
         this.points = points;
         this.value = value;
         this.round = round;
@@ -73,8 +83,10 @@ public class Team {
         this.l = l;
         this.tdScored = tdScored;
         this.tdConceded = tdConceded;
+        this.tdNet = tdScored - tdConceded;
         this.casInflicted = casInflicted;
         this.casSuffered = casSuffered;
+        this.casNet = casInflicted - casSuffered;
         this.points = points;
         this.value = value;
         this.round = round;
@@ -262,5 +274,37 @@ public class Team {
 
     public void setRound(int round) {
         this.round = round;
+    }
+
+    public int getTdNet() {
+        return tdNet;
+    }
+
+    public void setTdNet(int tdNet) {
+        this.tdNet = tdNet;
+    }
+
+    public int getCasNet() {
+        return casNet;
+    }
+
+    public void setCasNet(int casNet) {
+        this.casNet = casNet;
+    }
+
+    /**
+     * Restutisce il resul set dei team
+     * @param id identificatore del team. Se è 0 si prendono tutti i team
+     * @return
+     * @throws SQLException
+     */
+    public ResultSet getTeam(int id) throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs;
+        if(id != 0)
+            rs = st.executeQuery("SELECT * FROM team WHERE id = " + id);
+        else
+            rs = st.executeQuery("SELECT * FROM team");
+        return rs;
     }
 }

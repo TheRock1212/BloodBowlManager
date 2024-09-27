@@ -1,6 +1,7 @@
 package it.unipi.bloodbowlmanager;
 
 import it.unipi.dataset.League;
+import it.unipi.dataset.Team;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +20,7 @@ public class App extends Application {
     private static Scene scene;
     private static boolean newTeam = false;
     private static League league;
+    private static Team team;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException, ClassNotFoundException {
@@ -63,6 +65,14 @@ public class App extends Application {
 
     public static void setLeague(League league) {
         App.league = league;
+    }
+
+    public static Team getTeam() {
+        return team;
+    }
+
+    public static void setTeam(Team team) {
+        App.team = team;
     }
 
     public static void main(String[] args) {
