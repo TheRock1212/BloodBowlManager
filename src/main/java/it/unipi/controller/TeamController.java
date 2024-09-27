@@ -91,6 +91,10 @@ public class TeamController {
         t.setName(teamName.getText());
         t.setTreasury(Integer.valueOf(treasury.getText()));
         t.setValue(App.getLeague().getTreasury() - Integer.valueOf(treasury.getText()));
+        t.setLeague(App.getLeague().getId());
+        t.setRound(0);
+        t.setRace(r.getId());
+        t.addTeam();
         App.setTeam(t);
         App.setNewTeam(true);
         App.setRoot("player/player_purchase");

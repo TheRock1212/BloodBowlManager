@@ -2,6 +2,7 @@ package it.unipi.dataset;
 
 import it.unipi.bloodbowlmanager.App;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -306,5 +307,44 @@ public class Team {
         else
             rs = st.executeQuery("SELECT * FROM team");
         return rs;
+    }
+
+    public void addTeam() throws SQLException{
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO team(coach, name, race, league, ngiocatori, nreroll, apothecary, cheerleader, assistant, DF, treasury, G, W, N, L, TDScored, TDConceded, CASInflicted, CASSuffered, PTS, value, round) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        ps.setString(1, coach);
+        ps.setString(2, name);
+        ps.setInt(3, race);
+        ps.setInt(4, league);
+        ps.setInt(5, ngiocatori);
+        ps.setInt(6, nreroll);
+        ps.setBoolean(7, apothecary);
+        ps.setInt(8, cheerleader);
+        ps.setInt(9, assistant);
+        ps.setInt(10, df);
+        ps.setInt(11, treasury);
+        ps.setInt(12, g);
+        ps.setInt(13, w);
+        ps.setInt(14, n);
+        ps.setInt(15, l);
+        ps.setInt(16, tdScored);
+        ps.setInt(17, tdConceded);
+        ps.setInt(18, casInflicted);
+        ps.setInt(19, casSuffered);
+        ps.setInt(20, points);
+        ps.setInt(21, value);
+        ps.setInt(22, round);
+        ps.executeUpdate();
+
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT LAST_INSERT_ID()");
+        while(rs.next())
+            id = rs.getInt(1);
+
+    }
+
+    public void removeTeam() throws SQLException{
+        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM team WHERE id = ?");
+        ps.setInt(1, id);
+        ps.executeUpdate();
     }
 }

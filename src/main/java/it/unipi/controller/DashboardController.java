@@ -32,7 +32,7 @@ public class DashboardController {
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn pts = new TableColumn("Points");
-        pts.setCellValueFactory(new PropertyValueFactory<>("pts"));
+        pts.setCellValueFactory(new PropertyValueFactory<>("points"));
 
         TableColumn matches = new TableColumn("MatchesPlayed");
         matches.setCellValueFactory(new PropertyValueFactory<>("g"));
@@ -79,7 +79,7 @@ public class DashboardController {
         reroll.setCellValueFactory(new PropertyValueFactory<>("nreroll"));
 
         TableColumn apotechary = new TableColumn("Apo");
-        apotechary.setCellValueFactory(new PropertyValueFactory<>("apotechary"));
+        apotechary.setCellValueFactory(new PropertyValueFactory<>("apothecary"));
 
         TableColumn df = new TableColumn("DF");
         df.setCellValueFactory(new PropertyValueFactory<>("df"));
@@ -115,7 +115,7 @@ public class DashboardController {
         Team team = new Team();
         ResultSet rs = team.getTeam(0);
         while (rs.next()) {
-            Team t = new Team(rs.getInt("id"), rs.getString("coach"), rs.getString("name"), rs.getInt("race"), rs.getInt("league"), rs.getInt("ngiocatori"), rs.getInt("nreroll"), rs.getBoolean("apotechary"), rs.getInt("cheerleader"), rs.getInt("assistant"), rs.getInt("DF"), rs.getInt("treasury"), rs.getInt("G"), rs.getInt("W"), rs.getInt("N"), rs.getInt("L"), rs.getInt("TDscored"), rs.getInt("TDconceded"), rs.getInt("CASInflicted"), rs.getInt("CASSuffered"), rs.getInt("PTS"), rs.getInt("value"), rs.getInt("round"));
+            Team t = new Team(rs.getInt("id"), rs.getString("coach"), rs.getString("name"), rs.getInt("race"), rs.getInt("league"), rs.getInt("ngiocatori"), rs.getInt("nreroll"), rs.getBoolean("apothecary"), rs.getInt("cheerleader"), rs.getInt("assistant"), rs.getInt("DF"), rs.getInt("treasury"), rs.getInt("G"), rs.getInt("W"), rs.getInt("N"), rs.getInt("L"), rs.getInt("TDscored"), rs.getInt("TDconceded"), rs.getInt("CASInflicted"), rs.getInt("CASSuffered"), rs.getInt("PTS"), rs.getInt("value"), rs.getInt("round"));
             rl.add(t);
             tl.add(t);
         }
@@ -126,6 +126,14 @@ public class DashboardController {
 
     @FXML public void createTeam() throws IOException {
         App.setRoot("team/team_creation");
+    }
+
+    @FXML private void deleteTeam() throws SQLException {
+        Team t = teamList.getSelectionModel().getSelectedItem();
+        t.removeTeam();
+        //elimina l'elemento dalla lista
+        tl.remove(teamList.getSelectionModel().getSelectedItem());
+        tl.remove(t);
     }
 
 }
