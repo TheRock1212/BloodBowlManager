@@ -97,6 +97,7 @@ public class TeamController {
         t.addTeam();
         App.setTeam(t);
         App.setNewTeam(true);
+        App.setNaming(false);
         App.setRoot("player/player_purchase");
     }
 }

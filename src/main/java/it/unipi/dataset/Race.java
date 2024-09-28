@@ -102,4 +102,9 @@ public class Race {
         Statement st = App.getConnection().createStatement();
         return st.executeQuery("SELECT * FROM race WHERE name = '" + name + "'");
     }
+
+    public ResultSet getRules(int id) throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        return st.executeQuery("SELECT special_1, special_2, special_3 FROM race WHERE id = " + id);
+    }
 }

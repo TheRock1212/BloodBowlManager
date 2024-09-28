@@ -21,6 +21,7 @@ public class App extends Application {
     private static boolean newTeam = false;
     private static League league;
     private static Team team;
+    private static boolean naming = false;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException, ClassNotFoundException {
@@ -77,5 +78,13 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    public static boolean isNaming() {
+        return naming;
+    }
+
+    public static void setNaming(boolean naming) {
+        App.naming = naming;
     }
 }

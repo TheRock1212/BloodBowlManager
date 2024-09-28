@@ -347,4 +347,13 @@ public class Team {
         ps.setInt(1, id);
         ps.executeUpdate();
     }
+
+    public void updatePlayer() throws SQLException{
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET ngiocatori = ?, treasury = ?, value = ? WHERE id = ?");
+        ps.setInt(1, ngiocatori);
+        ps.setInt(2, treasury);
+        ps.setInt(3, value);
+        ps.setInt(4, id);
+        ps.executeUpdate();
+    }
 }
