@@ -8,18 +8,18 @@ import java.sql.Statement;
 
 public class PlayerTemplate {
     private int id;
-    private String position;
+    public String position;
     private int race;
-    private int ma;
-    private int st;
-    private int ag;
-    private int pa;
-    private int av;
-    private String skill;
-    private int maxQty;
-    private String primary;
-    private String secondary;
-    private int cost;
+    public int ma;
+    public int st;
+    public int ag;
+    public int pa;
+    public int av;
+    public String skill;
+    public int maxQty;
+    public String primary;
+    public String secondary;
+    public int cost;
     private String url;
     private boolean bigGuy;
 
@@ -186,5 +186,10 @@ public class PlayerTemplate {
     public ResultSet getTemplate(int race) throws SQLException {
         Statement st = App.getConnection().createStatement();
         return st.executeQuery("SELECT * FROM player_template WHERE race = " + race);
+    }
+
+    public ResultSet getLineman(int race) throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        return st.executeQuery("SELECT * FROM player_template WHERE race = " + race + " AND max_qty > 10");
     }
 }

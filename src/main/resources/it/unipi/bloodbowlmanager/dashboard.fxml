@@ -27,8 +27,8 @@
                      <contextMenu>
                         <ContextMenu>
                            <items>
-                              <MenuItem fx:id="EditTeam" mnemonicParsing="false" text="Edit" />
-                              <MenuItem fx:id="removeItem" mnemonicParsing="false" text="Remove" />
+                              <MenuItem fx:id="EditTeam" mnemonicParsing="false" text="Edit" onAction="#openTeamManagement"/>
+                              <MenuItem fx:id="removeItem" mnemonicParsing="false" text="Remove" onAction="#deleteTeam"/>
                            </items>
                         </ContextMenu>
                      </contextMenu>
@@ -36,7 +36,7 @@
                   <Pane prefHeight="32.0" prefWidth="600.0">
                      <children>
                         <Button fx:id="addTeam" contentDisplay="CENTER" layoutX="256.0" layoutY="5.0" mnemonicParsing="false" onAction="#createTeam" text="Create Team" />
-                        <Button fx:id="playoff" contentDisplay="CENTER" layoutX="65.0" layoutY="5.0" mnemonicParsing="false" text="Set Groups" visible="false" />
+                        <Button fx:id="groups" contentDisplay="CENTER" layoutX="65.0" layoutY="5.0" mnemonicParsing="false" text="Set Groups" visible="false" />
                         <Button fx:id="playoff" contentDisplay="CENTER" layoutX="449.0" layoutY="5.0" mnemonicParsing="false" text="Set Playoff" visible="false" />
                      </children>
                   </Pane>
@@ -58,15 +58,15 @@
          </content>
       </Tab>
       <Tab text="Statistic Players">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
                   <TableView layoutY="26.0" prefHeight="343.0" prefWidth="600.0" />
                   <ComboBox layoutX="450.0" prefWidth="150.0" />
                   <Label layoutX="377.0" layoutY="6.0" text="Choose One:" />
                </children>
             </AnchorPane>
-        </content>
+         </content>
       </Tab>
    </tabs>
 </TabPane>

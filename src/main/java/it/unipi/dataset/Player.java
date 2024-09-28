@@ -1,19 +1,22 @@
 package it.unipi.dataset;
 
+import com.mysql.cj.xdevapi.PreparableStatement;
 import it.unipi.bloodbowlmanager.App;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Player {
     private int id;
-    private int number;
-    private String name;
+    public int number;
+    public String name;
     private int template;
     private int team;
-    private int unspentSPP;
-    private int spp;
-    private String skill;
+    public int unspentSPP;
+    public int spp;
+    public String skill;
     private int maInc;
     private int stInc;
     private int agInc;
@@ -24,15 +27,15 @@ public class Player {
     private int agDec;
     private int paDec;
     private int avDec;
-    private int nig;
-    private boolean mng;
-    private int value;
-    private int td;
-    private int cas;
-    private int kill;
-    private int cp;
-    private int def;
-    private int inter;
+    public int nig;
+    public boolean mng;
+    public int value;
+    public int td;
+    public int cas;
+    public int kill;
+    public int cp;
+    public int def;
+    public int inter;
     private int level;
     private boolean status;
 
@@ -40,7 +43,8 @@ public class Player {
 
     }
 
-    public Player(int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status) {
+    public Player(int id, int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status) {
+        this.id = id;
         this.number = number;
         this.name = name;
         this.template = template;
@@ -71,8 +75,7 @@ public class Player {
         this.status = status;
     }
 
-    public Player(int id, int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status) {
-        this.id = id;
+    public Player(int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status) {
         this.number = number;
         this.name = name;
         this.template = template;
@@ -401,5 +404,70 @@ public class Player {
         }
         ps.executeBatch();
         ps.close();
+    }
+
+    public void deletePlayer(int id) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM player WHERE id = ?");
+        ps.setInt(1, id);
+        ps.executeUpdate();
+    }
+
+    public void deletePlayers(int team) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM player WHERE team = ?");
+        ps.setInt(1, team);
+    }
+
+    public ResultSet getPlayers(int team, boolean alive) throws SQLException {
+        PreparedStatement ps;
+        if(alive)
+            ps = App.getConnection().prepareStatement("SELECT * FROM player WHERE team = ? AND status = 1 ORDER BY number ASC");
+        else
+            ps = App.getConnection().prepareStatement("SELECT * FROM player WHERE team = ?");
+        ps.setInt(1, team);
+        return ps.executeQuery();
+    }
+
+    public void removePlayer(int id) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE player SET status = 0 WHERE id = ?");
+        ps.setInt(1, id);
+        ps.executeUpdate();
+    }
+
+    public void addPlayer() throws SQLException{
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO player(number, name, player_template, team, unspentSPP, SPP, new_skill, MA_inc, ST_inc, AG_inc, PA_inc, AV_inc, MA_dec, ST_dec, AG_dec, PA_dec, AV_dec, NIG, MNG, val, TD, CAS, K, CP, D, I, lev, status) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        ps.setInt(1, getNumber());
+        ps.setString(2, getName());
+        ps.setInt(3, getTemplate());
+        ps.setInt(4, getTeam());
+        ps.setInt(5, getUnspentSPP());
+        ps.setInt(6, getSpp());
+        ps.setString(7, getSkill());
+        ps.setInt(8, getMaInc());
+        ps.setInt(9, getStInc());
+        ps.setInt(10, getAgInc());
+        ps.setInt(11, getPaInc());
+        ps.setInt(12, getAvInc());
+        ps.setInt(13, getMaDec());
+        ps.setInt(14, getStDec());
+        ps.setInt(15, getAgDec());
+        ps.setInt(16, getPaDec());
+        ps.setInt(17, getAvDec());
+        ps.setInt(18, getNig());
+        ps.setBoolean(19, isMng());
+        ps.setInt(20, getValue());
+        ps.setInt(21, getTd());
+        ps.setInt(22, getCas());
+        ps.setInt(23, getKill());
+        ps.setInt(24, getCp());
+        ps.setInt(25, getDef());
+        ps.setInt(26, getInter());
+        ps.setInt(27, getLevel());
+        ps.setBoolean(28, isStatus());
+        ps.executeUpdate();
+
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT LAST_INSERT_ID()");
+        while(rs.next())
+            id = rs.getInt(1);
     }
 }

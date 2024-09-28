@@ -9,29 +9,29 @@ import java.sql.Statement;
 
 public class Team {
     private int id;
-    private String coach;
-    private String name;
+    public String coach;
+    public String name;
     private int race;
     private int league;
-    private int ngiocatori;
-    private int nreroll;
-    private boolean apothecary;
-    private int cheerleader;
-    private int assistant;
-    private int df;
-    private int treasury;
-    private int g;
-    private int w;
-    private int n;
-    private int l;
-    private int tdScored;
-    private int tdConceded;
-    private int tdNet;
-    private int casInflicted;
-    private int casSuffered;
-    private int casNet;
-    private int points;
-    private int value;
+    public int ngiocatori;
+    public int nreroll;
+    public boolean apothecary;
+    public int cheerleader;
+    public int assistant;
+    public int df;
+    public int treasury;
+    public int g;
+    public int w;
+    public int n;
+    public int l;
+    public int tdScored;
+    public int tdConceded;
+    public int tdNet;
+    public int casInflicted;
+    public int casSuffered;
+    public int casNet;
+    public int points;
+    public int value;
     private int round;
 
     public Team() {
@@ -343,6 +343,9 @@ public class Team {
     }
 
     public void removeTeam() throws SQLException{
+        PreparedStatement p = App.getConnection().prepareStatement("DELETE FROM player WHERE team = ?");
+        p.setInt(1, id);
+        p.executeUpdate();
         PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM team WHERE id = ?");
         ps.setInt(1, id);
         ps.executeUpdate();
@@ -354,6 +357,18 @@ public class Team {
         ps.setInt(2, treasury);
         ps.setInt(3, value);
         ps.setInt(4, id);
+        ps.executeUpdate();
+    }
+
+    public void updateStaff() throws SQLException{
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET nreroll = ?,  apothecary = ?, cheerleader = ?, assistant = ?, treasury = ?, value = ? WHERE id = ?");
+        ps.setInt(1, nreroll);
+        ps.setInt(3, cheerleader);
+        ps.setBoolean(2, apothecary);
+        ps.setInt(4, assistant);
+        ps.setInt(5, treasury);
+        ps.setInt(6, value);
+        ps.setInt(7, id);
         ps.executeUpdate();
     }
 }

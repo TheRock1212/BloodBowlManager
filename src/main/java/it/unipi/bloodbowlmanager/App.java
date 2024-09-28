@@ -1,7 +1,9 @@
 package it.unipi.bloodbowlmanager;
 
 import it.unipi.dataset.League;
+import it.unipi.dataset.Player;
 import it.unipi.dataset.Team;
+import it.unipi.utility.PlayerPreview;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,11 +19,13 @@ import it.unipi.controller.*;
 public class App extends Application {
 
     private static Connection connection;
+    private static Stage stage;
     private static Scene scene;
     private static boolean newTeam = false;
     private static League league;
     private static Team team;
     private static boolean naming = false;
+    private static PlayerPreview player;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException, ClassNotFoundException {
@@ -32,6 +36,8 @@ public class App extends Application {
         scene = new Scene(loadFXML("league/league_dashboard"), 600, 400);
         stage.setTitle("Blood Bowl League Manager");
         stage.setScene(scene);
+        //stage.setResizable(false);
+        App.stage = stage;
         stage.show();
     }
 
@@ -86,5 +92,18 @@ public class App extends Application {
 
     public static void setNaming(boolean naming) {
         App.naming = naming;
+    }
+
+    public static void changeScene(double width, double height, String fxml) throws IOException{
+        App.scene = new Scene(loadFXML(fxml), width, height);
+        stage.setScene(scene);
+    }
+
+    public static PlayerPreview getPlayer() {
+        return player;
+    }
+
+    public static void setPlayer(PlayerPreview player) {
+        App.player = player;
     }
 }

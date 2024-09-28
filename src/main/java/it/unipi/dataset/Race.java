@@ -8,11 +8,11 @@ import java.sql.Statement;
 
 public class Race {
     private int id;
-    private String name;
-    private int positional;
-    private int reroll;
-    private boolean apothecary;
-    private String special1, special2, special3;
+    public String name;
+    public int positional;
+    public int reroll;
+    public boolean apothecary;
+    public String special1, special2, special3;
 
     public Race() {
 
@@ -103,8 +103,22 @@ public class Race {
         return st.executeQuery("SELECT * FROM race WHERE name = '" + name + "'");
     }
 
+    public ResultSet getRace(int id) throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        return st.executeQuery("SELECT * FROM race WHERE id = " + id);
+    }
+
     public ResultSet getRules(int id) throws SQLException {
         Statement st = App.getConnection().createStatement();
         return st.executeQuery("SELECT special_1, special_2, special_3 FROM race WHERE id = " + id);
+    }
+
+    public boolean hasSpecial(int id) throws SQLException{
+        ResultSet rs = getRules(id);
+        String spe = "";
+        while(rs.next()){
+            spe = rs.getString("special_1") + " " + rs.getString("special_2") + " " + rs.getString("special_3");
+        }
+        return spe.contains("Low Cost Lineman");
     }
 }

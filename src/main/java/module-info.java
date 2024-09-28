@@ -9,6 +9,7 @@ module it.unipi.bloodbowlmanager {
     requires org.kordamp.bootstrapfx.core;
     //requires eu.hansolo.tilesfx;
     requires java.sql;
+    requires mysql.connector.j;
 
     opens it.unipi.controller to javafx.fxml;
     opens it.unipi.bloodbowlmanager to javafx.fxml;

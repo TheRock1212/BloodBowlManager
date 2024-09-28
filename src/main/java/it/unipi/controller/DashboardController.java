@@ -24,6 +24,7 @@ public class DashboardController {
     @FXML private TableView<Team> teamList;
     private ObservableList<Team> tl;
 
+
     @FXML private Button addTeam, groups, playoff;
 
     @FXML public void initialize() throws SQLException{
@@ -64,9 +65,12 @@ public class DashboardController {
         TableColumn casNet = new TableColumn("CASNet");
         casNet.setCellValueFactory(new PropertyValueFactory<>("casNet"));
 
+
         rankingTable.getColumns().addAll(name, pts, matches, win, tie, loss, tdScore, tdConceded, tdNet, casScore, casConceded, casNet);
         rl = FXCollections.observableArrayList();
         rankingTable.setItems(rl);
+        //rankingTable.prefHeightProperty().bind(rankingTable.heightProperty());
+        //rankingTable.prefWidthProperty().bind(rankingTable.widthProperty());
 
         //Colonne per teamList
         TableColumn nameT = new TableColumn("Name");
@@ -96,9 +100,12 @@ public class DashboardController {
         TableColumn value = new TableColumn("TeamValue");
         value.setCellValueFactory(new PropertyValueFactory<>("value"));
 
+
         teamList.getColumns().addAll(nameT, players, reroll, apotechary, df, cheer, assistant, treasury, value);
         tl = FXCollections.observableArrayList();
         teamList.setItems(tl);
+        //teamList.prefWidthProperty().bind(teamList.widthProperty());
+        //teamList.prefHeightProperty().bind(teamList.heightProperty());
 
         getTable();
 
@@ -134,6 +141,12 @@ public class DashboardController {
         //elimina l'elemento dalla lista
         tl.remove(teamList.getSelectionModel().getSelectedItem());
         tl.remove(t);
+    }
+
+    @FXML public void openTeamManagement() throws IOException {
+        App.setTeam(teamList.getSelectionModel().getSelectedItem());
+        App.setNewTeam(false);
+        App.setRoot("team/team_management");
     }
 
 }

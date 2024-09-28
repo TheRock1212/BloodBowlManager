@@ -94,6 +94,7 @@ public class LeagueController {
     private void open() throws IOException {
         App.setLeague(leagueTable.getSelectionModel().getSelectedItem());
         App.setRoot("dashboard");
+        //App.changeScene(1000, 563, "dashboard");
     }
 
     @FXML
