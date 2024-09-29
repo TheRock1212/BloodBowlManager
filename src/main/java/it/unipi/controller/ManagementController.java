@@ -279,7 +279,7 @@ public class ManagementController {
     @FXML
     public void switchToPlayerPreview() throws IOException {
         App.setPlayer(players.getSelectionModel().getSelectedItem());
-        App.setRoot("player/player_review");
+        App.setRoot("player/player_preview");
     }
 
 }

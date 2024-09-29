@@ -2,6 +2,7 @@ package it.unipi.dataset;
 
 import com.mysql.cj.xdevapi.PreparableStatement;
 import it.unipi.bloodbowlmanager.App;
+import it.unipi.utility.PlayerPreview;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -137,6 +138,32 @@ public class Player {
         this.level = level;
         this.status = status;
         this.journey = journey;
+    }
+
+    public Player(PlayerPreview pp) {
+        this.id = pp.getId();
+        this.number = pp.number;
+        this.name = pp.name;
+        this.template = pp.getTemplateId();
+        this.team = App.getTeam().getId();
+        this.unspentSPP = pp.unspentSPP;
+        this.spp = pp.SPP;
+        this.skill = pp.getNewSkills();
+        this.maInc = pp.getNewMA();
+        this.stInc = pp.getNewST();
+        this.agInc = pp.getNewAG();
+        this.paInc = pp.getNewPA();
+        this.avInc = pp.getNewAV();
+        this.nig = pp.getNIG();
+        this.mng = pp.isMNG();
+        this.value = pp.getNewVal();
+        this.td = pp.TD;
+        this.cas = pp.CAS;
+        this.kill = pp.K;
+        this.cp = pp.CP;
+        this.def = pp.D;
+        this.inter = pp.I;
+        this.level = pp.getLev();
     }
 
     public int getId() {
@@ -483,5 +510,22 @@ public class Player {
         ResultSet rs = st.executeQuery("SELECT LAST_INSERT_ID()");
         while(rs.next())
             id = rs.getInt(1);
+    }
+
+    public void updatePreview() throws SQLException{
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE player SET number = ?, name = ?, unspentSPP = ?, new_skill = ?, MA_inc = ?, ST_inc = ?, AG_inc = ?, PA_inc = ?, AV_inc = ?, val = ?, lev = ? WHERE id = ?");
+        ps.setInt(1, number);
+        ps.setString(2, getName());
+        ps.setInt(3, unspentSPP);
+        ps.setString(4, getSkill());
+        ps.setInt(5, getMaInc());
+        ps.setInt(6, getStInc());
+        ps.setInt(7, getAgInc());
+        ps.setInt(8, getPaInc());
+        ps.setInt(9, getAvInc());
+        ps.setInt(10, value);
+        ps.setInt(11, getLevel());
+        ps.setInt(12, id);
+        ps.executeUpdate();
     }
 }

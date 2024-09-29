@@ -19,6 +19,8 @@ public class PlayerPreview {
     private int newPA;
     private int newAV;
     private int newVal;
+    private String primary;
+    private String secondary;
     @FXML public ImageView img;
     public int number;
     public String name;
@@ -39,7 +41,7 @@ public class PlayerPreview {
     public int CP;
     public int D;
     public int I;
-    public int lev;
+    private int lev;
     public String position;
 
     public PlayerPreview(TemplateImage ti, Player p) throws SQLException {
@@ -82,6 +84,8 @@ public class PlayerPreview {
         this.newPA = p.getPaInc();
         this.newAV = p.getAvInc();
         this.newVal = p.getValue();
+        this.primary = ti.primary;
+        this.secondary = ti.secondary;
     }
 
     public int getId() {
@@ -330,5 +334,21 @@ public class PlayerPreview {
 
     public void setNewVal(int newVal) {
         this.newVal = newVal;
+    }
+
+    public String getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(String primary) {
+        this.primary = primary;
+    }
+
+    public String getSecondary() {
+        return secondary;
+    }
+
+    public void setSecondary(String secondary) {
+        this.secondary = secondary;
     }
 }

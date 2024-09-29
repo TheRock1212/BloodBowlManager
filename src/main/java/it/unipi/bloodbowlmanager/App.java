@@ -99,6 +99,11 @@ public class App extends Application {
         stage.setScene(scene);
     }
 
+    public static Parent load(String fxml) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        return fxmlLoader.load();
+    }
+
     public static PlayerPreview getPlayer() {
         return player;
     }
