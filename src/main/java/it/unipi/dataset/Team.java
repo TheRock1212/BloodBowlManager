@@ -33,12 +33,13 @@ public class Team {
     public int points;
     public int value;
     private int round;
+    private int journeyman;
 
     public Team() {
 
     }
 
-    public Team(int id, String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round) {
+    public Team(int id, String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman) {
         this.id = id;
         this.coach = coach;
         this.name = name;
@@ -64,9 +65,10 @@ public class Team {
         this.points = points;
         this.value = value;
         this.round = round;
+        this.journeyman = journeyman;
     }
 
-    public Team(String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round) {
+    public Team(String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman) {
         this.coach = coach;
         this.name = name;
         this.race = race;
@@ -91,6 +93,7 @@ public class Team {
         this.points = points;
         this.value = value;
         this.round = round;
+        this.journeyman = journeyman;
     }
 
     public int getId() {
@@ -293,6 +296,14 @@ public class Team {
         this.casNet = casNet;
     }
 
+    public int getJourneyman() {
+        return journeyman;
+    }
+
+    public void setJourneyman(int journeyman) {
+        this.journeyman = journeyman;
+    }
+
     /**
      * Restutisce il resul set dei team
      * @param id identificatore del team. Se è 0 si prendono tutti i team
@@ -310,7 +321,7 @@ public class Team {
     }
 
     public void addTeam() throws SQLException{
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO team(coach, name, race, league, ngiocatori, nreroll, apothecary, cheerleader, assistant, DF, treasury, G, W, N, L, TDScored, TDConceded, CASInflicted, CASSuffered, PTS, value, round) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO team(coach, name, race, league, ngiocatori, nreroll, apothecary, cheerleader, assistant, DF, treasury, G, W, N, L, TDScored, TDConceded, CASInflicted, CASSuffered, PTS, value, round, journeyman) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, coach);
         ps.setString(2, name);
         ps.setInt(3, race);
@@ -333,6 +344,7 @@ public class Team {
         ps.setInt(20, points);
         ps.setInt(21, value);
         ps.setInt(22, round);
+        ps.setInt(23, journeyman);
         ps.executeUpdate();
 
         Statement st = App.getConnection().createStatement();
@@ -370,5 +382,51 @@ public class Team {
         ps.setInt(6, value);
         ps.setInt(7, id);
         ps.executeUpdate();
+    }
+
+    public int getPositional(int id) throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM player WHERE player_template = " + id + " AND team = " + this.id + " AND status = 1 AND isjourney = 0");
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public int[] getPlayerNumbers() throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT number FROM player WHERE team = " + this.id + " AND status = 1 AND isjourney = 0");
+        int[] nrs = new int[ngiocatori];
+        int i = 0;
+        while(rs.next()) {
+            nrs[i++] = rs.getInt(1);
+        }
+        return nrs;
+    }
+
+    public String[] getPlayerNames() throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT name FROM player WHERE team = " + this.id + " AND status = 1 AND isjourney = 0");
+        String[] names = new String[ngiocatori];
+        int i = 0;
+        while(rs.next()) {
+            names[i++] = rs.getString(1);
+        }
+        return names;
+    }
+
+    public Player[] getJourneymans() throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT COUNT(*) from player WHERE team = " + this.id + " AND status = 1 AND isjourney = 1");
+        rs.next();
+        System.out.println(rs.getInt(1));
+        if(rs.getInt(1) == 0)
+            return null;
+        Player[] journeymans = new Player[rs.getInt(1)];
+        st = App.getConnection().createStatement();
+        rs = st.executeQuery("SELECT * from player WHERE team = " + this.id + " AND status = 1 AND isjourney = 1");
+        int i = 0;
+        while(rs.next()) {
+            journeymans[i++] = new Player(rs.getInt("id"), rs.getInt("number"), rs.getString("name"), rs.getInt("player_template"), rs.getInt("team"), rs.getInt("unspentSPP"), rs.getInt("SPP"), rs.getString("new_skill"), rs.getInt("MA_inc"), rs.getInt("ST_inc"), rs.getInt("AG_inc"), rs.getInt("PA_inc"), rs.getInt("AV_inc"), rs.getInt("MA_dec"), rs.getInt("ST_dec"), rs.getInt("AG_dec"), rs.getInt("PA_dec"), rs.getInt("AV_dec"), rs.getInt("NIG"), rs.getBoolean("MNG"), rs.getInt("val"), rs.getInt("TD"), rs.getInt("CAS"), rs.getInt("K"), rs.getInt("CP"), rs.getInt("D"), rs.getInt("I"), rs.getInt("lev"), rs.getBoolean("status"), rs.getBoolean("isjourney"));
+        }
+        return journeymans;
     }
 }

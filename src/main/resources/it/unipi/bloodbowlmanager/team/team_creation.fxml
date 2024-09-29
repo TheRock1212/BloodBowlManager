@@ -4,7 +4,9 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
@@ -54,5 +56,12 @@
       <Label layoutX="362.0" layoutY="93.0" text="Special Rules:" />
       <Label layoutX="66.0" layoutY="85.0" text="Select Race:" />
       <Label fx:id="error" alignment="CENTER" layoutX="1.0" layoutY="378.0" prefHeight="17.0" prefWidth="600.0" text="Label" textFill="RED" visible="false" />
+      <RadioButton fx:id="zombie" layoutX="408.0" layoutY="167.0" mnemonicParsing="false" selected="true" text="Zombie" visible="false">
+         <toggleGroup>
+            <ToggleGroup fx:id="journey" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="skeleton" layoutX="408.0" layoutY="186.0" mnemonicParsing="false" text="Skeleton" toggleGroup="$journey" visible="false" />
+      <Label fx:id="journeyman" layoutX="385.0" layoutY="151.0" text="Choose Journeyman:" visible="false" />
    </children>
 </Pane>

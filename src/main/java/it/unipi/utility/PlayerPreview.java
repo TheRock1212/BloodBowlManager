@@ -100,6 +100,14 @@ public class PlayerPreview {
         this.img = img;
     }
 
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
     public String getName() {
         return name;
     }

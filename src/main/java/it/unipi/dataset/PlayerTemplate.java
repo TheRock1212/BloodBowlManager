@@ -188,8 +188,16 @@ public class PlayerTemplate {
         return st.executeQuery("SELECT * FROM player_template WHERE race = " + race);
     }
 
-    public ResultSet getLineman(int race) throws SQLException {
+    public int getLineman(int race) throws SQLException {
         Statement st = App.getConnection().createStatement();
-        return st.executeQuery("SELECT * FROM player_template WHERE race = " + race + " AND max_qty > 10");
+        ResultSet rs = st.executeQuery("SELECT * FROM player_template WHERE race = " + race + " AND max_qty > 10");
+        rs.next();
+        return rs.getInt("id");
     }
+
+    public ResultSet getJourneyman(int id) throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        return st.executeQuery("SELECT * FROM player_template WHERE id = " + id);
+    }
+
 }

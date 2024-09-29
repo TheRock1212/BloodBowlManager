@@ -32,6 +32,8 @@ public class PlayerPurchaseController {
     @FXML private Button purchase;
 
     private static Player[] p = new Player[16];
+    private int[] nrs = new int[App.getTeam().ngiocatori];
+    private String[] names = new String[App.getTeam().ngiocatori];
     //private TemplateImage[] pt2 = new TemplateImage[16];
 
     @FXML public void initialize() throws SQLException {
@@ -92,6 +94,11 @@ public class PlayerPurchaseController {
             getTable();
         }
 
+        if(!App.isNewTeam()) {
+            nrs = App.getTeam().getPlayerNumbers();
+            names = App.getTeam().getPlayerNames();
+        }
+
     }
 
     private void getTable() throws SQLException {
@@ -106,6 +113,7 @@ public class PlayerPurchaseController {
             int j = 0;
             if (!App.isNewTeam()) {
                 //Qualcosa per settare j
+                j = App.getTeam().getPositional(ti.getId());
             }
             for (; j <= ti.getMaxQty(); j++)
                 ti.cb.getItems().add(j);
@@ -143,7 +151,7 @@ public class PlayerPurchaseController {
         for(int i = 0; i < pt.size(); i++) {
             if(App.isNewTeam()) {
                 for(int j = 0; j < pt.get(i).cb.getValue(); j++) {
-                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true);
+                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false);
                     if(pt.get(i).getMaxQty() > 10 && rules.contains("Low Cost Lineman"))
                         value += 0;
                     else
@@ -151,7 +159,13 @@ public class PlayerPurchaseController {
                 }
             }
             else{
-                //Fai cose quando compri da team già creato
+                for(int j = 0; j < (pt.get(i).cb.getValue() - (int)pt.get(i).cb.getItems().get(0)); j++) {
+                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false);
+                    if(pt.get(i).getMaxQty() > 10 && rules.contains("Low Cost Lineman"))
+                        value += 0;
+                    else
+                        value += pt.get(i).getCost();
+                }
             }
         }
         App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() + cont);
@@ -171,6 +185,9 @@ public class PlayerPurchaseController {
         for(int i = 0; i < pt.size(); i++) {
             if(App.isNewTeam())
                 tmp -= pt.get(i).cb.getValue() * pt.get(i).getCost();
+            else {
+                tmp -= (pt.get(i).cb.getValue() - (int)pt.get(i).cb.getItems().get(0)) * pt.get(i).cost;
+            }
             if(pt.get(i).isBigGuy() && pt.get(i).cb.getValue() > 0)
                 bg++;
         }
@@ -235,28 +252,44 @@ public class PlayerPurchaseController {
 
     @FXML public void checkDuplicate() {
         error.setVisible(false);
-        if(App.isNewTeam()) {
-            for(int i = 0; i < pt2.size(); i++) {
-                for(int j = 0; j < pt2.size(); j++)
-                    if(pt2.get(i).namePlayer.getText().equals(pt2.get(j).namePlayer.getText()) && i != j && !pt2.get(i).namePlayer.getText().equals("")) {
-                        error.setText("Name Duplicate!");
+        for(int i = 0; i < pt2.size(); i++) {
+            for(int j = 0; j < pt2.size(); j++)
+                if(pt2.get(i).namePlayer.getText().equals(pt2.get(j).namePlayer.getText()) && i != j && !pt2.get(i).namePlayer.getText().equals("")) {
+                    error.setText("Name Duplicate!");
+                    error.setVisible(true);
+                    pt2.get(j).namePlayer.requestFocus();
+                    return;
+                }
+            if(!App.isNewTeam()) {
+                for(String name : names) {
+                    if(name.equals(pt2.get(i).namePlayer.getText())) {
+                        error.setText("Number Duplicate!");
                         error.setVisible(true);
-                        pt2.get(j).namePlayer.requestFocus();
+                        pt2.get(i).number.requestFocus();
                         return;
                     }
+                }
             }
         }
     }
 
     @FXML public void checkNumber() {
         error.setVisible(false);
-        if(App.isNewTeam()) {
-            for(int i = 0; i < pt2.size(); i++) {
-                for(int j= 0; j < pt2.size(); j++) {
-                    if(pt2.get(i).number.getValue() == pt2.get(j).number.getValue() && i != j) {
+        for(int i = 0; i < pt2.size(); i++) {
+            for(int j= 0; j < pt2.size(); j++) {
+                if(pt2.get(i).number.getValue() == pt2.get(j).number.getValue() && i != j) {
+                    error.setText("Number Duplicate!");
+                    error.setVisible(true);
+                    pt2.get(j).number.requestFocus();
+                    return;
+                }
+            }
+            if(!App.isNewTeam()) {
+                for(int nr : nrs) {
+                    if(nr == pt2.get(i).number.getValue()) {
                         error.setText("Number Duplicate!");
                         error.setVisible(true);
-                        pt2.get(j).number.requestFocus();
+                        pt2.get(i).number.requestFocus();
                         return;
                     }
                 }
@@ -271,8 +304,22 @@ public class PlayerPurchaseController {
             getP()[i].setNumber(pt2.get(i).number.getValue());
         }
         getP()[0].addPlayer(getP());
+        if(!App.isNewTeam() && getP() != null) {
+            Player[] jms = App.getTeam().getJourneymans();
+            if(jms != null) {
+                for(int i = 0,  j = (jms.length - 1); i < 27 && j >= 0; i++, j--) {
+                    if(getP() == null)
+                        break;
+                    else
+                        jms[j].deletePlayer(jms[j].getId());
+                }
+            }
+        }
         setP(null);
-        App.setRoot("dashboard");
+        if(App.isNewTeam())
+            App.setRoot("dashboard");
+        else
+            App.setRoot("team/team_management");
     }
 
     public static Player[] getP() {

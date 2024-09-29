@@ -1,13 +1,11 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
+import it.unipi.dataset.PlayerTemplate;
 import it.unipi.dataset.Race;
 import it.unipi.dataset.Team;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -17,8 +15,10 @@ public class TeamController {
     @FXML private ComboBox<String> race;
     @FXML private ComboBox<Integer> cheer, assi, df, reroll;
     @FXML private TextField teamName, coach;
-    @FXML private Label rules, noApo, rrValue, error, treasury;
+    @FXML private Label rules, noApo, rrValue, error, treasury, journeyman;
+    @FXML private ToggleGroup journey;
     @FXML private CheckBox apo;
+    @FXML private RadioButton zombie, skeleton;
 
     private Team t = new Team();
     private Race r = new Race();
@@ -79,6 +79,16 @@ public class TeamController {
         apo.setSelected(false);
         treasury.setText(Integer.toString(App.getLeague().getTreasury()));
         rrValue.setText(r.getReroll() + "k");
+        if(race.getValue().equals("Shambling Undead")) {
+            journeyman.setVisible(true);
+            zombie.setVisible(true);
+            skeleton.setVisible(true);
+        }
+        else {
+            journeyman.setVisible(false);
+            zombie.setVisible(false);
+            skeleton.setVisible(false);
+        }
     }
 
     @FXML public void purchasePlayer() throws IOException, SQLException {
@@ -94,6 +104,16 @@ public class TeamController {
         t.setLeague(App.getLeague().getId());
         t.setRound(0);
         t.setRace(r.getId());
+        if(t.getRace() == 4) {
+            if(journey.getSelectedToggle() == zombie)
+                t.setJourneyman(16);
+            else
+                t.setJourneyman(15);
+        }
+        else {
+            PlayerTemplate pt = new PlayerTemplate();
+            t.setJourneyman(pt.getLineman(t.getRace()));
+        }
         t.addTeam();
         App.setTeam(t);
         App.setNewTeam(true);

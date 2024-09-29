@@ -122,7 +122,7 @@ public class DashboardController {
         Team team = new Team();
         ResultSet rs = team.getTeam(0);
         while (rs.next()) {
-            Team t = new Team(rs.getInt("id"), rs.getString("coach"), rs.getString("name"), rs.getInt("race"), rs.getInt("league"), rs.getInt("ngiocatori"), rs.getInt("nreroll"), rs.getBoolean("apothecary"), rs.getInt("cheerleader"), rs.getInt("assistant"), rs.getInt("DF"), rs.getInt("treasury"), rs.getInt("G"), rs.getInt("W"), rs.getInt("N"), rs.getInt("L"), rs.getInt("TDscored"), rs.getInt("TDconceded"), rs.getInt("CASInflicted"), rs.getInt("CASSuffered"), rs.getInt("PTS"), rs.getInt("value"), rs.getInt("round"));
+            Team t = new Team(rs.getInt("id"), rs.getString("coach"), rs.getString("name"), rs.getInt("race"), rs.getInt("league"), rs.getInt("ngiocatori"), rs.getInt("nreroll"), rs.getBoolean("apothecary"), rs.getInt("cheerleader"), rs.getInt("assistant"), rs.getInt("DF"), rs.getInt("treasury"), rs.getInt("G"), rs.getInt("W"), rs.getInt("N"), rs.getInt("L"), rs.getInt("TDscored"), rs.getInt("TDconceded"), rs.getInt("CASInflicted"), rs.getInt("CASSuffered"), rs.getInt("PTS"), rs.getInt("value"), rs.getInt("round"), rs.getInt("journeyman"));
             rl.add(t);
             tl.add(t);
         }

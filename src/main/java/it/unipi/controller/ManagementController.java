@@ -4,6 +4,7 @@ import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Player;
 import it.unipi.dataset.PlayerTemplate;
 import it.unipi.dataset.Race;
+import it.unipi.dataset.Team;
 import it.unipi.utility.PlayerPreview;
 import it.unipi.utility.TemplateImage;
 import javafx.collections.FXCollections;
@@ -17,6 +18,7 @@ import javafx.scene.image.ImageView;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 
 public class ManagementController {
 
@@ -36,8 +38,8 @@ public class ManagementController {
         TableColumn nomeCol = new TableColumn("Position");
         nomeCol.setCellValueFactory(new PropertyValueFactory<>("position"));
 
-        TableColumn number = new TableColumn("Nr");
-        number.setCellValueFactory(new PropertyValueFactory<>("number"));
+        TableColumn nr = new TableColumn("Nr");
+        nr.setCellValueFactory(new PropertyValueFactory<>("number"));
 
         TableColumn namePlayer = new TableColumn("Name");
         namePlayer.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -78,7 +80,7 @@ public class ManagementController {
         TableColumn image = new TableColumn(" ");
         image.setCellValueFactory(new PropertyValueFactory<ImageView, PlayerPreview>("img"));
 
-        players.getColumns().addAll(image, number, namePlayer, nomeCol, ma, st, ag, pa, av, skills, unspp, totalspp, mng, nig, Cost);
+        players.getColumns().addAll(image, nr, namePlayer, nomeCol, ma, st, ag, pa, av, skills, unspp, totalspp, mng, nig, Cost);
         p = FXCollections.observableArrayList();
         players.setItems(p);
 
@@ -127,7 +129,7 @@ public class ManagementController {
         ResultSet rs = tmp.getPlayers(App.getTeam().getId(), true);
         int cont = 0;
         while(rs.next()) {
-            player[cont++] = new Player(rs.getInt("id"), rs.getInt("number"), rs.getString("name"), rs.getInt("player_template"), rs.getInt("team"), rs.getInt("unspentSPP"), rs.getInt("SPP"), rs.getString("new_skill"), rs.getInt("MA_inc"), rs.getInt("ST_inc"), rs.getInt("AG_inc"), rs.getInt("PA_inc"), rs.getInt("AV_inc"), rs.getInt("MA_dec"), rs.getInt("ST_dec"), rs.getInt("AG_dec"), rs.getInt("PA_dec"), rs.getInt("AV_dec"), rs.getInt("NIG"), rs.getBoolean("MNG"), rs.getInt("val"), rs.getInt("TD"), rs.getInt("CAS"), rs.getInt("K"), rs.getInt("CP"), rs.getInt("D"), rs.getInt("I"), rs.getInt("lev"), rs.getBoolean("status"));
+            player[cont++] = new Player(rs.getInt("id"), rs.getInt("number"), rs.getString("name"), rs.getInt("player_template"), rs.getInt("team"), rs.getInt("unspentSPP"), rs.getInt("SPP"), rs.getString("new_skill"), rs.getInt("MA_inc"), rs.getInt("ST_inc"), rs.getInt("AG_inc"), rs.getInt("PA_inc"), rs.getInt("AV_inc"), rs.getInt("MA_dec"), rs.getInt("ST_dec"), rs.getInt("AG_dec"), rs.getInt("PA_dec"), rs.getInt("AV_dec"), rs.getInt("NIG"), rs.getBoolean("MNG"), rs.getInt("val"), rs.getInt("TD"), rs.getInt("CAS"), rs.getInt("K"), rs.getInt("CP"), rs.getInt("D"), rs.getInt("I"), rs.getInt("lev"), rs.getBoolean("status"), rs.getBoolean("isjourney"));
         }
         PlayerTemplate pt = new PlayerTemplate();
         rs = pt.getTemplate(App.getTeam().getRace());
@@ -148,6 +150,8 @@ public class ManagementController {
                 pp.PA = 0;
             p.add(pp);
         }
+        Comparator<PlayerPreview> comparator = Comparator.comparingInt(PlayerPreview::getNumber);
+        FXCollections.sort(p, comparator);
     }
 
     @FXML
@@ -212,11 +216,10 @@ public class ManagementController {
     @FXML
     public void switchToPurchase() throws IOException, SQLException {
         App.setNewTeam(false);
-        //Gson gson = new Gson();
         if(checkPurchase()) {
             App.getTeam().updateStaff();
         }
-        App.setRoot("player_purchase");
+        App.setRoot("player/player_purchase");
 
     }
 
@@ -230,37 +233,44 @@ public class ManagementController {
         p.remove(tmp);
         App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() - 1);
         App.getTeam().setValue(App.getTeam().getValue() - tmp.getVal());
-        int mng = 0;
+        int mng = 0, nj = 0;
         for(int j = 0; j < 27; j++) {
             if(player[j] == null)
                 break;
+            if(player[j].isJourney())
+                nj++;
             if(player[j].mng)
                 mng++;
         }
-        while((App.getTeam().getNgiocatori() - mng) < 11) {
-            int i = 0;
+        ResultSet rs = null;
+        PlayerTemplate pt;
+        if((App.getTeam().getNgiocatori() - mng + nj) < 11) {
+            pt = new PlayerTemplate();
+            rs = pt.getJourneyman(App.getTeam().getJourneyman());
+            rs.next();
+        }
+        int nrPlayer = 0;
+        while(nrPlayer < (11 - (App.getTeam().getNgiocatori() - mng + nj))) {
+            int i = 0, journeyNbr = 100;
             for(; i < 27; i++) {
                 if(player[i] == null) {
                     break;
                 }
+                if(player[i].isJourney())
+                    journeyNbr++;
             }
-            PlayerTemplate pt = new PlayerTemplate();
-            ResultSet rs = pt.getLineman(App.getTeam().getRace());
-            while(rs.next()) {
-                player[i] = new Player(0, "Journeyman", rs.getInt("id"), App.getTeam().getId(), 0, 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true);
-                player[i].addPlayer();
-                pt = new PlayerTemplate(pt = new PlayerTemplate(rs.getInt("id"), rs.getString("position"), rs.getInt("race"), rs.getInt("MA"), rs.getInt("ST"), rs.getInt("AG"), rs.getInt("PA"), rs.getInt("AV"), rs.getString("skill"), rs.getInt("max_qty"), rs.getString("primary"), rs.getString("secondary"), rs.getInt("cost"), rs.getString("url"), rs.getBoolean("big_guy")));
-                TemplateImage ti = new TemplateImage(pt);
-                ti = new TemplateImage(pt);
-                ti.img = new ImageView();
-                ti.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
-                PlayerPreview pp = new PlayerPreview(ti, player[i]);
-                p.add(pp);
-                App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() + 1);
-                App.getTeam().setValue(App.getTeam().getValue() + pp.getVal());
-                i++;
-                break;
-            }
+            player[i] = new Player(journeyNbr, "Journeyman", rs.getInt("id"), App.getTeam().getId(), 0, 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, true);
+            player[i].addPlayer();
+            pt = new PlayerTemplate(pt = new PlayerTemplate(rs.getInt("id"), rs.getString("position"), rs.getInt("race"), rs.getInt("MA"), rs.getInt("ST"), rs.getInt("AG"), rs.getInt("PA"), rs.getInt("AV"), rs.getString("skill"), rs.getInt("max_qty"), rs.getString("primary"), rs.getString("secondary"), rs.getInt("cost"), rs.getString("url"), rs.getBoolean("big_guy")));
+            TemplateImage ti = new TemplateImage(pt);
+            ti = new TemplateImage(pt);
+            ti.img = new ImageView();
+            ti.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
+            PlayerPreview pp = new PlayerPreview(ti, player[i]);
+            p.add(pp);
+            //App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() + 1);
+            App.getTeam().setValue(App.getTeam().getValue() + pp.getVal());
+            nrPlayer++;
         }
         App.getTeam().updatePlayer();
     }

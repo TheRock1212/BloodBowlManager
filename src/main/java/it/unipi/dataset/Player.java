@@ -38,12 +38,13 @@ public class Player {
     public int inter;
     private int level;
     private boolean status;
+    public boolean journey;
 
     public Player() {
 
     }
 
-    public Player(int id, int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status) {
+    public Player(int id, int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey) {
         this.id = id;
         this.number = number;
         this.name = name;
@@ -73,9 +74,10 @@ public class Player {
         this.inter = inter;
         this.level = level;
         this.status = status;
+        this.journey = journey;
     }
 
-    public Player(int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status) {
+    public Player(int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey) {
         this.number = number;
         this.name = name;
         this.template = template;
@@ -104,9 +106,10 @@ public class Player {
         this.inter = inter;
         this.level = level;
         this.status = status;
+        this.journey = journey;
     }
 
-    public Player(int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status) {
+    public Player(int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey) {
         this.template = template;
         this.team = team;
         this.unspentSPP = unspentSPP;
@@ -133,6 +136,7 @@ public class Player {
         this.inter = inter;
         this.level = level;
         this.status = status;
+        this.journey = journey;
     }
 
     public int getId() {
@@ -367,8 +371,16 @@ public class Player {
         this.status = status;
     }
 
+    public boolean isJourney() {
+        return journey;
+    }
+
+    public void setJourney(boolean journey) {
+        this.journey = journey;
+    }
+
     public void addPlayer(Player[] pp) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO player(number, name, player_template, team, unspentSPP, SPP, new_skill, MA_inc, ST_inc, AG_inc, PA_inc, AV_inc, MA_dec, ST_dec, AG_dec, PA_dec, AV_dec, NIG, MNG, val, TD, CAS, K, CP, D, I, lev, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO player(number, name, player_template, team, unspentSPP, SPP, new_skill, MA_inc, ST_inc, AG_inc, PA_inc, AV_inc, MA_dec, ST_dec, AG_dec, PA_dec, AV_dec, NIG, MNG, val, TD, CAS, K, CP, D, I, lev, status, isjourney) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         for(Player p : pp) {
             if(p == null)
                 break;
@@ -400,6 +412,7 @@ public class Player {
             ps.setInt(26, p.getInter());
             ps.setInt(27, p.getLevel());
             ps.setBoolean(28, p.isStatus());
+            ps.setBoolean(29, p.isJourney());
             ps.addBatch();
         }
         ps.executeBatch();
@@ -434,7 +447,7 @@ public class Player {
     }
 
     public void addPlayer() throws SQLException{
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO player(number, name, player_template, team, unspentSPP, SPP, new_skill, MA_inc, ST_inc, AG_inc, PA_inc, AV_inc, MA_dec, ST_dec, AG_dec, PA_dec, AV_dec, NIG, MNG, val, TD, CAS, K, CP, D, I, lev, status) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO player(number, name, player_template, team, unspentSPP, SPP, new_skill, MA_inc, ST_inc, AG_inc, PA_inc, AV_inc, MA_dec, ST_dec, AG_dec, PA_dec, AV_dec, NIG, MNG, val, TD, CAS, K, CP, D, I, lev, status, isjourney) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         ps.setInt(1, getNumber());
         ps.setString(2, getName());
         ps.setInt(3, getTemplate());
@@ -463,6 +476,7 @@ public class Player {
         ps.setInt(26, getInter());
         ps.setInt(27, getLevel());
         ps.setBoolean(28, isStatus());
+        ps.setBoolean(29, isJourney());
         ps.executeUpdate();
 
         Statement st = App.getConnection().createStatement();
