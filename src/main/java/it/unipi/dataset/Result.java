@@ -1,0 +1,319 @@
+package it.unipi.dataset;
+
+import it.unipi.bloodbowlmanager.App;
+import it.unipi.utility.Pair;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class Result {
+    private int id;
+    public int league;
+    public int teamH;
+    public int teamA;
+    public int tdh;
+    public int tda;
+    public int cash;
+    public int casa;
+    public int killh;
+    public int killa;
+    public int cph;
+    public int cpa;
+    public int dech;
+    public int deca;
+    public int inth;
+    public int inta;
+    public int dfh;
+    public int dfa;
+    public int winh;
+    public int wina;
+
+    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina) {
+        this.league = league;
+        this.teamH = teamH;
+        this.teamA = teamA;
+        this.tdh = tdh;
+        this.tda = tda;
+        this.cash = cash;
+        this.casa = casa;
+        this.killh = killh;
+        this.killa = killa;
+        this.cph = cph;
+        this.cpa = cpa;
+        this.dech = dech;
+        this.deca = deca;
+        this.inth = inth;
+        this.inta = inta;
+        this.dfh = dfh;
+        this.dfa = dfa;
+        this.winh = winh;
+        this.wina = wina;
+    }
+
+    public Result() {
+    }
+
+    public Result(Result r) {
+        this.id = r.getId();
+        this.league = r.league;
+        this.teamH = r.teamH;
+        this.teamA = r.teamA;
+        this.tdh = r.tdh;
+        this.tda = r.tda;
+        this.cash = r.cash;
+        this.casa = r.casa;
+        this.killh = r.killh;
+        this.killa = r.killa;
+        this.cph = r.cph;
+        this.cpa = r.cpa;
+        this.dech = r.dech;
+        this.deca = r.deca;
+        this.inth = r.inth;
+        this.inta = r.inta;
+        this.dfh = r.dfh;
+        this.dfa = r.dfa;
+        this.winh = r.winh;
+        this.wina = r.wina;
+    }
+
+    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina) {
+        this.id = id;
+        this.league = league;
+        this.teamH = teamH;
+        this.teamA = teamA;
+        this.tdh = tdh;
+        this.tda = tda;
+        this.cash = cash;
+        this.casa = casa;
+        this.killh = killh;
+        this.killa = killa;
+        this.cph = cph;
+        this.cpa = cpa;
+        this.dech = dech;
+        this.deca = deca;
+        this.inth = inth;
+        this.inta = inta;
+        this.dfh = dfh;
+        this.dfa = dfa;
+        this.winh = winh;
+        this.wina = wina;
+    }
+
+    /*public Result(ResultGame rg) {
+        this.league = rg.league;
+        this.teamH = rg.teamH;
+        this.teamA = rg.teamA;
+        this.tdh = rg.TDH;
+        this.tda = rg.TDA;
+        this.cash = rg.CASH;
+        this.casa = rg.CASA;
+        this.killh = rg.KILLH;
+        this.killa = rg.KILLA;
+        this.cph = rg.CPH;
+        this.cpa = rg.CPA;
+        this.dech = rg.DECH;
+        this.deca = rg.DECA;
+        this.inth = rg.INTH;
+        this.inta = rg.INTA;
+        this.dfh = rg.DFH;
+        this.dfa = rg.DFA;
+        this.winh = rg.WINH;
+        this.wina = rg.WINA;
+    }*/
+
+    public Result(int league, int teamH, int teamA) {
+        this.league = league;
+        this.teamH = teamH;
+        this.teamA = teamA;
+    }
+
+
+
+    public int getLeague() {
+        return league;
+    }
+
+    public void setLeague(int league) {
+        this.league = league;
+    }
+
+    public int getTeamH() {
+        return teamH;
+    }
+
+    public void setTeamH(int teamH) {
+        this.teamH = teamH;
+    }
+
+    public int getTeamA() {
+        return teamA;
+    }
+
+    public void setTeamA(int teamA) {
+        this.teamA = teamA;
+    }
+
+    public int getTdh() {
+        return tdh;
+    }
+
+    public void setTdh(int tdh) {
+        this.tdh = tdh;
+    }
+
+    public int getTda() {
+        return tda;
+    }
+
+    public void setTda(int tda) {
+        this.tda = tda;
+    }
+
+    public int getCash() {
+        return cash;
+    }
+
+    public void setCash(int cash) {
+        this.cash = cash;
+    }
+
+    public int getCasa() {
+        return casa;
+    }
+
+    public void setCasa(int casa) {
+        this.casa = casa;
+    }
+
+    public int getKillh() {
+        return killh;
+    }
+
+    public void setKillh(int killh) {
+        this.killh = killh;
+    }
+
+    public int getKilla() {
+        return killa;
+    }
+
+    public void setKilla(int killa) {
+        this.killa = killa;
+    }
+
+    public int getCph() {
+        return cph;
+    }
+
+    public void setCph(int cph) {
+        this.cph = cph;
+    }
+
+    public int getCpa() {
+        return cpa;
+    }
+
+    public void setCpa(int cpa) {
+        this.cpa = cpa;
+    }
+
+    public int getDech() {
+        return dech;
+    }
+
+    public void setDech(int dech) {
+        this.dech = dech;
+    }
+
+    public int getDeca() {
+        return deca;
+    }
+
+    public void setDeca(int deca) {
+        this.deca = deca;
+    }
+
+    public int getInth() {
+        return inth;
+    }
+
+    public void setInth(int inth) {
+        this.inth = inth;
+    }
+
+    public int getInta() {
+        return inta;
+    }
+
+    public void setInta(int inta) {
+        this.inta = inta;
+    }
+
+    public int getDfh() {
+        return dfh;
+    }
+
+    public void setDfh(int dfh) {
+        this.dfh = dfh;
+    }
+
+    public int getDfa() {
+        return dfa;
+    }
+
+    public void setDfa(int dfa) {
+        this.dfa = dfa;
+    }
+
+    public int getWinh() {
+        return winh;
+    }
+
+    public void setWinh(int winh) {
+        this.winh = winh;
+    }
+
+    public int getWina() {
+        return wina;
+    }
+
+    public void setWina(int wina) {
+        this.wina = wina;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void addResult(Pair[] pairs) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO results(league, teamH, teamA) VALUES(?, ?, ?)");
+        for(Pair pair : pairs) {
+            ps.setInt(1, App.getLeague().getId());
+            ps.setInt(2, pair.home);
+            ps.setInt(3, pair.away);
+            ps.addBatch();
+        }
+        ps.executeBatch();
+        ps.close();
+    }
+
+    public ResultSet getResults() throws SQLException {
+        Statement s = App.getConnection().createStatement();
+        return s.executeQuery("SELECT * FROM results WHERE league = " + App.getLeague().getId());
+    }
+
+    public String[] getNames() throws SQLException {
+        String[] res = new String[2];
+        Team t = new Team();
+        res[0] = t.getName(getTeamH());
+        res[1] = t.getName(getTeamA());
+        return res;
+    }
+}

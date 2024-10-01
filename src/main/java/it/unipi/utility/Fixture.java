@@ -1,0 +1,66 @@
+package it.unipi.utility;
+
+import it.unipi.bloodbowlmanager.App;
+import it.unipi.dataset.League;
+import it.unipi.dataset.Result;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Fixture {
+    private ArrayList<Integer> teams;
+    private Pair[] giornata;
+
+    public Fixture() {
+        teams = new ArrayList<>();
+    }
+
+    /**
+     * Genera calendario con algoritmo round robin per ciascun girone
+     * @param n il numero di giornate da generare
+     * @throws SQLException
+     */
+    public void RoundRobin(int n) throws SQLException {
+        Result r = new Result();
+        int gironi = App.getLeague().getNrGroups();
+        for(int gr = 0; gr < gironi; gr++) {
+            int[] tms;
+            if(gironi == 1)
+                tms = App.getLeague().getTeams(gr);
+            else
+                tms = App.getLeague().getTeams(gr + 1);
+
+            for(int team : tms) {
+                teams.add(team);
+            }
+            if(tms.length % 2 != 0)
+                teams.add(0);
+            Collections.shuffle(teams);
+            giornata = new Pair[App.getLeague().getNTeams() / 2];
+            for(int i = 0; i < n; i++) {
+               for(int home = 0, away = teams.size() - 1; home < teams.size() / 2; home++, away--) {
+                   giornata[home] = new Pair(teams.get(home), teams.get(away));
+                   System.out.println(giornata[home].toString());
+               }
+               changePairings();
+               r.addResult(giornata);
+            }
+        }
+    }
+
+    private void changePairings() {
+        int[] tms = new int[teams.size()];
+        for(int i = 0; i < tms.length; i++) {
+            tms[i] = teams.get(i);
+        }
+        int tmp = tms[teams.size() - 1];
+        int dest[] = tms;
+        teams.clear();
+        System.arraycopy(tms, 1, dest, 2, tms.length - 2);
+        dest[1] = tmp;
+        for(int t : dest)
+            teams.add(t);
+    }
+}

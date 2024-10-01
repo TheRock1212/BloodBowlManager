@@ -206,4 +206,22 @@ public class League {
         ps.setInt(1, id);
         ps.executeUpdate();
     }
+
+    public int getNrGroups() throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT round FROM league WHERE id = " + getId());
+        rs.next();
+        return rs.getInt("round");
+    }
+
+    public int[] getTeams(int gr) throws SQLException {
+        int[] teams = new int[getNTeams()];
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT id FROM team WHERE league = " + id + " AND round = " + gr);
+        int i = 0;
+        while (rs.next()) {
+            teams[i++] = rs.getInt("id");
+        }
+        return teams;
+    }
 }

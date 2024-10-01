@@ -528,4 +528,12 @@ public class Player {
         ps.setInt(12, id);
         ps.executeUpdate();
     }
+
+    public void updateAnagrafic() throws SQLException{
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE player SET name = ?, number = ? WHERE id = ?");
+        ps.setString(1, getName());
+        ps.setInt(2, number);
+        ps.setInt(3, id);
+        ps.executeUpdate();
+    }
 }

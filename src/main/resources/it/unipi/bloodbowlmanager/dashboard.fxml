@@ -50,7 +50,8 @@
                <contextMenu>
                   <ContextMenu>
                      <items>
-                        <MenuItem mnemonicParsing="false" text="Add Result" />
+                        <MenuItem fx:id="fixture" mnemonicParsing="false" text="Add Fixture" onAction="#addFixture"/>
+                        <MenuItem fx:id="result" mnemonicParsing="false" text="Add Result" />
                      </items>
                   </ContextMenu>
                </contextMenu>

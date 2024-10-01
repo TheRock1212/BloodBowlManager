@@ -1,15 +1,17 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
+import it.unipi.dataset.Result;
 import it.unipi.dataset.Team;
+import it.unipi.utility.ResultTable;
+import it.unipi.utility.State;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -24,8 +26,15 @@ public class DashboardController {
     @FXML private TableView<Team> teamList;
     private ObservableList<Team> tl;
 
+    @FXML private TableView<ResultTable> resultList;
+    private ObservableList<ResultTable> res;
+
+    @FXML private MenuItem fixture, result;
 
     @FXML private Button addTeam, groups, playoff;
+
+    public Stage stage = new Stage();
+    public Scene scene;
 
     @FXML public void initialize() throws SQLException{
         //Colonne per rankingTable
@@ -107,10 +116,35 @@ public class DashboardController {
         //teamList.prefWidthProperty().bind(teamList.widthProperty());
         //teamList.prefHeightProperty().bind(teamList.heightProperty());
 
+        TableColumn homeTeam = new TableColumn("Home Team");
+        homeTeam.setCellValueFactory(new PropertyValueFactory<>("home"));
+
+        TableColumn awayTeam = new TableColumn("Away Team");
+        awayTeam.setCellValueFactory(new PropertyValueFactory<>("away"));
+
+        TableColumn homeTD = new TableColumn("TD Home");
+        homeTD.setCellValueFactory(new PropertyValueFactory<>("TDH"));
+
+        TableColumn awayTD = new TableColumn("TD Away");
+        awayTD.setCellValueFactory(new PropertyValueFactory<>("TDA"));
+
+        TableColumn homeCAS = new TableColumn("CAS Home");
+        homeCAS.setCellValueFactory(new PropertyValueFactory<>("CASH"));
+
+        TableColumn awayCAS = new TableColumn("CAS Away");
+        awayCAS.setCellValueFactory(new PropertyValueFactory<>("CASA"));
+
+        resultList.getColumns().addAll(homeTeam, awayTeam, homeTD, awayTD, homeCAS, awayCAS);
+        res = FXCollections.observableArrayList();
+        resultList.setItems(res);
+
+        fixture.setDisable(true);
+
         getTable();
 
         if(tl.size() == App.getLeague().getNTeams()) {
             addTeam.setVisible(false);
+            fixture.setDisable(false);
             if(App.getLeague().getGroups() > 1)
                 groups.setVisible(true);
             if(App.getLeague().getPlayoff() > 2)
@@ -120,7 +154,7 @@ public class DashboardController {
 
     private void getTable() throws SQLException {
         Team team = new Team();
-        ResultSet rs = team.getTeam(0);
+        ResultSet rs = team.getTeam(0, App.getLeague().getId());
         while (rs.next()) {
             Team t = new Team(rs.getInt("id"), rs.getString("coach"), rs.getString("name"), rs.getInt("race"), rs.getInt("league"), rs.getInt("ngiocatori"), rs.getInt("nreroll"), rs.getBoolean("apothecary"), rs.getInt("cheerleader"), rs.getInt("assistant"), rs.getInt("DF"), rs.getInt("treasury"), rs.getInt("G"), rs.getInt("W"), rs.getInt("N"), rs.getInt("L"), rs.getInt("TDscored"), rs.getInt("TDconceded"), rs.getInt("CASInflicted"), rs.getInt("CASSuffered"), rs.getInt("PTS"), rs.getInt("value"), rs.getInt("round"), rs.getInt("journeyman"));
             rl.add(t);
@@ -129,6 +163,16 @@ public class DashboardController {
         Comparator<Team> comparator = Comparator.comparingInt(Team::getPoints);
         comparator = comparator.reversed();
         FXCollections.sort(rl, comparator);
+
+        //msg = Connection.getConnection("/league/listres", "POST", Integer.toString(App.getLeague().id));
+        Result r = new Result();
+        ResultSet q = r.getResults();
+        while (q.next()) {
+            r = new Result(q.getInt("id"), q.getInt("teamH"), q.getInt("teamA"), q.getInt("tdH"), q.getInt("tdA"), q.getInt("casH"), q.getInt("casA"), q.getInt("killH"), q.getInt("killA"), q.getInt("cpH"), q.getInt("cpA"), q.getInt("decH"), q.getInt("decA"), q.getInt("intH"), q.getInt("intA"), q.getInt("dfH"), q.getInt("dfA"), q.getInt("winH"), q.getInt("winA"));
+            String[] names = r.getNames();
+            ResultTable reta = new ResultTable(r, names[0], names[1]);
+            res.add(reta);
+        }
     }
 
     @FXML public void createTeam() throws IOException {
@@ -149,4 +193,11 @@ public class DashboardController {
         App.setRoot("team/team_management");
     }
 
+    @FXML public void addFixture() throws IOException {
+        ResultController.setStato(State.SELECTMODE);
+        stage.setTitle("Select Fixtures");
+        scene = new Scene(App.load("result/mode"), 200, 300);
+        stage.setScene(scene);
+        stage.show();
+    }
 }

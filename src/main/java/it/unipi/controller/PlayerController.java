@@ -3,10 +3,14 @@ package it.unipi.controller;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Player;
 import it.unipi.dataset.Skill;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,8 +26,15 @@ public class PlayerController {
     @FXML private ComboBox cb;
     @FXML private Label text, error, maxLevel;
 
+    @FXML private Spinner<Integer> number;
+    @FXML private TextField newName;
+    @FXML private Button saveButton;
+
     private static boolean lUp = false;
     private static boolean naming = false;
+
+    private int[] nrs = new int[App.getTeam().ngiocatori];
+    private String[] names = new String[App.getTeam().ngiocatori];
 
     public Stage sta = new Stage();
     public Scene sc;
@@ -78,22 +89,46 @@ public class PlayerController {
             skills.setVisible(false);
             return;
         }
-        maxLevel.setVisible(false);
-        //Se il giocatore non ha un nome viene visualizzato il text field e il bottone per assegnarlo, altrimenti viene visualizzata una Label che mostra il nome
-        if(App.getPlayer().getName() == null)
-            playerName.setVisible(false);
-        else {
-            playerName.setVisible(true);
-            playerName.setText(App.getPlayer().getName());
+        else if(isNaming()) {
+            nrs = App.getTeam().getPlayerNumbers();
+            names = App.getTeam().getPlayerNames();
+            SpinnerValueFactory<Integer> numbs = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 1);
+            numbs.setValue(App.getPlayer().number);
+            number.setValueFactory(numbs);
+            newName.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent keyEvent) {
+                    if(keyEvent.getCode() == KeyCode.TAB)
+                        checkDuplicate();
+                }
+            });
+            number.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent keyEvent) {
+                    if(keyEvent.getCode() == KeyCode.TAB)
+                        checkNumber();
+                }
+            });
+            return;
         }
-        //Riempe le informazioni relative al giocatore
-        position.setText(App.getPlayer().getPosition());
-        team.setText(App.getTeam().getName());
-        mng.setText(Boolean.toString(App.getPlayer().isMNG()));
-        nig.setText(Integer.toString(App.getPlayer().getNIG()));
-        playerPortrait.setImage(App.getPlayer().getImg().getImage());
-        nr.setText("#" + Integer.toString(App.getPlayer().number));
-        setStats();
+        else {
+            maxLevel.setVisible(false);
+            //Se il giocatore non ha un nome viene visualizzato il text field e il bottone per assegnarlo, altrimenti viene visualizzata una Label che mostra il nome
+            if (App.getPlayer().getName() == null)
+                playerName.setVisible(false);
+            else {
+                playerName.setVisible(true);
+                playerName.setText(App.getPlayer().getName());
+            }
+            //Riempe le informazioni relative al giocatore
+            position.setText(App.getPlayer().getPosition());
+            team.setText(App.getTeam().getName());
+            mng.setText(Boolean.toString(App.getPlayer().isMNG()));
+            nig.setText(Integer.toString(App.getPlayer().getNIG()));
+            playerPortrait.setImage(App.getPlayer().getImg().getImage());
+            nr.setText("#" + Integer.toString(App.getPlayer().number));
+            setStats();
+        }
     }
 
     /**
@@ -141,17 +176,19 @@ public class PlayerController {
 
     //Salva il nome del giocatore
     @FXML
-    public void setName() {
-
+    public void setName() throws IOException{
+        setNaming(true);
+        sta.setTitle("Edit Name");
+        sc = new Scene(App.load("player/edit_name"), 320, 200);
+        sta.setScene(sc);
+        sta.show();
     }
 
     //Torna alla schermata generale del team
     @FXML
     public void switchToTeam() throws IOException, SQLException {
         Player p = new Player(App.getPlayer());
-        App.getTeam().updatePlayer();
         p.updatePreview();
-       //Connection.getConnection("/player/save", "POST", gson.toJson(p));
         App.setRoot("team/team_management");
     }
 
@@ -164,7 +201,7 @@ public class PlayerController {
         }
         setlUp(true);
         sta.setTitle("Choose Skill");
-        sc = new Scene(App.load("skill"), 250, 200);
+        sc = new Scene(App.load("player/skill"), 250, 200);
         sta.setScene(sc);
         sta.show();
     }
@@ -397,6 +434,40 @@ public class PlayerController {
             App.setRoot("player/player_preview");
         }
 
+    }
+
+    @FXML public void checkDuplicate() {
+        error.setVisible(false);
+        for(String name : names) {
+            if(name.equals(newName.getText())) {
+                error.setText("Number Duplicate!");
+                error.setVisible(true);
+                return;
+            }
+        }
+
+    }
+
+    @FXML public void checkNumber() {
+        error.setVisible(false);
+        for(int nr : nrs) {
+            if(nr == number.getValue() && nr != App.getPlayer().number) {
+                error.setText("Number Duplicate!");
+                error.setVisible(true);
+                return;
+            }
+        }
+    }
+
+    @FXML public void save() throws IOException, SQLException {
+        App.getPlayer().number = number.getValue();
+        App.getPlayer().name = newName.getText();
+        //Player p = new Player(App.getPlayer());
+        //p.updateAnagrafic();
+        setNaming(false);
+        Stage stage = (Stage) saveButton.getScene().getWindow();
+        stage.close();
+        App.setRoot("player/player_preview");
     }
 
     public static boolean islUp() {

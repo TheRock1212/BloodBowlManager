@@ -310,13 +310,13 @@ public class Team {
      * @return
      * @throws SQLException
      */
-    public ResultSet getTeam(int id) throws SQLException {
+    public ResultSet getTeam(int id, int league) throws SQLException {
         Statement st = App.getConnection().createStatement();
         ResultSet rs;
         if(id != 0)
-            rs = st.executeQuery("SELECT * FROM team WHERE id = " + id);
+            rs = st.executeQuery("SELECT * FROM team WHERE id = " + id + " AND league = " + league);
         else
-            rs = st.executeQuery("SELECT * FROM team");
+            rs = st.executeQuery("SELECT * FROM team" + " WHERE league = " + league);
         return rs;
     }
 
@@ -428,5 +428,12 @@ public class Team {
             journeymans[i++] = new Player(rs.getInt("id"), rs.getInt("number"), rs.getString("name"), rs.getInt("player_template"), rs.getInt("team"), rs.getInt("unspentSPP"), rs.getInt("SPP"), rs.getString("new_skill"), rs.getInt("MA_inc"), rs.getInt("ST_inc"), rs.getInt("AG_inc"), rs.getInt("PA_inc"), rs.getInt("AV_inc"), rs.getInt("MA_dec"), rs.getInt("ST_dec"), rs.getInt("AG_dec"), rs.getInt("PA_dec"), rs.getInt("AV_dec"), rs.getInt("NIG"), rs.getBoolean("MNG"), rs.getInt("val"), rs.getInt("TD"), rs.getInt("CAS"), rs.getInt("K"), rs.getInt("CP"), rs.getInt("D"), rs.getInt("I"), rs.getInt("lev"), rs.getBoolean("status"), rs.getBoolean("isjourney"));
         }
         return journeymans;
+    }
+
+    public String getName(int team) throws SQLException {
+        Statement st = App.getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SELECT name FROM team WHERE id = " + team);
+        rs.next();
+        return rs.getString(1);
     }
 }
