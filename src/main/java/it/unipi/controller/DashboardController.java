@@ -126,18 +126,21 @@ public class DashboardController {
         awayTeam.setCellValueFactory(new PropertyValueFactory<>("away"));
 
         TableColumn homeTD = new TableColumn("TD Home");
-        homeTD.setCellValueFactory(new PropertyValueFactory<>("TDH"));
+        homeTD.setCellValueFactory(new PropertyValueFactory<>("tdh"));
 
         TableColumn awayTD = new TableColumn("TD Away");
-        awayTD.setCellValueFactory(new PropertyValueFactory<>("TDA"));
+        awayTD.setCellValueFactory(new PropertyValueFactory<>("tda"));
 
         TableColumn homeCAS = new TableColumn("CAS Home");
-        homeCAS.setCellValueFactory(new PropertyValueFactory<>("CASH"));
+        homeCAS.setCellValueFactory(new PropertyValueFactory<>("cash"));
 
         TableColumn awayCAS = new TableColumn("CAS Away");
-        awayCAS.setCellValueFactory(new PropertyValueFactory<>("CASA"));
+        awayCAS.setCellValueFactory(new PropertyValueFactory<>("casa"));
 
-        resultList.getColumns().addAll(homeTeam, awayTeam, homeTD, awayTD, homeCAS, awayCAS);
+        TableColumn played = new TableColumn("Played");
+        played.setCellValueFactory(new PropertyValueFactory<>("played"));
+
+        resultList.getColumns().addAll(homeTeam, awayTeam, homeTD, awayTD, homeCAS, awayCAS, played);
         res = FXCollections.observableArrayList();
         resultList.setItems(res);
 

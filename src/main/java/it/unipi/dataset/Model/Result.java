@@ -30,8 +30,9 @@ public class Result {
     public int dfa;
     public int winh;
     public int wina;
+    public boolean played;
 
-    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina) {
+    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played) {
         this.league = league;
         this.teamH = teamH;
         this.teamA = teamA;
@@ -51,6 +52,7 @@ public class Result {
         this.dfa = dfa;
         this.winh = winh;
         this.wina = wina;
+        this.played = played;
     }
 
     public Result() {
@@ -77,9 +79,10 @@ public class Result {
         this.dfa = r.dfa;
         this.winh = r.winh;
         this.wina = r.wina;
+        this.played = r.played;
     }
 
-    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina) {
+    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played) {
         this.id = id;
         this.league = league;
         this.teamH = teamH;
@@ -100,6 +103,7 @@ public class Result {
         this.dfa = dfa;
         this.winh = winh;
         this.wina = wina;
+        this.played = played;
     }
 
     public Result(ResultSet rs) throws SQLException {
@@ -123,6 +127,7 @@ public class Result {
         this.dfa = rs.getInt("dfA");
         this.winh = rs.getInt("winH");
         this.wina = rs.getInt("winA");
+        this.played = rs.getBoolean("played");
     }
 
     /*public Result(ResultGame rg) {
@@ -314,6 +319,14 @@ public class Result {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isPlayed() {
+        return played;
+    }
+
+    public void setPlayed(boolean played) {
+        this.played = played;
     }
 
     public String[] getNames() throws SQLException {
