@@ -1,15 +1,19 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.PlayerTemplate;
-import it.unipi.dataset.Race;
-import it.unipi.dataset.Team;
+import it.unipi.dataset.Dao.PlayerTemplateDao;
+import it.unipi.dataset.Dao.RaceDao;
+import it.unipi.dataset.Dao.TeamDao;
+import it.unipi.dataset.Model.PlayerTemplate;
+import it.unipi.dataset.Model.Race;
+import it.unipi.dataset.Model.Team;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class TeamController {
     @FXML private ComboBox<String> race;
@@ -24,9 +28,10 @@ public class TeamController {
     private Race r = new Race();
 
     @FXML public void initialize() throws SQLException {
-        ResultSet rs = r.getNames();
-        while(rs.next())
-            race.getItems().add(rs.getString("name"));
+        //ResultSet rs = r.getNames();
+        List<String> names = RaceDao.getNames();
+        for(String name: names)
+            race.getItems().add(name);
         for(int i = 0; i < 12; i++) {
             cheer.getItems().add(i);
             if(i <= 6)
@@ -62,9 +67,7 @@ public class TeamController {
     }
 
     @FXML public void changeOptions() throws SQLException {
-        ResultSet rs = r.getRace(race.getValue());
-        while(rs.next())
-            r = new Race(rs.getInt("id"), rs.getString("name"), rs.getInt("positional"), rs.getInt("cost_reroll"), rs.getBoolean("apothecary"), rs.getString("special_1"), rs.getString("special_2"), rs.getString("special_3"));
+        Race r = RaceDao.getRace(race.getValue());
         apo.setVisible(false);
         noApo.setVisible(false);
         if(r.isApothecary())
@@ -112,9 +115,9 @@ public class TeamController {
         }
         else {
             PlayerTemplate pt = new PlayerTemplate();
-            t.setJourneyman(pt.getLineman(t.getRace()));
+            t.setJourneyman(PlayerTemplateDao.getLineman(t.getRace()));
         }
-        t.addTeam();
+        TeamDao.addTeam(t);
         App.setTeam(t);
         App.setNewTeam(true);
         App.setNaming(false);

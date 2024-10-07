@@ -1,4 +1,4 @@
-package it.unipi.dataset;
+package it.unipi.dataset.Model;
 
 import it.unipi.bloodbowlmanager.App;
 
@@ -61,6 +61,24 @@ public class PlayerTemplate {
         this.cost = pt.getCost();
         this.url = pt.getUrl();
         this.bigGuy = pt.isBigGuy();
+    }
+
+    public PlayerTemplate(ResultSet rs) throws SQLException {
+        this.id = rs.getInt("id");
+        this.position = rs.getString("position");
+        this.race = rs.getInt("race");
+        this.ma = rs.getInt("MA");
+        this.st = rs.getInt("ST");
+        this.ag = rs.getInt("AG");
+        this.pa = rs.getInt("PA");
+        this.av = rs.getInt("AV");
+        this.skill = rs.getString("skill");
+        this.maxQty = rs.getInt("max_qty");
+        this.primary = rs.getString("primary");
+        this.secondary = rs.getString("secondary");
+        this.cost = rs.getInt("cost");
+        this.url = rs.getString("url");
+        this.bigGuy = rs.getBoolean("big_guy");
     }
 
     public int getId() {
@@ -181,23 +199,6 @@ public class PlayerTemplate {
 
     public void setBigGuy(boolean bigGuy) {
         this.bigGuy = bigGuy;
-    }
-
-    public ResultSet getTemplate(int race) throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        return st.executeQuery("SELECT * FROM player_template WHERE race = " + race);
-    }
-
-    public int getLineman(int race) throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM player_template WHERE race = " + race + " AND max_qty > 10");
-        rs.next();
-        return rs.getInt("id");
-    }
-
-    public ResultSet getJourneyman(int id) throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        return st.executeQuery("SELECT * FROM player_template WHERE id = " + id);
     }
 
 }

@@ -1,9 +1,8 @@
 package it.unipi.utility;
 
-import it.unipi.dataset.PlayerTemplate;
+import it.unipi.dataset.Model.PlayerTemplate;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;

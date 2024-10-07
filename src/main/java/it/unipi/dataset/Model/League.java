@@ -1,4 +1,4 @@
-package it.unipi.dataset;
+package it.unipi.dataset.Model;
 
 import it.unipi.bloodbowlmanager.App;
 
@@ -62,6 +62,21 @@ public class League {
         this.treasury = treasury;
         this.groups = groups;
         this.playoff = playoff;
+    }
+
+    public League(ResultSet rs) throws SQLException {
+        this.id = rs.getInt("id");
+        this.name = rs.getString("name");
+        this.nTeams = rs.getInt("nteams");
+        this.ptsWin = rs.getInt("pts_win");
+        this.ptsTie = rs.getInt("pts_tie");
+        this.ptsLose = rs.getInt("pts_loss");
+        this.ptsTD = rs.getBoolean("pts_td");
+        this.ptsCAS = rs.getBoolean("pts_cas");
+        this.ptsTDConceded = rs.getBoolean("pts_td_conceded");
+        this.treasury = rs.getInt("treasury");
+        this.groups = rs.getInt("round");
+        this.playoff = rs.getInt("playoff");
     }
 
     public Integer getId() {
@@ -160,68 +175,4 @@ public class League {
         this.playoff = playoff;
     }
 
-    /**
-     * Aggiunge la lega al database
-     * @throws SQLException
-     */
-    public void addLeague() throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO league(name, nteams, pts_win, pts_tie, pts_loss, pts_td, pts_cas, pts_td_conceded, treasury, round, playoff) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        ps.setString(1, getName());
-        ps.setInt(2, getNTeams());
-        ps.setInt(3, getPtsWin());
-        ps.setInt(4, getPtsTie());
-        ps.setInt(5, getPtsLose());
-        ps.setBoolean(6, isPtsTD());
-        ps.setBoolean(7, isPtsCAS());
-        ps.setBoolean(8, isPtsTDConceded());
-        ps.setInt(9, getTreasury());
-        ps.setInt(10, getGroups());
-        ps.setInt(11, getPlayoff());
-        ps.executeUpdate();
-    }
-
-    /**
-     * Seleziona dal database la/e lega/ghe selezionate
-     * @param id identifcatore della lega. Se è 0 allora indica l'elenco di leghe
-     * @return
-     * @throws SQLException
-     */
-    public ResultSet getLeagues(int id) throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        ResultSet rs;
-        if(id != 0)
-            rs = st.executeQuery("SELECT * FROM league WHERE id = " + id);
-        else
-            rs = st.executeQuery("SELECT * FROM league");
-        return rs;
-    }
-
-    /**
-     * Elimina le lega selezionata
-     * @param id Identificatore della lega
-     * @throws SQLException
-     */
-    public void removeLeague(int id) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM league WHERE id = ?");
-        ps.setInt(1, id);
-        ps.executeUpdate();
-    }
-
-    public int getNrGroups() throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT round FROM league WHERE id = " + getId());
-        rs.next();
-        return rs.getInt("round");
-    }
-
-    public int[] getTeams(int gr) throws SQLException {
-        int[] teams = new int[getNTeams()];
-        Statement st = App.getConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT id FROM team WHERE league = " + id + " AND round = " + gr);
-        int i = 0;
-        while (rs.next()) {
-            teams[i++] = rs.getInt("id");
-        }
-        return teams;
-    }
 }

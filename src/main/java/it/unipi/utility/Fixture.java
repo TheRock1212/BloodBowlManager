@@ -1,13 +1,13 @@
 package it.unipi.utility;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.League;
-import it.unipi.dataset.Result;
+import it.unipi.dataset.Dao.ResultDao;
+import it.unipi.dataset.Dao.TeamDao;
+import it.unipi.dataset.Model.Result;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class Fixture {
     private ArrayList<Integer> teams;
@@ -24,13 +24,13 @@ public class Fixture {
      */
     public void RoundRobin(int n) throws SQLException {
         Result r = new Result();
-        int gironi = App.getLeague().getNrGroups();
+        int gironi = App.getLeague().getGroups();
         for(int gr = 0; gr < gironi; gr++) {
             int[] tms;
             if(gironi == 1)
-                tms = App.getLeague().getTeams(gr);
+                tms = TeamDao.getTeams(gr, App.getLeague());
             else
-                tms = App.getLeague().getTeams(gr + 1);
+                tms = TeamDao.getTeams(gr + 1, App.getLeague());
 
             for(int team : tms) {
                 teams.add(team);
@@ -45,7 +45,7 @@ public class Fixture {
                    System.out.println(giornata[home].toString());
                }
                changePairings();
-               r.addResult(giornata);
+               ResultDao.addResult(giornata);
             }
         }
     }

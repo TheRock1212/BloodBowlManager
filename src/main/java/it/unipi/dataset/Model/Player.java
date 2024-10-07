@@ -1,6 +1,5 @@
-package it.unipi.dataset;
+package it.unipi.dataset.Model;
 
-import com.mysql.cj.xdevapi.PreparableStatement;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.utility.PlayerPreview;
 
@@ -164,6 +163,39 @@ public class Player {
         this.def = pp.D;
         this.inter = pp.I;
         this.level = pp.getLev();
+    }
+
+    public Player(ResultSet rs) throws SQLException {
+        this.id = rs.getInt("id");
+        this.number = rs.getInt("number");
+        this.name = rs.getString("name");
+        this.template = rs.getInt("template");
+        this.team = rs.getInt("team");
+        this.unspentSPP = rs.getInt("unspentSPP");
+        this.spp = rs.getInt("SPP");
+        this.skill = rs.getString("skill");
+        this.maInc = rs.getInt("MA_inc");
+        this.stInc = rs.getInt("ST_inc");
+        this.agInc = rs.getInt("AG_inc");
+        this.paInc = rs.getInt("PA_inc");
+        this.avInc = rs.getInt("AV_inc");
+        this.maDec = rs.getInt("MA_dec");
+        this.stDec = rs.getInt("ST_dec");
+        this.agDec = rs.getInt("AG_dec");
+        this.paDec = rs.getInt("PA_dec");
+        this.avDec = rs.getInt("AV_dec");
+        this.nig = rs.getInt("NIG");
+        this.mng = rs.getBoolean("MNG");
+        this.value = rs.getInt("val");
+        this.td = rs.getInt("TD");
+        this.cas = rs.getInt("CAS");
+        this.kill = rs.getInt("K");
+        this.cp = rs.getInt("CP");
+        this.def = rs.getInt("D");
+        this.inter = rs.getInt("I");
+        this.level = rs.getInt("lev");
+        this.status = rs.getBoolean("status");
+        this.journey = rs.getBoolean("isjourney");
     }
 
     public int getId() {
@@ -404,136 +436,5 @@ public class Player {
 
     public void setJourney(boolean journey) {
         this.journey = journey;
-    }
-
-    public void addPlayer(Player[] pp) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO player(number, name, player_template, team, unspentSPP, SPP, new_skill, MA_inc, ST_inc, AG_inc, PA_inc, AV_inc, MA_dec, ST_dec, AG_dec, PA_dec, AV_dec, NIG, MNG, val, TD, CAS, K, CP, D, I, lev, status, isjourney) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        for(Player p : pp) {
-            if(p == null)
-                break;
-            ps.setInt(1, p.getNumber());
-            ps.setString(2, p.getName());
-            ps.setInt(3, p.getTemplate());
-            ps.setInt(4, p.getTeam());
-            ps.setInt(5, p.getUnspentSPP());
-            ps.setInt(6, p.getSpp());
-            ps.setString(7, p.getSkill());
-            ps.setInt(8, p.getMaInc());
-            ps.setInt(9, p.getStInc());
-            ps.setInt(10, p.getAgInc());
-            ps.setInt(11, p.getPaInc());
-            ps.setInt(12, p.getAvInc());
-            ps.setInt(13, p.getMaDec());
-            ps.setInt(14, p.getStDec());
-            ps.setInt(15, p.getAgDec());
-            ps.setInt(16, p.getPaDec());
-            ps.setInt(17, p.getAvDec());
-            ps.setInt(18, p.getNig());
-            ps.setBoolean(19, p.isMng());
-            ps.setInt(20, p.getValue());
-            ps.setInt(21, p.getTd());
-            ps.setInt(22, p.getCas());
-            ps.setInt(23, p.getKill());
-            ps.setInt(24, p.getCp());
-            ps.setInt(25, p.getDef());
-            ps.setInt(26, p.getInter());
-            ps.setInt(27, p.getLevel());
-            ps.setBoolean(28, p.isStatus());
-            ps.setBoolean(29, p.isJourney());
-            ps.addBatch();
-        }
-        ps.executeBatch();
-        ps.close();
-    }
-
-    public void deletePlayer(int id) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM player WHERE id = ?");
-        ps.setInt(1, id);
-        ps.executeUpdate();
-    }
-
-    public void deletePlayers(int team) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM player WHERE team = ?");
-        ps.setInt(1, team);
-    }
-
-    public ResultSet getPlayers(int team, boolean alive) throws SQLException {
-        PreparedStatement ps;
-        if(alive)
-            ps = App.getConnection().prepareStatement("SELECT * FROM player WHERE team = ? AND status = 1 ORDER BY number ASC");
-        else
-            ps = App.getConnection().prepareStatement("SELECT * FROM player WHERE team = ?");
-        ps.setInt(1, team);
-        return ps.executeQuery();
-    }
-
-    public void removePlayer(int id) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE player SET status = 0 WHERE id = ?");
-        ps.setInt(1, id);
-        ps.executeUpdate();
-    }
-
-    public void addPlayer() throws SQLException{
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO player(number, name, player_template, team, unspentSPP, SPP, new_skill, MA_inc, ST_inc, AG_inc, PA_inc, AV_inc, MA_dec, ST_dec, AG_dec, PA_dec, AV_dec, NIG, MNG, val, TD, CAS, K, CP, D, I, lev, status, isjourney) VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        ps.setInt(1, getNumber());
-        ps.setString(2, getName());
-        ps.setInt(3, getTemplate());
-        ps.setInt(4, getTeam());
-        ps.setInt(5, getUnspentSPP());
-        ps.setInt(6, getSpp());
-        ps.setString(7, getSkill());
-        ps.setInt(8, getMaInc());
-        ps.setInt(9, getStInc());
-        ps.setInt(10, getAgInc());
-        ps.setInt(11, getPaInc());
-        ps.setInt(12, getAvInc());
-        ps.setInt(13, getMaDec());
-        ps.setInt(14, getStDec());
-        ps.setInt(15, getAgDec());
-        ps.setInt(16, getPaDec());
-        ps.setInt(17, getAvDec());
-        ps.setInt(18, getNig());
-        ps.setBoolean(19, isMng());
-        ps.setInt(20, getValue());
-        ps.setInt(21, getTd());
-        ps.setInt(22, getCas());
-        ps.setInt(23, getKill());
-        ps.setInt(24, getCp());
-        ps.setInt(25, getDef());
-        ps.setInt(26, getInter());
-        ps.setInt(27, getLevel());
-        ps.setBoolean(28, isStatus());
-        ps.setBoolean(29, isJourney());
-        ps.executeUpdate();
-
-        Statement st = App.getConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT LAST_INSERT_ID()");
-        while(rs.next())
-            id = rs.getInt(1);
-    }
-
-    public void updatePreview() throws SQLException{
-        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE player SET number = ?, name = ?, unspentSPP = ?, new_skill = ?, MA_inc = ?, ST_inc = ?, AG_inc = ?, PA_inc = ?, AV_inc = ?, val = ?, lev = ? WHERE id = ?");
-        ps.setInt(1, number);
-        ps.setString(2, getName());
-        ps.setInt(3, unspentSPP);
-        ps.setString(4, getSkill());
-        ps.setInt(5, getMaInc());
-        ps.setInt(6, getStInc());
-        ps.setInt(7, getAgInc());
-        ps.setInt(8, getPaInc());
-        ps.setInt(9, getAvInc());
-        ps.setInt(10, value);
-        ps.setInt(11, getLevel());
-        ps.setInt(12, id);
-        ps.executeUpdate();
-    }
-
-    public void updateAnagrafic() throws SQLException{
-        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE player SET name = ?, number = ? WHERE id = ?");
-        ps.setString(1, getName());
-        ps.setInt(2, number);
-        ps.setInt(3, id);
-        ps.executeUpdate();
     }
 }

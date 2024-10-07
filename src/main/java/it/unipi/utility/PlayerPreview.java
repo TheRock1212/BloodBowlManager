@@ -1,8 +1,8 @@
 package it.unipi.utility;
 
-import it.unipi.dataset.Player;
-import it.unipi.dataset.Race;
-import it.unipi.dataset.Team;
+import it.unipi.dataset.Dao.RaceDao;
+import it.unipi.dataset.Model.Player;
+import it.unipi.dataset.Model.Race;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -66,7 +66,7 @@ public class PlayerPreview {
         this.NIG = p.getNig();
         this.MNG = p.isMng();
         Race r = new Race();
-        if(r.hasSpecial(ti.getRace()))
+        if(RaceDao.hasSpecial(ti.getRace()))
             this.val = p.getValue();
         else
             this.val = ti.getCost() + p.getValue();

@@ -1,9 +1,13 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Player;
-import it.unipi.dataset.PlayerTemplate;
-import it.unipi.dataset.Race;
+import it.unipi.dataset.Dao.PlayerDao;
+import it.unipi.dataset.Dao.PlayerTemplateDao;
+import it.unipi.dataset.Dao.RaceDao;
+import it.unipi.dataset.Dao.TeamDao;
+import it.unipi.dataset.Model.Player;
+import it.unipi.dataset.Model.PlayerTemplate;
+import it.unipi.dataset.Model.Race;
 import it.unipi.utility.TemplateImage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +23,7 @@ import javafx.scene.input.KeyEvent;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class PlayerPurchaseController {
     @FXML TableView<TemplateImage> selectPlayers = new TableView<TemplateImage>();
@@ -95,25 +100,24 @@ public class PlayerPurchaseController {
         }
 
         if(!App.isNewTeam()) {
-            nrs = App.getTeam().getPlayerNumbers();
-            names = App.getTeam().getPlayerNames();
+            nrs = PlayerDao.getPlayerNumbers(App.getTeam());
+            names = PlayerDao.getPlayerNames(App.getTeam());
         }
 
     }
 
     private void getTable() throws SQLException {
         PlayerTemplate p = new PlayerTemplate();
-        ResultSet rs = p.getTemplate(App.getTeam().getRace());
-        while(rs.next()) {
-            p = new PlayerTemplate(rs.getInt("id"), rs.getString("position"), rs.getInt("race"), rs.getInt("MA"), rs.getInt("ST"), rs.getInt("AG"), rs.getInt("PA"), rs.getInt("AV"), rs.getString("skill"), rs.getInt("max_qty"), rs.getString("primary"), rs.getString("secondary"), rs.getInt("cost"), rs.getString("url"), rs.getBoolean("big_guy"));
-            TemplateImage ti = new TemplateImage(p);
+        List<PlayerTemplate> templates = PlayerTemplateDao.getTemplate(App.getTeam().getRace());
+        for(PlayerTemplate t : templates) {
+            TemplateImage ti = new TemplateImage(t);
             ti.img = new ImageView();
             ti.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
             ti.cb = new ComboBox<Integer>();
             int j = 0;
             if (!App.isNewTeam()) {
                 //Qualcosa per settare j
-                j = App.getTeam().getPositional(ti.getId());
+                j = PlayerDao.getPositional(ti.getId(), App.getTeam().getId());
             }
             for (; j <= ti.getMaxQty(); j++)
                 ti.cb.getItems().add(j);
@@ -140,19 +144,14 @@ public class PlayerPurchaseController {
             error.setVisible(true);
             return;
         }
-        Race race = new Race();
-        ResultSet rs = race.getRules(App.getTeam().getRace());
-        String rules = "";
-        while(rs.next()) {
-            rules = rs.getString("special_1") + " " + rs.getString("special_2") + " " + rs.getString("special_3");
-        }
+        boolean rules = RaceDao.hasSpecial(App.getTeam().getRace());
         int value = 0, cont = 0;
         Player[] players = new Player[16];
         for(int i = 0; i < pt.size(); i++) {
             if(App.isNewTeam()) {
                 for(int j = 0; j < pt.get(i).cb.getValue(); j++) {
                     players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false);
-                    if(pt.get(i).getMaxQty() > 10 && rules.contains("Low Cost Lineman"))
+                    if(pt.get(i).getMaxQty() > 10 && rules)
                         value += 0;
                     else
                         value += pt.get(i).getCost();
@@ -161,7 +160,7 @@ public class PlayerPurchaseController {
             else{
                 for(int j = 0; j < (pt.get(i).cb.getValue() - (int)pt.get(i).cb.getItems().get(0)); j++) {
                     players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false);
-                    if(pt.get(i).getMaxQty() > 10 && rules.contains("Low Cost Lineman"))
+                    if(pt.get(i).getMaxQty() > 10 && rules)
                         value += 0;
                     else
                         value += pt.get(i).getCost();
@@ -171,7 +170,7 @@ public class PlayerPurchaseController {
         App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() + cont);
         App.getTeam().setTreasury(Integer.valueOf(treasuryPlayer.getText()));
         App.getTeam().setValue(App.getTeam().getValue() + value);
-        App.getTeam().updatePlayer();
+        TeamDao.updateTeam(App.getTeam(), true);
         setP(players);
         App.setNaming(true);
         App.setRoot("player/list_name");
@@ -210,16 +209,13 @@ public class PlayerPurchaseController {
     }
 
     private void getPlayers() throws SQLException {
-        PlayerTemplate plte = new PlayerTemplate();
-        ResultSet rs = plte.getTemplate(App.getTeam().getRace());
-        while(rs.next()) {
-            plte = new PlayerTemplate(rs.getInt("id"), rs.getString("position"), rs.getInt("race"), rs.getInt("MA"), rs.getInt("ST"), rs.getInt("AG"), rs.getInt("PA"), rs.getInt("AV"), rs.getString("skill"), rs.getInt("max_qty"), rs.getString("primary"), rs.getString("secondary"), rs.getInt("cost"), rs.getString("url"), rs.getBoolean("big_guy"));
-
+        List<PlayerTemplate> templates = PlayerTemplateDao.getTemplate(App.getTeam().getRace());
+        for(PlayerTemplate template : templates) {
             for(int i = 0; i <= 16; i++) {
                 if(getP()[i] == null)
                     break;
-                if(getP()[i].getTemplate() == plte.getId()) {
-                    TemplateImage ti = new TemplateImage(plte);
+                if(getP()[i].getTemplate() == template.getId()) {
+                    TemplateImage ti = new TemplateImage(template);
                     ti.img = new ImageView();
                     ti.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
                     ti.namePlayer = new TextField();
@@ -303,15 +299,15 @@ public class PlayerPurchaseController {
             getP()[i].setName(pt2.get(i).namePlayer.getText());
             getP()[i].setNumber(pt2.get(i).number.getValue());
         }
-        getP()[0].addPlayer(getP());
+        PlayerDao.addPlayer(getP());
         if(!App.isNewTeam() && getP() != null) {
-            Player[] jms = App.getTeam().getJourneymans();
+            Player[] jms = PlayerDao.getJourneymans(App.getTeam());
             if(jms != null) {
                 for(int i = 0,  j = (jms.length - 1); i < 27 && j >= 0; i++, j--) {
                     if(getP() == null)
                         break;
                     else
-                        jms[j].deletePlayer(jms[j].getId());
+                        PlayerDao.deletePlayer(jms[j].getId());
                 }
             }
         }

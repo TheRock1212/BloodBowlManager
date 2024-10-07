@@ -1,8 +1,10 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Result;
-import it.unipi.dataset.Team;
+import it.unipi.dataset.Dao.ResultDao;
+import it.unipi.dataset.Dao.TeamDao;
+import it.unipi.dataset.Model.Result;
+import it.unipi.dataset.Model.Team;
 import it.unipi.utility.ResultTable;
 import it.unipi.utility.State;
 import javafx.collections.FXCollections;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.List;
 
 public class DashboardController {
 
@@ -153,22 +156,16 @@ public class DashboardController {
     }
 
     private void getTable() throws SQLException {
-        Team team = new Team();
-        ResultSet rs = team.getTeam(0, App.getLeague().getId());
-        while (rs.next()) {
-            Team t = new Team(rs.getInt("id"), rs.getString("coach"), rs.getString("name"), rs.getInt("race"), rs.getInt("league"), rs.getInt("ngiocatori"), rs.getInt("nreroll"), rs.getBoolean("apothecary"), rs.getInt("cheerleader"), rs.getInt("assistant"), rs.getInt("DF"), rs.getInt("treasury"), rs.getInt("G"), rs.getInt("W"), rs.getInt("N"), rs.getInt("L"), rs.getInt("TDscored"), rs.getInt("TDconceded"), rs.getInt("CASInflicted"), rs.getInt("CASSuffered"), rs.getInt("PTS"), rs.getInt("value"), rs.getInt("round"), rs.getInt("journeyman"));
-            rl.add(t);
-            tl.add(t);
-        }
+        List<Team> teams = TeamDao.getTeam(0, App.getLeague().getId());
+        rl.addAll(teams);
+        tl.addAll(teams);
         Comparator<Team> comparator = Comparator.comparingInt(Team::getPoints);
         comparator = comparator.reversed();
         FXCollections.sort(rl, comparator);
 
         //msg = Connection.getConnection("/league/listres", "POST", Integer.toString(App.getLeague().id));
-        Result r = new Result();
-        ResultSet q = r.getResults();
-        while (q.next()) {
-            r = new Result(q.getInt("id"), q.getInt("teamH"), q.getInt("teamA"), q.getInt("tdH"), q.getInt("tdA"), q.getInt("casH"), q.getInt("casA"), q.getInt("killH"), q.getInt("killA"), q.getInt("cpH"), q.getInt("cpA"), q.getInt("decH"), q.getInt("decA"), q.getInt("intH"), q.getInt("intA"), q.getInt("dfH"), q.getInt("dfA"), q.getInt("winH"), q.getInt("winA"));
+        List<Result> results = ResultDao.getResults();
+        for(Result r : results) {
             String[] names = r.getNames();
             ResultTable reta = new ResultTable(r, names[0], names[1]);
             res.add(reta);
@@ -181,7 +178,7 @@ public class DashboardController {
 
     @FXML private void deleteTeam() throws SQLException {
         Team t = teamList.getSelectionModel().getSelectedItem();
-        t.removeTeam();
+        TeamDao.removeTeam(t.getId());
         //elimina l'elemento dalla lista
         tl.remove(teamList.getSelectionModel().getSelectedItem());
         tl.remove(t);

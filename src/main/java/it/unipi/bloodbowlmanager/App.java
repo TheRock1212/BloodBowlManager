@@ -1,8 +1,7 @@
 package it.unipi.bloodbowlmanager;
 
-import it.unipi.dataset.League;
-import it.unipi.dataset.Player;
-import it.unipi.dataset.Team;
+import it.unipi.dataset.Model.League;
+import it.unipi.dataset.Model.Team;
 import it.unipi.utility.PlayerPreview;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import it.unipi.controller.*;
 
 public class App extends Application {
 

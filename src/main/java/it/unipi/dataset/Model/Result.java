@@ -1,6 +1,7 @@
-package it.unipi.dataset;
+package it.unipi.dataset.Model;
 
 import it.unipi.bloodbowlmanager.App;
+import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.utility.Pair;
 
 import java.sql.PreparedStatement;
@@ -99,6 +100,29 @@ public class Result {
         this.dfa = dfa;
         this.winh = winh;
         this.wina = wina;
+    }
+
+    public Result(ResultSet rs) throws SQLException {
+        this.id = rs.getInt("id");
+        this.league = rs.getInt("league");
+        this.teamH = rs.getInt("teamH");
+        this.teamA = rs.getInt("teamA");
+        this.tdh = rs.getInt("tdH");
+        this.tda = rs.getInt("tdA");
+        this.cash = rs.getInt("casH");
+        this.casa = rs.getInt("casA");
+        this.killh = rs.getInt("killH");
+        this.killa = rs.getInt("killA");
+        this.cph = rs.getInt("cpH");
+        this.cpa = rs.getInt("cpA");
+        this.dech = rs.getInt("decH");
+        this.deca = rs.getInt("decA");
+        this.inth = rs.getInt("intH");
+        this.inta = rs.getInt("intA");
+        this.dfh = rs.getInt("dfH");
+        this.dfa = rs.getInt("dfA");
+        this.winh = rs.getInt("winH");
+        this.wina = rs.getInt("winA");
     }
 
     /*public Result(ResultGame rg) {
@@ -292,28 +316,11 @@ public class Result {
         this.id = id;
     }
 
-    public void addResult(Pair[] pairs) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO results(league, teamH, teamA) VALUES(?, ?, ?)");
-        for(Pair pair : pairs) {
-            ps.setInt(1, App.getLeague().getId());
-            ps.setInt(2, pair.home);
-            ps.setInt(3, pair.away);
-            ps.addBatch();
-        }
-        ps.executeBatch();
-        ps.close();
-    }
-
-    public ResultSet getResults() throws SQLException {
-        Statement s = App.getConnection().createStatement();
-        return s.executeQuery("SELECT * FROM results WHERE league = " + App.getLeague().getId());
-    }
-
     public String[] getNames() throws SQLException {
         String[] res = new String[2];
         Team t = new Team();
-        res[0] = t.getName(getTeamH());
-        res[1] = t.getName(getTeamA());
+        res[0] = TeamDao.getName(getTeamH());
+        res[1] = TeamDao.getName(getTeamA());
         return res;
     }
 }

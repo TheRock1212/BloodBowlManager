@@ -1,7 +1,6 @@
 package it.unipi.utility;
 
-import com.mysql.cj.xdevapi.Table;
-import it.unipi.dataset.Result;
+import it.unipi.dataset.Model.Result;
 
 public class ResultTable extends Result {
     public String home, away;

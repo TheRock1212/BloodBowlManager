@@ -1,13 +1,14 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Player;
-import it.unipi.dataset.Skill;
+import it.unipi.dataset.Dao.PlayerDao;
+import it.unipi.dataset.Dao.SkillDao;
+import it.unipi.dataset.Model.Player;
+import it.unipi.dataset.Model.Skill;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -90,8 +91,8 @@ public class PlayerController {
             return;
         }
         else if(isNaming()) {
-            nrs = App.getTeam().getPlayerNumbers();
-            names = App.getTeam().getPlayerNames();
+            nrs = PlayerDao.getPlayerNumbers(App.getTeam());
+            names = PlayerDao.getPlayerNames(App.getTeam());
             SpinnerValueFactory<Integer> numbs = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 1);
             numbs.setValue(App.getPlayer().number);
             number.setValueFactory(numbs);
@@ -188,7 +189,7 @@ public class PlayerController {
     @FXML
     public void switchToTeam() throws IOException, SQLException {
         Player p = new Player(App.getPlayer());
-        p.updatePreview();
+        PlayerDao.updatePlayer(p, true);
         App.setRoot("team/team_management");
     }
 
@@ -263,14 +264,14 @@ public class PlayerController {
             for(; i < App.getPlayer().getPrimary().length(); i++)
                 primary[i] = Character.toString(App.getPlayer().getPrimary().charAt(i));
             skills = new String[App.getPlayer().getPrimary().length()];
-            skills = s.getSkill(primary);
+            skills = SkillDao.getSkill(primary);
         }
         else {
             String[] secondary = new String[App.getPlayer().getSecondary().length()];
             for(; i < App.getPlayer().getSecondary().length(); i++)
                 secondary[i] = Character.toString(App.getPlayer().getSecondary().charAt(i));
             skills = new String[App.getPlayer().getPrimary().length()];
-            skills = s.getSkill(secondary);
+            skills = SkillDao.getSkill(secondary);
         }
         for(int j = 0; j < skills.length; j++) {
             cb.getItems().add(skills[j]);

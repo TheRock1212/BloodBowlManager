@@ -1,7 +1,8 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.League;
+import it.unipi.dataset.Dao.LeagueDao;
+import it.unipi.dataset.Model.League;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,6 +12,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 public class LeagueController {
 
@@ -77,11 +80,8 @@ public class LeagueController {
     }
 
     private void getLeagues() throws SQLException {
-        League league = new League();
-        ResultSet rs = league.getLeagues(0);
-        while (rs.next()) {
-            ol.add(new League(rs.getInt("id"), rs.getString("name"), rs.getInt("nteams"), rs.getInt("pts_win"), rs.getInt("pts_tie"), rs.getInt("pts_loss"), rs.getBoolean("pts_td"), rs.getBoolean("pts_cas"), rs.getBoolean("pts_td_conceded"), rs.getInt("treasury"), rs.getInt("round"), rs.getInt("playoff")));
-        }
+        List<League> leagues = LeagueDao.getLeagues(0);
+        ol.addAll(leagues);
     }
 
     @FXML
@@ -100,7 +100,7 @@ public class LeagueController {
     @FXML
     private void remove() throws SQLException{
         League league = leagueTable.getSelectionModel().getSelectedItem();
-        league.removeLeague(league.getId());
+        LeagueDao.removeLeague(league.getId());
         ol.remove(league);
     }
 
@@ -117,7 +117,7 @@ public class LeagueController {
             if(check.isSelected())
                 nGroups = groups.getValue();
             League league = new League(leagueName.getText(), nTeam.getValue(), ptsWin.getValue(), ptsTie.getValue(), ptsLoss.getValue(), pts3TD.isSelected(), pts3CAS.isSelected(), pts0TD.isSelected(), (int)treasury.getValue(), nGroups, pf);
-            league.addLeague();
+            LeagueDao.addLeague(league);
             App.setNewTeam(false);
             App.setRoot("league/league_dashboard");
         }

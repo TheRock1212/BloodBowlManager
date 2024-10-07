@@ -1,4 +1,4 @@
-package it.unipi.dataset;
+package it.unipi.dataset.Model;
 
 import it.unipi.bloodbowlmanager.App;
 
@@ -27,6 +27,17 @@ public class Race {
         this.special1 = special1;
         this.special2 = special2;
         this.special3 = special3;
+    }
+
+    public Race(ResultSet rs) throws SQLException {
+        this.id = rs.getInt("id");
+        this.name = rs.getString("name");
+        this.positional = rs.getInt("positional");
+        this.reroll = rs.getInt("cost_reroll");
+        this.apothecary = rs.getBoolean("apothecary");
+        this.special1 = rs.getString("special_1");
+        this.special2 = rs.getString("special_2");
+        this.special3 = rs.getString("special_3");
     }
 
     public int getId() {
@@ -93,32 +104,4 @@ public class Race {
         this.special3 = special3;
     }
 
-    public ResultSet getNames() throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        return st.executeQuery("SELECT name FROM race");
-    }
-
-    public ResultSet getRace(String name) throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        return st.executeQuery("SELECT * FROM race WHERE name = '" + name + "'");
-    }
-
-    public ResultSet getRace(int id) throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        return st.executeQuery("SELECT * FROM race WHERE id = " + id);
-    }
-
-    public ResultSet getRules(int id) throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        return st.executeQuery("SELECT special_1, special_2, special_3 FROM race WHERE id = " + id);
-    }
-
-    public boolean hasSpecial(int id) throws SQLException{
-        ResultSet rs = getRules(id);
-        String spe = "";
-        while(rs.next()){
-            spe = rs.getString("special_1") + " " + rs.getString("special_2") + " " + rs.getString("special_3");
-        }
-        return spe.contains("Low Cost Lineman");
-    }
 }
