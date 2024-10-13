@@ -547,28 +547,68 @@ public class ResultController {
                 break;
             }
             case "MA-": {
-                if(p.getMaDec() < 4 && (pt.ma + p.getMaInc() - p.getMaDec()) > 1)
+                if(p.getMaDec() < 4 && (pt.ma + p.getMaInc() - p.getMaDec()) > 1) {
+                    if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
+                        p.value -= 5;
+                        if(home)
+                            App.getResult().gettH().value -= 5;
+                        else
+                            App.getResult().gettA().value -= 5;
+                    }
                     p.setMaDec(p.getMaDec() + 1);
+                }
                 break;
             }
             case "ST-": {
-                if(p.getStDec() < 4 && (pt.st + p.getStInc() - p.getStDec()) > 1)
+                if(p.getStDec() < 4 && (pt.st + p.getStInc() - p.getStDec()) > 1) {
+                    if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
+                        p.value -= 5;
+                        if(home)
+                            App.getResult().gettH().value -= 5;
+                        else
+                            App.getResult().gettA().value -= 5;
+                    }
                     p.setStDec(p.getStDec() + 1);
+                }
                 break;
             }
             case "AG-": {
-                if(p.getAgDec() < 4 && (pt.ag - p.getAgInc() + p.getAgDec()) < 6)
+                if(p.getAgDec() < 4 && (pt.ag - p.getAgInc() + p.getAgDec()) < 6) {
+                    if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
+                        p.value -= 5;
+                        if(home)
+                            App.getResult().gettH().value -= 5;
+                        else
+                            App.getResult().gettA().value -= 5;
+                    }
                     p.setAgDec(p.getAgDec() + 1);
+                }
                 break;
             }
             case "PA-": {
-                if(p.getPaDec() < 4 && (pt.pa - p.getPaInc() + p.getPaDec()) < 7)
+                if(p.getPaDec() < 4 && (pt.pa - p.getPaInc() + p.getPaDec()) < 7) {
+                    if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
+                        p.value -= 5;
+                        if(home)
+                            App.getResult().gettH().value -= 5;
+                        else
+                            App.getResult().gettA().value -= 5;
+                    }
                     p.setPaDec(p.getPaDec() + 1);
+                }
                 break;
             }
             case "AV-": {
-                if(p.getAvDec() < 4 && (pt.av + p.getAvInc() - p.getAvDec()) > 3)
+                if(p.getAvDec() < 4 && (pt.av + p.getAvInc() - p.getAvDec()) > 3) {
+                    if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
+                        p.value -= 5;
+                        if(home)
+                            App.getResult().gettH().value -= 5;
+                        else
+                            App.getResult().gettA().value -= 5;
+                    }
                     p.setAvDec(p.getAvDec() + 1);
+                }
                 break;
             }
             case "DEAD": {

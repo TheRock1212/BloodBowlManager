@@ -16,7 +16,7 @@ public class LeagueDao {
      * @throws SQLException
      */
     public static synchronized  void addLeague(League l) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO league(name, nteams, pts_win, pts_tie, pts_loss, pts_td, pts_cas, pts_td_conceded, treasury, round, playoff) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO league(name, nteams, pts_win, pts_tie, pts_loss, pts_td, pts_cas, pts_td_conceded, treasury, round, playoff, tvr) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, l.getName());
         ps.setInt(2, l.getNTeams());
         ps.setInt(3, l.getPtsWin());
@@ -28,6 +28,7 @@ public class LeagueDao {
         ps.setInt(9, l.getTreasury());
         ps.setInt(10, l.getGroups());
         ps.setInt(11, l.getPlayoff());
+        ps.setBoolean(12, l.isTvr());
         ps.executeUpdate();
         ps.close();
     }

@@ -32,10 +32,12 @@ public class League {
 
     private int playoff;
 
+    public boolean tvr;
+
     public League() {
     }
 
-    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff) {
+    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr) {
         this.id = id;
         this.name = name;
         this.nTeams = nTeams;
@@ -48,9 +50,10 @@ public class League {
         this.treasury = treasury;
         this.groups = groups;
         this.playoff = playoff;
+        this.tvr = tvr;
     }
 
-    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff) {
+    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr) {
         this.name = name;
         this.nTeams = nTeams;
         this.ptsWin = ptsWin;
@@ -62,6 +65,7 @@ public class League {
         this.treasury = treasury;
         this.groups = groups;
         this.playoff = playoff;
+        this.tvr = tvr;
     }
 
     public League(ResultSet rs) throws SQLException {
@@ -77,6 +81,7 @@ public class League {
         this.treasury = rs.getInt("treasury");
         this.groups = rs.getInt("round");
         this.playoff = rs.getInt("playoff");
+        this.tvr = rs.getBoolean("tvr");
     }
 
     public Integer getId() {
@@ -175,4 +180,11 @@ public class League {
         this.playoff = playoff;
     }
 
+    public boolean isTvr() {
+        return tvr;
+    }
+
+    public void setTvr(boolean tvr) {
+        this.tvr = tvr;
+    }
 }

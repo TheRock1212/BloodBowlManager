@@ -230,11 +230,12 @@ public class DashboardController {
 
     private boolean checkResult() {
         int riga = resultList.getSelectionModel().getSelectedIndex();
+        if(res.get(riga).played)
+            return false;
         int giornata = riga / (App.getLeague().getNTeams() / 2);
         int cont = 0;
         for(int i = 0; i <= riga; i++) {
-            if(res.get(i).played)
-                return false;
+
             if(cont < giornata && !res.get(i).played)
                 return false;
             if(cont == giornata)
