@@ -47,4 +47,34 @@ public class ResultDao {
         s.close();
         return results;
     }
+
+    /**
+     * Aggiunge un risultato completo
+     * @param result risultato da aggiungere
+     * @throws SQLException
+     */
+    public static synchronized void setResult(Result result) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE results SET tdH = ?, tdA = ?, casH = ?, casA = ?, killH = ?, killA = ?, cpH = ?, cpA = ?, decH = ?, decA = ?, intH = ?, intA = ?, dfH = ?, dfA = ?, winH = ?, winA = ?, played = 1, date = ? WHERE id = ?");
+        int i = 0;
+        ps.setInt(++i, result.tdh);
+        ps.setInt(++i, result.tda);
+        ps.setInt(++i, result.cash);
+        ps.setInt(++i, result.casa);
+        ps.setInt(++i, result.killh);
+        ps.setInt(++i, result.killa);
+        ps.setInt(++i, result.cph);
+        ps.setInt(++i, result.cpa);
+        ps.setInt(++i, result.dech);
+        ps.setInt(++i, result.deca);
+        ps.setInt(++i, result.inth);
+        ps.setInt(++i, result.inta);
+        ps.setInt(++i, result.dfh);
+        ps.setInt(++i, result.dfa);
+        ps.setInt(++i, result.winh);
+        ps.setInt(++i, result.wina);
+        ps.setDate(++i, result.date);
+        ps.setInt(++i, result.getId());
+        ps.executeUpdate();
+        ps.close();
+    }
 }

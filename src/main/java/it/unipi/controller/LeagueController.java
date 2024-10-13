@@ -6,14 +6,18 @@ import it.unipi.dataset.Model.League;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+
+import static it.unipi.bloodbowlmanager.App.load;
 
 public class LeagueController {
 
@@ -33,6 +37,9 @@ public class LeagueController {
     @FXML
     private TableView<League> leagueTable;
     private ObservableList<League> ol;
+
+    private Stage stage = new Stage();
+    private Scene scene;
 
     @FXML
     public void initialize() throws SQLException {
@@ -71,7 +78,7 @@ public class LeagueController {
             pts = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 1);
             pts.setValue(0);
             ptsLoss.setValueFactory(pts);
-            SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1000, 1200, 5);
+            SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1000, 1200, 1000, 5);
             valueFactory.setValue(1000);
             treasury.setValueFactory(valueFactory);
             valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(2, 20, 1);
@@ -87,7 +94,12 @@ public class LeagueController {
     @FXML
     private void createLeague() throws IOException {
         App.setNewTeam(true);
-        App.setRoot("league/league_creation");
+        scene = new Scene(load("league/league_creation"), 600, 400);
+        stage.setScene(scene);
+        stage.setTitle("Create a League");
+        stage.setResizable(false);
+        stage.show();
+        //App.setRoot("league/league_creation");
     }
 
     @FXML
@@ -118,6 +130,8 @@ public class LeagueController {
                 nGroups = groups.getValue();
             League league = new League(leagueName.getText(), nTeam.getValue(), ptsWin.getValue(), ptsTie.getValue(), ptsLoss.getValue(), pts3TD.isSelected(), pts3CAS.isSelected(), pts0TD.isSelected(), (int)treasury.getValue(), nGroups, pf);
             LeagueDao.addLeague(league);
+            Stage stage = (Stage) error.getScene().getWindow();
+            stage.close();
             App.setNewTeam(false);
             App.setRoot("league/league_dashboard");
         }

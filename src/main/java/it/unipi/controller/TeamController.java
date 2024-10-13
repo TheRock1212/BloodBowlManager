@@ -8,7 +8,9 @@ import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Race;
 import it.unipi.dataset.Model.Team;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -23,6 +25,9 @@ public class TeamController {
     @FXML private ToggleGroup journey;
     @FXML private CheckBox apo;
     @FXML private RadioButton zombie, skeleton;
+
+    private Stage stage = new Stage();
+    private Scene scene;
 
     private Team t = new Team();
     private Race r = new Race();
@@ -67,7 +72,7 @@ public class TeamController {
     }
 
     @FXML public void changeOptions() throws SQLException {
-        Race r = RaceDao.getRace(race.getValue());
+        r = RaceDao.getRace(race.getValue());
         apo.setVisible(false);
         noApo.setVisible(false);
         if(r.isApothecary())
@@ -121,6 +126,13 @@ public class TeamController {
         App.setTeam(t);
         App.setNewTeam(true);
         App.setNaming(false);
-        App.setRoot("player/player_purchase");
+        Stage old = (Stage)df.getScene().getWindow();
+        old.close();
+        scene = new Scene(App.load("player/player_purchase"), 600, 400);
+        stage.setScene(scene);
+        stage.setTitle("Purchase Players");
+        stage.setResizable(false);
+        stage.show();
+        //App.setRoot("player/player_purchase");
     }
 }

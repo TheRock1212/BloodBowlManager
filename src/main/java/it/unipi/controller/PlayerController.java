@@ -86,7 +86,7 @@ public class PlayerController {
                 else
                     cb.getItems().add("Characteristic Improvement (" + (sppRequired + 20) + ")");
             }
-            select.setVisible(false);
+            select.setVisible(true);
             skills.setVisible(false);
             return;
         }
@@ -190,6 +190,8 @@ public class PlayerController {
     public void switchToTeam() throws IOException, SQLException {
         Player p = new Player(App.getPlayer());
         PlayerDao.updatePlayer(p, true);
+        Stage stage = (Stage) ma.getScene().getWindow();
+        stage.close();
         App.setRoot("team/team_management");
     }
 
@@ -432,7 +434,9 @@ public class PlayerController {
             setlUp(false);
             Stage stage = (Stage) skills.getScene().getWindow();
             stage.close();
-            App.setRoot("player/player_preview");
+            Scene scene = new Scene(App.load("player/player_preview"), 600, 400);
+            ManagementController.getStage().setScene(scene);
+            //App.setRoot("player/player_preview");
         }
 
     }

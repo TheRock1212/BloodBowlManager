@@ -13,10 +13,12 @@ import it.unipi.utility.TemplateImage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -37,6 +39,9 @@ public class ManagementController {
     @FXML private Label costRr, treasury, apoUn, apoAcq, error;
     @FXML private RadioButton option;
     @FXML private ComboBox<Integer> rr, ac, ch;
+
+    private static Scene scene;
+    private static Stage stage = new Stage();
 
     @FXML public void initialize() throws SQLException {
         //Creazione tabella per info e selezione giocatori
@@ -218,7 +223,12 @@ public class ManagementController {
         if(checkPurchase()) {
             TeamDao.updateTeam(App.getTeam(), false);
         }
-        App.setRoot("player/player_purchase");
+        scene = new Scene(App.load("player/player_purchase"), 600, 400);
+        stage.setScene(scene);
+        stage.setTitle("Purchase Player");
+        stage.setResizable(false);
+        stage.show();
+        //App.setRoot("player/player_purchase");
 
     }
 
@@ -273,7 +283,27 @@ public class ManagementController {
     @FXML
     public void switchToPlayerPreview() throws IOException {
         App.setPlayer(players.getSelectionModel().getSelectedItem());
-        App.setRoot("player/player_preview");
+        scene = new Scene(App.load("player/player_preview"), 600, 400);
+        stage.setScene(scene);
+        stage.setTitle("Player Preview");
+        stage.setResizable(false);
+        stage.show();
+        //App.setRoot("player/player_preview");
     }
 
+    public static Stage getStage() {
+        return stage;
+    }
+
+    public static void setStage(Stage stage) {
+        ManagementController.stage = stage;
+    }
+
+    public static Scene getScene() {
+        return scene;
+    }
+
+    public static void setScene(Scene scene) {
+        ManagementController.scene = scene;
+    }
 }

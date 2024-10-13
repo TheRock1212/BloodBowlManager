@@ -5,6 +5,7 @@ import it.unipi.dataset.Dao.ResultDao;
 import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.dataset.Model.Result;
 import it.unipi.dataset.Model.Team;
+import it.unipi.utility.ResultGame;
 import it.unipi.utility.ResultTable;
 import it.unipi.utility.State;
 import javafx.collections.FXCollections;
@@ -34,7 +35,7 @@ public class DashboardController {
 
     @FXML private MenuItem fixture, result;
 
-    @FXML private Button addTeam, groups, playoff;
+    @FXML private Button addTeam, groups, playoff, close;
 
     public Stage stage = new Stage();
     public Scene scene;
@@ -137,16 +138,18 @@ public class DashboardController {
         TableColumn awayCAS = new TableColumn("CAS Away");
         awayCAS.setCellValueFactory(new PropertyValueFactory<>("casa"));
 
-        TableColumn played = new TableColumn("Played");
-        played.setCellValueFactory(new PropertyValueFactory<>("played"));
+        TableColumn datePlayed = new TableColumn("Date");
+        datePlayed.setCellValueFactory(new PropertyValueFactory<>("datePlayed"));
 
-        resultList.getColumns().addAll(homeTeam, awayTeam, homeTD, awayTD, homeCAS, awayCAS, played);
+        resultList.getColumns().addAll(datePlayed, homeTeam, awayTeam, homeTD, awayTD, homeCAS, awayCAS);
         res = FXCollections.observableArrayList();
         resultList.setItems(res);
 
-        fixture.setDisable(true);
-
         getTable();
+
+        if(!res.isEmpty())
+            //fixture.setDisable(false);
+            fixture.setVisible(false);
 
         if(tl.size() == App.getLeague().getNTeams()) {
             addTeam.setVisible(false);
@@ -176,7 +179,12 @@ public class DashboardController {
     }
 
     @FXML public void createTeam() throws IOException {
-        App.setRoot("team/team_creation");
+        //App.setRoot("team/team_creation");
+        scene = new Scene(App.load("team/team_creation"), 600, 400);
+        stage.setScene(scene);
+        stage.setTitle("Team Creation");
+        stage.setResizable(false);
+        stage.show();
     }
 
     @FXML private void deleteTeam() throws SQLException {
@@ -194,10 +202,46 @@ public class DashboardController {
     }
 
     @FXML public void addFixture() throws IOException {
-        ResultController.setStato(State.SELECTMODE);
+        ResultController.setStato(State.FIXTURE);
         stage.setTitle("Select Fixtures");
         scene = new Scene(App.load("result/mode"), 200, 300);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
+    }
+
+    @FXML public void addResult() throws IOException, SQLException {
+        if(!checkResult()) {
+            stage.setTitle("Error");
+            scene = new Scene(App.load("error/result"), 200, 100);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+            return;
+        }
+        ResultController.setStato(State.SELECTMODE);
+        App.setResult(new ResultGame(resultList.getSelectionModel().getSelectedItem()));
+        stage.setTitle("Post-Game Phase");
+        scene = new Scene(App.load("result/post"), 400, 400);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+    }
+
+    private boolean checkResult() {
+        int riga = resultList.getSelectionModel().getSelectedIndex();
+        int giornata = riga / (App.getLeague().getNTeams() / 2);
+        int cont = 0;
+        for(int i = 0; i <= riga; i++) {
+            if(res.get(i).played)
+                return false;
+            if(cont < giornata && !res.get(i).played)
+                return false;
+            if(cont == giornata)
+                return true;
+            if(i % 5 == 4)
+                cont++;
+        }
+        return false;
     }
 }

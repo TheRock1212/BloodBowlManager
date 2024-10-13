@@ -81,7 +81,7 @@ public class PlayerDao {
         PreparedStatement ps;
         String sql = "SELECT * FROM player WHERE team = ?";
         if(alive)
-            sql += " ORDER BY number ASC";
+            sql += " AND status = 1 ORDER BY number ASC";
         ps = App.getConnection().prepareStatement(sql);
         ps.setInt(1, team);
         ResultSet rs = ps.executeQuery();
@@ -272,4 +272,81 @@ public class PlayerDao {
         return journeymans;
     }
 
+    /**
+     * Aggiorna i giocatori che hanno partecipato ad una partita
+     * @param players
+     * @throws SQLException
+     */
+    public static synchronized void updateResults(List<Player> players) throws SQLException {
+        PreparedStatement ps;
+        for(Player p : players) {
+            ps = App.getConnection().prepareStatement("UPDATE player SET unspentSPP = ?, SPP = ?, MA_dec = ?, ST_dec = ?, AG_dec = ?, PA_dec = ?, AV_dec = ?, NIG = ?, MNG = ?, val = ?, TD = ?, CAS = ?, K = ?, CP = ?, D = ?, I = ? WHERE id = ?");
+            int i = 0;
+            ps.setInt(++i, p.unspentSPP);
+            ps.setInt(++i, p.spp);
+            ps.setInt(++i, p.getMaDec());
+            ps.setInt(++i, p.getStDec());
+            ps.setInt(++i, p.getAgDec());
+            ps.setInt(++i, p.getPaDec());
+            ps.setInt(++i, p.getAvDec());
+            ps.setInt(++i, p.nig);
+            ps.setBoolean(++i, p.mng);
+            ps.setInt(++i, p.value);
+            ps.setInt(++i, p.td);
+            ps.setInt(++i, p.cas);
+            ps.setInt(++i, p.kill);
+            ps.setInt(++i, p.cp);
+            ps.setInt(++i, p.def);
+            ps.setInt(++i, p.inter);
+            ps.setInt(++i, p.getId());
+            ps.executeUpdate();
+            ps.close();
+        }
+    }
+
+    /**
+     * Setta status dei giocatori a 0
+     * @param players id dei giocatori morti
+     * @throws SQLException
+     */
+    public static synchronized void setDead(List<Integer> players) throws SQLException {
+        PreparedStatement ps;
+        for(Integer p : players) {
+            ps = App.getConnection().prepareStatement("UPDATE player SET status = 0 WHERE id = ?");
+            ps.setInt(1, p);
+            ps.executeUpdate();
+            ps.close();
+        }
+    }
+
+    /**
+     * Prende i giocatori che possono giocare la partita
+     * @param team id del team
+     * @return lista dio giocatori disponibili
+     * @throws SQLException
+     */
+    public static synchronized List<Player> getStarting(int team) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("SELECT * FROM player WHERE status = 1 AND MNG = 0 AND team = ?");
+        ps.setInt(1, team);
+        ResultSet rs = ps.executeQuery();
+        List<Player> starting = new ArrayList<>();
+        while(rs.next()) {
+            starting.add(new Player(rs));
+        }
+        rs.close();
+        ps.close();
+        return starting;
+    }
+
+    /**
+     * Aggiorna i giocatori che saltano la partita
+     * @param team id del team
+     * @throws SQLException
+     */
+    public static synchronized void setMng(int team) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE player SET MNG = 0 WHERE team = ?");
+        ps.setInt(1, team);
+        ps.executeUpdate();
+        ps.close();
+    }
 }

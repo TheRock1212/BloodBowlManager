@@ -169,11 +169,11 @@ public class Player {
         this.id = rs.getInt("id");
         this.number = rs.getInt("number");
         this.name = rs.getString("name");
-        this.template = rs.getInt("template");
+        this.template = rs.getInt("player_template");
         this.team = rs.getInt("team");
         this.unspentSPP = rs.getInt("unspentSPP");
         this.spp = rs.getInt("SPP");
-        this.skill = rs.getString("skill");
+        this.skill = rs.getString("new_skill");
         this.maInc = rs.getInt("MA_inc");
         this.stInc = rs.getInt("ST_inc");
         this.agInc = rs.getInt("AG_inc");

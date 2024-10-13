@@ -8,5 +8,6 @@ public enum State {
     SETCP,
     SETDEC,
     SETINT,
-    SETINF
+    SETINF,
+    FIXTURE
 }

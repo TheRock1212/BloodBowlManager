@@ -3,6 +3,7 @@ package it.unipi.bloodbowlmanager;
 import it.unipi.dataset.Model.League;
 import it.unipi.dataset.Model.Team;
 import it.unipi.utility.PlayerPreview;
+import it.unipi.utility.ResultGame;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,6 +25,7 @@ public class App extends Application {
     private static Team team;
     private static boolean naming = false;
     private static PlayerPreview player;
+    private static ResultGame result;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException, ClassNotFoundException {
@@ -31,10 +33,10 @@ public class App extends Application {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection co = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/bblm", "root", "root");
         setConnection(co);
-        scene = new Scene(loadFXML("league/league_dashboard"), 600, 400);
+        scene = new Scene(loadFXML("league/league_dashboard"), 1000, 700);
         stage.setTitle("Blood Bowl League Manager");
         stage.setScene(scene);
-        //stage.setResizable(false);
+        stage.setResizable(false);
         App.stage = stage;
         stage.show();
     }
@@ -108,5 +110,13 @@ public class App extends Application {
 
     public static void setPlayer(PlayerPreview player) {
         App.player = player;
+    }
+
+    public static ResultGame getResult() {
+        return result;
+    }
+
+    public static void setResult(ResultGame result) {
+        App.result = result;
     }
 }

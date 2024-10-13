@@ -60,8 +60,8 @@ public class PlayerPreview {
             this.skill = ti.getSkill() + "," + p.getSkill();
         this.MA = ti.getMa() + p.getMaInc() - p.getMaDec();
         this.ST = ti.getSt() + p.getStInc() - p.getStDec();
-        this.AG = ti.getAg() + p.getAgInc() - p.getAgDec();
-        this.PA = ti.getPa() + p.getPaInc() - p.getPaDec();
+        this.AG = ti.getAg() - p.getAgInc() + p.getAgDec();
+        this.PA = ti.getPa() - p.getPaInc() + p.getPaDec();
         this.AV = ti.getAv() + p.getAvInc() - p.getAvDec();
         this.NIG = p.getNig();
         this.MNG = p.isMng();

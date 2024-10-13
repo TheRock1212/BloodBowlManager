@@ -55,7 +55,24 @@ public class PlayerTemplateDao {
      * @throws SQLException
      */
     public static synchronized PlayerTemplate getJourneyman(int id) throws SQLException {
-        PreparedStatement st = App.getConnection().prepareStatement("SELECT * FROM player_template WHERE id = ");
+        PreparedStatement st = App.getConnection().prepareStatement("SELECT * FROM player_template WHERE id = ?");
+        st.setInt(1, id);
+        ResultSet rs = st.executeQuery();
+        rs.next();
+        PlayerTemplate template = new PlayerTemplate(rs);
+        st.close();
+        rs.close();
+        return template;
+    }
+
+    /**
+     * Cerca il template richiesto
+     * @param id id del template
+     * @return il template
+     * @throws SQLException
+     */
+    public static synchronized PlayerTemplate getPlayer(int id) throws SQLException {
+        PreparedStatement st = App.getConnection().prepareStatement("SELECT * FROM player_template WHERE id = ?");
         st.setInt(1, id);
         ResultSet rs = st.executeQuery();
         rs.next();

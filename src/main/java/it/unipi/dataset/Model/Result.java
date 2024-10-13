@@ -3,11 +3,9 @@ package it.unipi.dataset.Model;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.utility.Pair;
+import it.unipi.utility.ResultGame;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Result {
     private int id;
@@ -31,8 +29,9 @@ public class Result {
     public int winh;
     public int wina;
     public boolean played;
+    public Date date;
 
-    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played) {
+    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date) {
         this.league = league;
         this.teamH = teamH;
         this.teamA = teamA;
@@ -53,6 +52,7 @@ public class Result {
         this.winh = winh;
         this.wina = wina;
         this.played = played;
+        this.date = date;
     }
 
     public Result() {
@@ -80,9 +80,10 @@ public class Result {
         this.winh = r.winh;
         this.wina = r.wina;
         this.played = r.played;
+        this.date = r.date;
     }
 
-    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played) {
+    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date) {
         this.id = id;
         this.league = league;
         this.teamH = teamH;
@@ -104,6 +105,7 @@ public class Result {
         this.winh = winh;
         this.wina = wina;
         this.played = played;
+        this.date = date;
     }
 
     public Result(ResultSet rs) throws SQLException {
@@ -128,29 +130,33 @@ public class Result {
         this.winh = rs.getInt("winH");
         this.wina = rs.getInt("winA");
         this.played = rs.getBoolean("played");
+        this.date = rs.getDate("date");
     }
 
-    /*public Result(ResultGame rg) {
+    public Result(ResultGame rg) {
+        this.id = rg.getId();
         this.league = rg.league;
         this.teamH = rg.teamH;
         this.teamA = rg.teamA;
-        this.tdh = rg.TDH;
-        this.tda = rg.TDA;
-        this.cash = rg.CASH;
-        this.casa = rg.CASA;
-        this.killh = rg.KILLH;
-        this.killa = rg.KILLA;
-        this.cph = rg.CPH;
-        this.cpa = rg.CPA;
-        this.dech = rg.DECH;
-        this.deca = rg.DECA;
-        this.inth = rg.INTH;
-        this.inta = rg.INTA;
-        this.dfh = rg.DFH;
-        this.dfa = rg.DFA;
-        this.winh = rg.WINH;
-        this.wina = rg.WINA;
-    }*/
+        this.tdh = rg.tdh;
+        this.tda = rg.tda;
+        this.cash = rg.cash;
+        this.casa = rg.casa;
+        this.killh = rg.killh;
+        this.killa = rg.killa;
+        this.cph = rg.cph;
+        this.cpa = rg.cpa;
+        this.dech = rg.dech;
+        this.deca = rg.deca;
+        this.inth = rg.inth;
+        this.inta = rg.inta;
+        this.dfh = rg.dfh;
+        this.dfa = rg.dfa;
+        this.winh = rg.winh;
+        this.wina = rg.wina;
+        this.played = rg.played;
+        this.date = rg.date;
+    }
 
     public Result(int league, int teamH, int teamA) {
         this.league = league;
@@ -319,6 +325,14 @@ public class Result {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public boolean isPlayed() {

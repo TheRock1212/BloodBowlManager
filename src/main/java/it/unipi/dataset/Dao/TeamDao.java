@@ -180,4 +180,24 @@ public class TeamDao {
         rs.close();
         return teams;
     }
+
+    public static synchronized void updateResult(Team t) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET ngiocatori = ?, treasury = ?, DF = ?, G = ?, W = ?, N = ?, L = ?, TDScored = ?, TDConceded = ?, CASInflicted = ?, CASSuffered = ?, PTS = ? WHERE id = ?");
+        int i = 0;
+        ps.setInt(++i, t.ngiocatori);
+        ps.setInt(++i, t.treasury);
+        ps.setInt(++i, t.df);
+        ps.setInt(++i, t.g);
+        ps.setInt(++i, t.w);
+        ps.setInt(++i, t.n);
+        ps.setInt(++i, t.l);
+        ps.setInt(++i, t.tdScored);
+        ps.setInt(++i, t.tdConceded);
+        ps.setInt(++i, t.casInflicted);
+        ps.setInt(++i, t.casSuffered);
+        ps.setInt(++i, t.points);
+        ps.setInt(++i, t.getId());
+        ps.executeUpdate();
+        ps.close();
+    }
 }

@@ -13,12 +13,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -35,6 +37,8 @@ public class PlayerPurchaseController {
     @FXML private Label treasuryPlayer, error;
 
     @FXML private Button purchase;
+
+    private Scene scene;
 
     private static Player[] p = new Player[16];
     private int[] nrs = new int[App.getTeam().ngiocatori];
@@ -173,7 +177,14 @@ public class PlayerPurchaseController {
         TeamDao.updateTeam(App.getTeam(), true);
         setP(players);
         App.setNaming(true);
-        App.setRoot("player/list_name");
+        Stage stage = (Stage) purchase.getScene().getWindow();
+        stage.close();
+        scene = new Scene(App.load("player/list_name"), 600, 400);
+        ManagementController.getStage().setScene(scene);
+        ManagementController.getStage().setResizable(false);
+        ManagementController.getStage().setTitle("Name players");
+        ManagementController.getStage().show();
+        //App.setRoot("player/list_name");
         //App.setRoot("dashboard");
     }
 
@@ -312,10 +323,14 @@ public class PlayerPurchaseController {
             }
         }
         setP(null);
-        if(App.isNewTeam())
+        Stage stage = (Stage) error.getScene().getWindow();
+        stage.close();
+        if(App.isNewTeam()) {
             App.setRoot("dashboard");
-        else
+        }
+        else {
             App.setRoot("team/team_management");
+        }
     }
 
     public static Player[] getP() {
