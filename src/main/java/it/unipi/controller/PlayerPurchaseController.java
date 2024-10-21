@@ -25,6 +25,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class PlayerPurchaseController {
@@ -173,7 +176,7 @@ public class PlayerPurchaseController {
         }
         App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() + cont);
         App.getTeam().setTreasury(Integer.valueOf(treasuryPlayer.getText()));
-        App.getTeam().setValue(App.getTeam().getValue() + value);
+        App.getTeam().value += value;
         TeamDao.updateTeam(App.getTeam(), true);
         setP(players);
         App.setNaming(true);
@@ -223,8 +226,9 @@ public class PlayerPurchaseController {
         List<PlayerTemplate> templates = PlayerTemplateDao.getTemplate(App.getTeam().getRace());
         for(PlayerTemplate template : templates) {
             for(int i = 0; i <= 16; i++) {
-                if(getP()[i] == null)
+                if(getP()[i] == null) {
                     break;
+                }
                 if(getP()[i].getTemplate() == template.getId()) {
                     TemplateImage ti = new TemplateImage(template);
                     ti.img = new ImageView();
@@ -310,19 +314,12 @@ public class PlayerPurchaseController {
             getP()[i].setName(pt2.get(i).namePlayer.getText());
             getP()[i].setNumber(pt2.get(i).number.getValue());
         }
-        PlayerDao.addPlayer(getP());
-        if(!App.isNewTeam() && getP() != null) {
-            Player[] jms = PlayerDao.getJourneymans(App.getTeam());
-            if(jms != null) {
-                for(int i = 0,  j = (jms.length - 1); i < 27 && j >= 0; i++, j--) {
-                    if(getP() == null)
-                        break;
-                    else
-                        PlayerDao.deletePlayer(jms[j].getId());
-                }
-            }
-        }
+        List<Player> tmp = new ArrayList<>();
+        //tmp.addAll(players);
+        Collections.addAll(tmp, getP());
+        PlayerDao.addPlayer(tmp);
         setP(null);
+        //TeamDao.updateTeam(App.getTeam(), true);
         Stage stage = (Stage) error.getScene().getWindow();
         stage.close();
         if(App.isNewTeam()) {

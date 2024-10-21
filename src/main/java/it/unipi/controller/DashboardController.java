@@ -1,19 +1,22 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
+import it.unipi.dataset.Dao.PlayerDao;
+import it.unipi.dataset.Dao.PlayerTemplateDao;
 import it.unipi.dataset.Dao.ResultDao;
 import it.unipi.dataset.Dao.TeamDao;
+import it.unipi.dataset.Model.Player;
+import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Result;
 import it.unipi.dataset.Model.Team;
-import it.unipi.utility.ResultGame;
-import it.unipi.utility.ResultTable;
-import it.unipi.utility.State;
+import it.unipi.utility.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -33,6 +36,11 @@ public class DashboardController {
     @FXML private TableView<ResultTable> resultList;
     private ObservableList<ResultTable> res;
 
+    @FXML private TableView<PlayerStatistic> stats;
+    private ObservableList<PlayerStatistic> pl;
+
+    @FXML private ComboBox<String> tipo;
+
     @FXML private MenuItem fixture, result;
 
     @FXML private Button addTeam, groups, playoff, close;
@@ -44,6 +52,9 @@ public class DashboardController {
         //Colonne per rankingTable
         TableColumn name = new TableColumn("Name");
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn coach = new TableColumn("Coach");
+        coach.setCellValueFactory(new PropertyValueFactory<>("coach"));
 
         TableColumn pts = new TableColumn("Points");
         pts.setCellValueFactory(new PropertyValueFactory<>("points"));
@@ -79,7 +90,7 @@ public class DashboardController {
         casNet.setCellValueFactory(new PropertyValueFactory<>("casNet"));
 
 
-        rankingTable.getColumns().addAll(name, pts, matches, win, tie, loss, tdScore, tdConceded, tdNet, casScore, casConceded, casNet);
+        rankingTable.getColumns().addAll(name, coach, pts, matches, win, tie, loss, tdScore, tdConceded, tdNet, casScore, casConceded, casNet);
         rl = FXCollections.observableArrayList();
         rankingTable.setItems(rl);
         //rankingTable.prefHeightProperty().bind(rankingTable.heightProperty());
@@ -88,6 +99,9 @@ public class DashboardController {
         //Colonne per teamList
         TableColumn nameT = new TableColumn("Name");
         nameT.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn coachT = new TableColumn("Coach");
+        coachT.setCellValueFactory(new PropertyValueFactory<>("coach"));
 
         TableColumn players = new TableColumn("Players");
         players.setCellValueFactory(new PropertyValueFactory<>("ngiocatori"));
@@ -114,7 +128,7 @@ public class DashboardController {
         value.setCellValueFactory(new PropertyValueFactory<>("value"));
 
 
-        teamList.getColumns().addAll(nameT, players, reroll, apotechary, df, cheer, assistant, treasury, value);
+        teamList.getColumns().addAll(nameT, coachT, players, reroll, apotechary, df, cheer, assistant, treasury, value);
         tl = FXCollections.observableArrayList();
         teamList.setItems(tl);
         //teamList.prefWidthProperty().bind(teamList.widthProperty());
@@ -144,6 +158,35 @@ public class DashboardController {
         resultList.getColumns().addAll(datePlayed, homeTeam, awayTeam, homeTD, awayTD, homeCAS, awayCAS);
         res = FXCollections.observableArrayList();
         resultList.setItems(res);
+
+        tipo.getItems().add("Best Players");
+        tipo.getItems().add("Best Scorers");
+        tipo.getItems().add("Most Vicious");
+        tipo.getItems().add("Best Killers");
+        tipo.getItems().add("Best Passers");
+        tipo.getItems().add("Best Interceptors");
+
+        tipo.getSelectionModel().selectFirst();
+
+        //Colonne tabella statistiche
+        TableColumn image = new TableColumn(" ");
+        image.setCellValueFactory(new PropertyValueFactory<ImageView, PlayerStatistic>("img"));
+
+        TableColumn namePlayer = new TableColumn("Name");
+        namePlayer.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn coachPlayer = new TableColumn("Coach");
+        coachPlayer.setCellValueFactory(new PropertyValueFactory<>("coach"));
+
+        TableColumn nameTeam = new TableColumn("Team");
+        nameTeam.setCellValueFactory(new PropertyValueFactory<>("teamName"));
+
+        TableColumn statistics = new TableColumn("Stat");
+        statistics.setCellValueFactory(new PropertyValueFactory<>("value"));
+
+        stats.getColumns().addAll(image, namePlayer, nameTeam, coachPlayer, statistics);
+        pl = FXCollections.observableArrayList();
+        stats.setItems(pl);
 
         getTable();
 
@@ -176,6 +219,15 @@ public class DashboardController {
             ResultTable reta = new ResultTable(r, names[0], names[1]);
             res.add(reta);
         }
+
+        List<Player> players = PlayerDao.getPlayers(App.getLeague().getId());
+        for(Player p : players) {
+            PlayerTemplate pt = PlayerTemplateDao.getPlayer(p.getTemplate());
+            pl.add(new PlayerStatistic(p, pt));
+        }
+        Comparator<PlayerStatistic> comp = Comparator.comparingInt(PlayerStatistic::getValue);
+        comp = comp.reversed();
+        FXCollections.sort(pl, comp);
     }
 
     @FXML public void createTeam() throws IOException {
@@ -244,5 +296,13 @@ public class DashboardController {
                 cont++;
         }
         return false;
+    }
+
+    @FXML public void changeSort() throws IOException {
+        for(PlayerStatistic ps : pl) {
+            ps.setValue(tipo.getValue());
+        }
+        //App.setRoot("dashboard");
+        FXCollections.sort(pl, Comparator.comparingInt(PlayerStatistic::getValue).reversed());
     }
 }

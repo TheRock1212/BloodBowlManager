@@ -3,10 +3,8 @@ package it.unipi.dataset.Model;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.utility.PlayerPreview;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Player {
     private int id;
@@ -40,7 +38,7 @@ public class Player {
     private boolean status;
     public boolean journey;
 
-    public Player() {
+    public Player(int nbrJr, String journeyman, int id, int team, int unspentSPP, String s, int i, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey) {
 
     }
 

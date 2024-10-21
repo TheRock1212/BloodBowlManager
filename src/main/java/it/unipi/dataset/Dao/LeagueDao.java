@@ -2,6 +2,7 @@ package it.unipi.dataset.Dao;
 
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Model.League;
+import it.unipi.dataset.Model.Team;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +17,7 @@ public class LeagueDao {
      * @throws SQLException
      */
     public static synchronized  void addLeague(League l) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO league(name, nteams, pts_win, pts_tie, pts_loss, pts_td, pts_cas, pts_td_conceded, treasury, round, playoff, tvr) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO league(name, nteams, pts_win, pts_tie, pts_loss, pts_td, pts_cas, pts_td_conceded, treasury, round, playoff, tvr, spp_star) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, l.getName());
         ps.setInt(2, l.getNTeams());
         ps.setInt(3, l.getPtsWin());
@@ -29,6 +30,7 @@ public class LeagueDao {
         ps.setInt(10, l.getGroups());
         ps.setInt(11, l.getPlayoff());
         ps.setBoolean(12, l.isTvr());
+        ps.setBoolean(13, l.isSppStar());
         ps.executeUpdate();
         ps.close();
     }
@@ -64,7 +66,14 @@ public class LeagueDao {
      * @throws SQLException
      */
     public static synchronized void removeLeague(int id) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM league WHERE id = ?");
+        PreparedStatement ps;
+        ResultDao.deleteResults(id);
+        List<Team> teams = TeamDao.getTeam(0, id);
+        for(Team team : teams) {
+            PlayerDao.deletePlayers(team.getId());
+            TeamDao.removeTeam(team.getId());
+        }
+        ps = App.getConnection().prepareStatement("DELETE FROM league WHERE id = ?");
         ps.setInt(1, id);
         ps.executeUpdate();
         ps.close();

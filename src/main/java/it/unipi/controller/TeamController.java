@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 public class TeamController {
@@ -35,6 +36,7 @@ public class TeamController {
     @FXML public void initialize() throws SQLException {
         //ResultSet rs = r.getNames();
         List<String> names = RaceDao.getNames();
+        Collections.sort(names);
         for(String name: names)
             race.getItems().add(name);
         for(int i = 0; i < 12; i++) {
@@ -108,7 +110,7 @@ public class TeamController {
         t.setCoach(coach.getText());
         t.setName(teamName.getText());
         t.setTreasury(Integer.valueOf(treasury.getText()));
-        t.setValue(App.getLeague().getTreasury() - Integer.valueOf(treasury.getText()));
+        t.value = t.treasury - Integer.parseInt(treasury.getText()) - (t.df - 1) * 10;
         t.setLeague(App.getLeague().getId());
         t.setRound(0);
         t.setRace(r.getId());
@@ -122,6 +124,7 @@ public class TeamController {
             PlayerTemplate pt = new PlayerTemplate();
             t.setJourneyman(PlayerTemplateDao.getLineman(t.getRace()));
         }
+        t.setReady(true);
         TeamDao.addTeam(t);
         App.setTeam(t);
         App.setNewTeam(true);

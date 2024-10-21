@@ -24,7 +24,7 @@ public class LeagueController {
     @FXML
     private TextField leagueName;
     @FXML
-    private CheckBox pts3CAS, pts3TD, pts0TD, tvr;
+    private CheckBox pts3CAS, pts3TD, pts0TD, tvr, spp;
     @FXML
     private Spinner<Integer> treasury, ptsWin, ptsTie, ptsLoss, nTeam, groups;
     @FXML
@@ -128,7 +128,7 @@ public class LeagueController {
                 pf = playoff.getValue();
             if(check.isSelected())
                 nGroups = groups.getValue();
-            League league = new League(leagueName.getText(), nTeam.getValue(), ptsWin.getValue(), ptsTie.getValue(), ptsLoss.getValue(), pts3TD.isSelected(), pts3CAS.isSelected(), pts0TD.isSelected(), (int)treasury.getValue(), nGroups, pf, tvr.isSelected());
+            League league = new League(leagueName.getText(), nTeam.getValue(), ptsWin.getValue(), ptsTie.getValue(), ptsLoss.getValue(), pts3TD.isSelected(), pts3CAS.isSelected(), pts0TD.isSelected(), (int)treasury.getValue(), nGroups, pf, tvr.isSelected(), spp.isSelected());
             LeagueDao.addLeague(league);
             Stage stage = (Stage) error.getScene().getWindow();
             stage.close();

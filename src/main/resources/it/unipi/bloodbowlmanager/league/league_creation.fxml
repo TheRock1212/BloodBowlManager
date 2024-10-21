@@ -16,22 +16,23 @@
       <CheckBox fx:id="pts0TD" layoutX="349.0" layoutY="141.0" mnemonicParsing="false" text="1 pt. for conceding 0 TD" />
       <Button fx:id="button" layoutX="247.0" layoutY="329.0" mnemonicParsing="false" onAction="#insertLeague" text="Create League" />
       <Label fx:id="winText" layoutX="30.0" layoutY="58.0" text="Points for Win" />
-      <Label fx:id="treasuryText" layoutX="373.0" layoutY="219.0" text="Starting value for Treasury" />
-      <Label fx:id="treasuryText2" layoutX="397.0" layoutY="236.0" opacity="0.43" text="1000 k minimum." />
-      <Label fx:id="tieText" layoutX="32.0" layoutY="133.0" text="Points for Tie" />
-      <Label fx:id="lossText" layoutX="28.0" layoutY="212.0" text="Points for Loss" />
+      <Label fx:id="treasuryText" layoutX="373.0" layoutY="234.0" text="Starting value for Treasury" />
+      <Label fx:id="treasuryText2" layoutX="397.0" layoutY="251.0" opacity="0.43" text="1000 k minimum." />
+      <Label fx:id="tieText" layoutX="32.0" layoutY="139.0" text="Points for Tie" />
+      <Label fx:id="lossText" layoutX="28.0" layoutY="227.0" text="Points for Loss" />
       <Label fx:id="error" alignment="CENTER" contentDisplay="CENTER" layoutX="206.0" layoutY="369.0" text="Errore: ptsWin &gt; ptsTie &gt; ptsLoss" textAlignment="CENTER" textFill="RED" visible="false" />
       <CheckBox fx:id="pts3TD" layoutX="349.0" layoutY="66.0" mnemonicParsing="false" text="1 pt. for scoring at least 3 TD" />
       <Label fx:id="teamText" layoutX="197.0" layoutY="58.0" text="Nr. Team" />
-      <Spinner fx:id="groups" disable="true" layoutX="192.0" layoutY="159.0" prefHeight="26.0" prefWidth="57.0" />
-      <RadioButton fx:id="check" layoutX="158.0" layoutY="133.0" mnemonicParsing="false" onAction="#setSpinner" prefHeight="17.0" prefWidth="127.0" text="More than 1 group" />
+      <Spinner fx:id="groups" disable="true" layoutX="192.0" layoutY="165.0" prefHeight="26.0" prefWidth="57.0" />
+      <RadioButton fx:id="check" layoutX="158.0" layoutY="139.0" mnemonicParsing="false" onAction="#setSpinner" prefHeight="17.0" prefWidth="127.0" text="More than 1 group" />
       <Spinner fx:id="ptsWin" editable="true" layoutX="39.0" layoutY="84.0" prefHeight="26.0" prefWidth="57.0" />
-      <Spinner fx:id="ptsTie" editable="true" layoutX="39.0" layoutY="159.0" prefHeight="26.0" prefWidth="57.0" />
-      <Spinner fx:id="ptsLoss" editable="true" layoutX="39.0" layoutY="237.0" prefHeight="26.0" prefWidth="57.0" />
+      <Spinner fx:id="ptsTie" editable="true" layoutX="39.0" layoutY="165.0" prefHeight="26.0" prefWidth="57.0" />
+      <Spinner fx:id="ptsLoss" editable="true" layoutX="39.0" layoutY="252.0" prefHeight="26.0" prefWidth="57.0" />
       <Spinner fx:id="nTeam" editable="true" layoutX="186.0" layoutY="84.0" onInputMethodTextChanged="#setPlayoff" prefHeight="26.0" prefWidth="71.0" />
-      <RadioButton fx:id="chkPF" layoutX="180.0" layoutY="212.0" mnemonicParsing="false" onAction="#setPlayoff" prefHeight="17.0" prefWidth="80.0" text="Play-offs" />
-      <Spinner fx:id="treasury" editable="true" layoutX="391.0" layoutY="256.0" prefHeight="26.0" prefWidth="94.0" />
-      <ComboBox fx:id="playoff" disable="true" layoutX="172.0" layoutY="237.0" prefHeight="26.0" prefWidth="97.0" />
+      <RadioButton fx:id="chkPF" layoutX="180.0" layoutY="227.0" mnemonicParsing="false" onAction="#setPlayoff" prefHeight="17.0" prefWidth="80.0" text="Play-offs" />
+      <Spinner fx:id="treasury" editable="true" layoutX="391.0" layoutY="271.0" prefHeight="26.0" prefWidth="94.0" />
+      <ComboBox fx:id="playoff" disable="true" layoutX="172.0" layoutY="252.0" prefHeight="26.0" prefWidth="97.0" />
       <CheckBox fx:id="tvr" layoutX="349.0" layoutY="172.0" mnemonicParsing="false" text="Team Value Reduction" />
+      <CheckBox fx:id="spp" layoutX="349.0" layoutY="202.0" mnemonicParsing="false" text="SPP for Killing Star Player" />
    </children>
 </Pane>

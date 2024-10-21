@@ -34,10 +34,12 @@ public class League {
 
     public boolean tvr;
 
+    public boolean sppStar;
+
     public League() {
     }
 
-    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr) {
+    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr, boolean sppStar) {
         this.id = id;
         this.name = name;
         this.nTeams = nTeams;
@@ -51,9 +53,10 @@ public class League {
         this.groups = groups;
         this.playoff = playoff;
         this.tvr = tvr;
+        this.sppStar = sppStar;
     }
 
-    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr) {
+    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr, boolean sppStar) {
         this.name = name;
         this.nTeams = nTeams;
         this.ptsWin = ptsWin;
@@ -66,6 +69,7 @@ public class League {
         this.groups = groups;
         this.playoff = playoff;
         this.tvr = tvr;
+        this.sppStar = sppStar;
     }
 
     public League(ResultSet rs) throws SQLException {
@@ -82,6 +86,7 @@ public class League {
         this.groups = rs.getInt("round");
         this.playoff = rs.getInt("playoff");
         this.tvr = rs.getBoolean("tvr");
+        this.sppStar = rs.getBoolean("spp_star");
     }
 
     public Integer getId() {
@@ -186,5 +191,13 @@ public class League {
 
     public void setTvr(boolean tvr) {
         this.tvr = tvr;
+    }
+
+    public boolean isSppStar() {
+        return sppStar;
+    }
+
+    public void setSppStar(boolean sppStar) {
+        this.sppStar = sppStar;
     }
 }

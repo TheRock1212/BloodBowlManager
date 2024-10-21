@@ -21,11 +21,8 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ManagementController {
 
@@ -36,9 +33,11 @@ public class ManagementController {
     private Player[] player = new Player[27];
     private Race r = new Race();
 
-    @FXML private Label costRr, treasury, apoUn, apoAcq, error;
+    @FXML private Label costRr, treasury, apoUn, apoAcq, error, sponsor, ready;
     @FXML private RadioButton option;
     @FXML private ComboBox<Integer> rr, ac, ch;
+    @FXML private Button readyButton, purButton, spoButton;
+    @FXML private MenuItem edit, fire;
 
     private static Scene scene;
     private static Stage stage = new Stage();
@@ -100,6 +99,8 @@ public class ManagementController {
         //Metto il tesoro rimanente e le altre informazioni relative alle razze
         treasury.setText(Integer.toString(App.getTeam().getTreasury()) + "k");
 
+        sponsor.setText(App.getTeam().getSponsor());
+
         costRr.setText(Integer.toString(r.getReroll() * 2) + " k");
         if(r.isApothecary()) {
             apoUn.setVisible(false);
@@ -128,6 +129,19 @@ public class ManagementController {
         ch.getSelectionModel().select(0);
         ac.getSelectionModel().select(0);
         rr.getSelectionModel().select(0);
+        ready.setText(Boolean.toString(App.getTeam().isReady()));
+        if(App.getTeam().isReady()) {
+            readyButton.setVisible(false);
+            purButton.setDisable(true);
+            ch.setDisable(true);
+            ac.setDisable(true);
+            rr.setDisable(true);
+            edit.setDisable(true);
+            fire.setDisable(true);
+            spoButton.setVisible(false);
+            if(option.isVisible())
+                option.setDisable(true);
+        }
     }
 
     public void getTable() throws SQLException{
@@ -164,6 +178,8 @@ public class ManagementController {
             //App.getTeam().updateStaff();
             TeamDao.updateTeam(App.getTeam(), false);
         }
+        TeamDao.updateTeam(App.getTeam(), true);
+        TeamDao.saveSponsor(App.getTeam().getId(), App.getTeam().getSponsor());
         App.setRoot("dashboard");
     }
 
@@ -208,9 +224,11 @@ public class ManagementController {
             App.getTeam().setNreroll(App.getTeam().getNreroll() + drr);
             if(apo) {
                 App.getTeam().setApothecary(apo);
-                App.getTeam().setTreasury(App.getTeam().getTreasury() - 50);
+                App.getTeam().treasury -= 50;
+                App.getTeam().value += 50;
             }
             App.getTeam().setTreasury(App.getTeam().getTreasury() - (dac * 10) - (dch * 10) - (drr * r.getReroll()) * 2);
+            App.getTeam().value += dac * 10 + dch * 10 + (drr * r.getReroll());
             return true;
         }
         return false;
@@ -234,48 +252,14 @@ public class ManagementController {
 
     //Lincenzia un giocatore e salva le modifiche nel database
     @FXML
-    public void deletePlayer() throws SQLException {
+    public void deletePlayer() throws SQLException, IOException {
         PlayerPreview tmp = players.getSelectionModel().getSelectedItem();
-        Player pl = new Player();
+        //Player pl = new Player(App.getTeam().getId(), App.getTeam().getId(), 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 1, true, true);
         PlayerDao.removePlayer(tmp.getId());
         p.remove(tmp);
         App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() - 1);
-        App.getTeam().setValue(App.getTeam().getValue() - tmp.getVal());
-        int mng = 0, nj = 0;
-        for(int j = 0; j < 27; j++) {
-            if(player[j] == null)
-                break;
-            if(player[j].isJourney())
-                nj++;
-            if(player[j].mng)
-                mng++;
-        }
-        PlayerTemplate pt = null;
-        if((App.getTeam().getNgiocatori() - mng + nj) < 11) {
-            pt = PlayerTemplateDao.getJourneyman(App.getTeam().getJourneyman());
-        }
-        int nrPlayer = 0;
-        while(nrPlayer < (11 - (App.getTeam().getNgiocatori() - mng + nj))) {
-            int i = 0, journeyNbr = 100;
-            for(; i < 27; i++) {
-                if(player[i] == null) {
-                    break;
-                }
-                if(player[i].isJourney())
-                    journeyNbr++;
-            }
-            player[i] = new Player(journeyNbr, "Journeyman", pt.getId(), App.getTeam().getId(), 0, 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, true);
-            //player[i].addPlayer();
-            PlayerDao.addPlayer(player[i]);
-            TemplateImage ti = new TemplateImage(pt);
-            ti.img = new ImageView();
-            ti.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
-            PlayerPreview pp = new PlayerPreview(ti, player[i]);
-            p.add(pp);
-            //App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() + 1);
-            App.getTeam().setValue(App.getTeam().getValue() + pp.getVal());
-            nrPlayer++;
-        }
+        if(!tmp.MNG)
+            App.getTeam().value -= tmp.val;
         TeamDao.updateTeam(App.getTeam(), true);
     }
 
@@ -305,5 +289,45 @@ public class ManagementController {
 
     public static void setScene(Scene scene) {
         ManagementController.scene = scene;
+    }
+
+    @FXML public void changeSponsor() throws IOException{
+        Stage stage = new Stage();
+        Scene scene = new Scene(App.load("team/sponsor"), 200, 250);
+        stage.setScene(scene);
+        stage.setTitle("Sponsor");
+        stage.setResizable(false);
+        stage.show();
+    }
+
+    @FXML public void setReady() throws SQLException, IOException {
+        //List<Player> listPlayers = PlayerDao.getStarting(App.getTeam().getId());
+        App.getTeam().setReady(true);
+        Player[] jrm = PlayerDao.getJourneymans(App.getTeam());
+        PlayerTemplate pt = PlayerTemplateDao.getJourneyman(App.getTeam().getJourneyman());
+        if(jrm != null) {
+            for(Player p : jrm) {
+                if(!p.mng)
+                    App.getTeam().value -= pt.cost;
+                PlayerDao.deletePlayer(p.getId());
+            }
+        }
+        //List<Player> listPlayers = PlayerDao.getStarting(App.getTeam().getId());
+        int nPlayer = PlayerDao.countPlayers(App.getTeam().getId());
+        List<Player> journey = new ArrayList<>();
+        int number = 100;
+        while(nPlayer < 11) {
+            journey.add(new Player(number++, "Journeyman", App.getTeam().getJourneyman(), App.getTeam().getId(), 0, 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, true));
+            App.getTeam().value += pt.cost;
+            nPlayer++;
+        }
+        if(!journey.isEmpty()) {
+            PlayerDao.addPlayer(journey);
+        }
+        TeamDao.updateTeam(App.getTeam(), true);
+        if(checkPurchase()) {
+            TeamDao.updateTeam(App.getTeam(), false);
+        }
+        App.setRoot("team/team_management");
     }
 }

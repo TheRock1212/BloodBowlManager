@@ -34,12 +34,14 @@ public class Team {
     public int value;
     private int round;
     private int journeyman;
+    public String sponsor;
+    private boolean ready;
 
     public Team() {
 
     }
 
-    public Team(int id, String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman) {
+    public Team(int id, String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman, String sponsor, boolean ready) {
         this.id = id;
         this.coach = coach;
         this.name = name;
@@ -66,9 +68,11 @@ public class Team {
         this.value = value;
         this.round = round;
         this.journeyman = journeyman;
+        this.sponsor = sponsor;
+        this.ready = ready;
     }
 
-    public Team(String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman) {
+    public Team(String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman, String sponsor) {
         this.coach = coach;
         this.name = name;
         this.race = race;
@@ -94,6 +98,8 @@ public class Team {
         this.value = value;
         this.round = round;
         this.journeyman = journeyman;
+        this.sponsor = sponsor;
+        this.ready = true;
     }
 
     public Team(ResultSet rs) throws SQLException {
@@ -123,6 +129,8 @@ public class Team {
         this.value = rs.getInt("value");
         this.round = rs.getInt("round");
         this.journeyman = rs.getInt("journeyman");
+        this.sponsor = rs.getString("sponsor");
+        this.ready = rs.getBoolean("ready");
     }
 
     public int getId() {
@@ -333,4 +341,19 @@ public class Team {
         this.journeyman = journeyman;
     }
 
+    public String getSponsor() {
+        return sponsor;
+    }
+
+    public void setSponsor(String sponsor) {
+        this.sponsor = sponsor;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
 }

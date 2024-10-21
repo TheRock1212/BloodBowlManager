@@ -77,4 +77,10 @@ public class ResultDao {
         ps.executeUpdate();
         ps.close();
     }
+
+    public static synchronized void deleteResults(int league) throws SQLException {
+        PreparedStatement s = App.getConnection().prepareStatement("DELETE FROM results WHERE league = ?");
+        s.setInt(1, league);
+        s.executeUpdate();
+    }
 }

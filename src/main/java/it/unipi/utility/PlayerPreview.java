@@ -65,7 +65,6 @@ public class PlayerPreview {
         this.AV = ti.getAv() + p.getAvInc() - p.getAvDec();
         this.NIG = p.getNig();
         this.MNG = p.isMng();
-        Race r = new Race();
         if(RaceDao.hasSpecial(ti.getRace()))
             this.val = p.getValue();
         else
@@ -86,6 +85,40 @@ public class PlayerPreview {
         this.newVal = p.getValue();
         this.primary = ti.primary;
         this.secondary = ti.secondary;
+    }
+
+    public PlayerPreview(PlayerPreview pp) {
+        this.id = pp.getId();
+        this.templateId = pp.getTemplateId();
+        this.number = pp.getNumber();
+        this.name = pp.getName();
+        this.img = pp.getImg();
+        this.unspentSPP = pp.getUnspentSPP();
+        this.SPP = pp.getSPP();
+        this.newSkills = pp.getNewSkills();
+        this.skill = pp.getSkill();
+        this.MA = pp.getMA();
+        this.ST = pp.getST();
+        this.AG = pp.getAG();
+        this.PA = pp.getPA();
+        this.AV = pp.getAV();
+        this.val = pp.getVal();
+        this.TD = pp.getTD();
+        this.CAS = pp.getCAS();
+        this.K = pp.getK();
+        this.CP = pp.getCP();
+        this.D = pp.getD();
+        this.I = pp.getI();
+        this.lev = pp.getLev();
+        this.position = pp.getPosition();
+        this.newMA = pp.getNewMA();
+        this.newST = pp.getNewST();
+        this.newAG = pp.getNewAG();
+        this.newPA = pp.getNewPA();
+        this.newAV = pp.getNewAV();
+        this.newVal = pp.getNewVal();
+        this.primary = pp.getPrimary();
+        this.secondary = pp.getSecondary();
     }
 
     public int getId() {

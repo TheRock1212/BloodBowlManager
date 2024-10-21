@@ -227,7 +227,7 @@ public class PlayerController {
             case 2:
                 spent = sppRequired;
                 getSkill(false);
-                value = 30;
+                value = 20;
                 break;
             case 3:
                 if(App.getPlayer().getLev() == 5)
@@ -318,7 +318,7 @@ public class PlayerController {
                         error.setVisible(true);
                     else if(s.equals("Catch") && !App.getPlayer().skill.contains("Diving Catch"))
                         error.setVisible(true);
-                    else if(s.equals("Tackle") && !App.getPlayer().skill.contains("Diving Tackle"))
+                    else if(s.equals("Tackle") && !App.getPlayer().skill.contains("Diving Tackle") && !App.getPlayer().skill.contains("Break Tackle"))
                         error.setVisible(true);
                     else if(s.equals("Pass") && (!App.getPlayer().skill.contains("Running Pass") || !App.getPlayer().skill.contains("Safe Pass")))
                         error.setVisible(true);
@@ -330,12 +330,15 @@ public class PlayerController {
                         App.getPlayer().skill += App.getPlayer().getNewSkills();
                         App.getPlayer().setNewVal(App.getPlayer().getNewVal() + value);
                         App.getPlayer().val += value;
-                        App.getTeam().value += value;
+                        if(!App.getPlayer().MNG)
+                            App.getTeam().value += value;
                         App.getPlayer().setLev(App.getPlayer().getLev() + 1);
                         setlUp(false);
                         Stage stage = (Stage) skills.getScene().getWindow();
                         stage.close();
-                        App.setRoot("player/player_preview");
+                        Scene scene = new Scene(App.load("player/player_preview"), 600, 400);
+                        ManagementController.getStage().setScene(scene);
+                        //App.setRoot("player/player_preview");
                     }
                 }
             }
@@ -343,7 +346,7 @@ public class PlayerController {
                 error.setVisible(true);
         }
         //In caso di aumento di caratteristica, vengono fatti i controlli relativi ad esse
-        else if(s.contains("+")) {
+        else if(s.charAt(s.length() - 1) == '+') {
             switch(s) {
                 case "MA+":
                     if(App.getPlayer().MA == 9 || App.getPlayer().getNewMA() == 2) {
@@ -355,7 +358,8 @@ public class PlayerController {
                         App.getPlayer().setNewMA(App.getPlayer().getNewMA() + 1);
                         App.getPlayer().setLev(App.getPlayer().getLev() + 1);
                         App.getPlayer().val += 20;
-                        App.getTeam().value += 20;
+                        if(!App.getPlayer().MNG)
+                            App.getTeam().value += 20;
                         App.getPlayer().setNewVal(App.getPlayer().getNewVal() + 20);
                     }
                     break;
@@ -368,7 +372,8 @@ public class PlayerController {
                         App.getPlayer().ST++;
                         App.getPlayer().setNewST(App.getPlayer().getNewST() + 1);
                         App.getPlayer().setLev(App.getPlayer().getLev() + 1);
-                        App.getTeam().value += 80;
+                        if(!App.getPlayer().MNG)
+                            App.getTeam().value += 80;
                         App.getPlayer().val += 80;
                         App.getPlayer().setNewVal(App.getPlayer().getNewVal() + 80);
                     }
@@ -382,7 +387,8 @@ public class PlayerController {
                         App.getPlayer().AG--;
                         App.getPlayer().setNewAG(App.getPlayer().getNewAG() - 1);
                         App.getPlayer().setLev(App.getPlayer().getLev() + 1);
-                        App.getTeam().value += 40;
+                        if(!App.getPlayer().MNG)
+                            App.getTeam().value += 40;
                         App.getPlayer().val += 40;
                         App.getPlayer().setNewVal(App.getPlayer().getNewVal() + 40);
                     }
@@ -396,7 +402,8 @@ public class PlayerController {
                         App.getPlayer().PA--;
                         App.getPlayer().setNewPA(App.getPlayer().getNewPA() - 1);
                         App.getPlayer().setLev(App.getPlayer().getLev() + 1);
-                        App.getTeam().value += 20;
+                        if(!App.getPlayer().MNG)
+                            App.getTeam().value += 20;
                         App.getPlayer().val += 20;
                         App.getPlayer().setNewVal(App.getPlayer().getNewVal() + 20);
                     }
@@ -410,7 +417,8 @@ public class PlayerController {
                         App.getPlayer().AV++;
                         App.getPlayer().setNewAV(App.getPlayer().getNewAV() + 1);
                         App.getPlayer().setLev(App.getPlayer().getLev() + 1);
-                        App.getTeam().value += 10;
+                        if(!App.getPlayer().MNG)
+                            App.getTeam().value += 10;
                         App.getPlayer().val += 10;
                         App.getPlayer().setNewVal(App.getPlayer().getNewVal() + 10);
                     }
@@ -420,7 +428,9 @@ public class PlayerController {
             App.getPlayer().unspentSPP -= spent;
             Stage stage = (Stage) skills.getScene().getWindow();
             stage.close();
-            App.setRoot("player/player_preview");
+            Scene scene = new Scene(App.load("player/player_preview"), 600, 400);
+            ManagementController.getStage().setScene(scene);
+            //App.setRoot("player/player_preview");
         }
         else {
             App.getPlayer().unspentSPP -= spent;
@@ -429,7 +439,8 @@ public class PlayerController {
             App.getPlayer().skill += App.getPlayer().getNewSkills();
             App.getPlayer().setNewVal(App.getPlayer().getNewVal() + value);
             App.getPlayer().val += value;
-            App.getTeam().value += value;
+            if(!App.getPlayer().MNG)
+                App.getTeam().value += value;
             App.getPlayer().setLev(App.getPlayer().getLev() + 1);
             setlUp(false);
             Stage stage = (Stage) skills.getScene().getWindow();
@@ -472,7 +483,9 @@ public class PlayerController {
         setNaming(false);
         Stage stage = (Stage) saveButton.getScene().getWindow();
         stage.close();
-        App.setRoot("player/player_preview");
+        //App.setRoot("player/player_preview");
+        Scene scene = new Scene(App.load("player/player_preview"), 600, 400);
+        ManagementController.getStage().setScene(scene);
     }
 
     public static boolean islUp() {

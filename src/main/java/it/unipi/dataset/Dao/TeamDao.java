@@ -47,7 +47,7 @@ public class TeamDao {
      * @throws SQLException
      */
     public static synchronized void addTeam(Team t) throws SQLException{
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO team(coach, name, race, league, ngiocatori, nreroll, apothecary, cheerleader, assistant, DF, treasury, G, W, N, L, TDScored, TDConceded, CASInflicted, CASSuffered, PTS, value, round, journeyman) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO team(coach, name, race, league, ngiocatori, nreroll, apothecary, cheerleader, assistant, DF, treasury, G, W, N, L, TDScored, TDConceded, CASInflicted, CASSuffered, PTS, value, round, journeyman, ready) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, t.coach);
         ps.setString(2, t.name);
         ps.setInt(3, t.getRace());
@@ -71,6 +71,7 @@ public class TeamDao {
         ps.setInt(21, t.value);
         ps.setInt(22, t.getRound());
         ps.setInt(23, t.getJourneyman());
+        ps.setBoolean(24, t.isReady());
         ps.executeUpdate();
         ps.close();
 
@@ -78,6 +79,7 @@ public class TeamDao {
         ResultSet rs = st.executeQuery("SELECT LAST_INSERT_ID()");
         while(rs.next())
             t.setId(rs.getInt(1));
+        t.sponsor = "none";
         st.close();
         rs.close();
     }
@@ -106,23 +108,25 @@ public class TeamDao {
      */
     public static synchronized void updateTeam(Team t, boolean player) throws SQLException {
         if(player) {
-            PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET ngiocatori = ?, treasury = ?, value = ? WHERE id = ?");
+            PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET ngiocatori = ?, treasury = ?, value = ?, ready = ? WHERE id = ?");
             ps.setInt(1, t.ngiocatori);
             ps.setInt(2, t.treasury);
             ps.setInt(3, t.value);
-            ps.setInt(4, t.getId());
+            ps.setBoolean(4, t.isReady());
+            ps.setInt(5, t.getId());
             ps.executeUpdate();
             ps.close();
         }
         else {
-            PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET nreroll = ?,  apothecary = ?, cheerleader = ?, assistant = ?, treasury = ?, value = ? WHERE id = ?");
+            PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET nreroll = ?,  apothecary = ?, cheerleader = ?, assistant = ?, treasury = ?, value = ?, sponsor = ? WHERE id = ?");
             ps.setInt(1, t.nreroll);
             ps.setInt(3, t.cheerleader);
             ps.setBoolean(2, t.apothecary);
             ps.setInt(4, t.assistant);
             ps.setInt(5, t.treasury);
             ps.setInt(6, t.value);
-            ps.setInt(7, t.getId());
+            ps.setString(7, t.sponsor);
+            ps.setInt(8, t.getId());
             ps.executeUpdate();
             ps.close();
         }
@@ -172,17 +176,17 @@ public class TeamDao {
         if(gr != 0)
             ps.setInt(2, gr);
         ResultSet rs = ps.executeQuery();
-        ps.close();
         int i = 0;
         while(rs.next()) {
             teams[i++] = rs.getInt(1);
         }
         rs.close();
+        ps.close();
         return teams;
     }
 
     public static synchronized void updateResult(Team t) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET ngiocatori = ?, treasury = ?, DF = ?, G = ?, W = ?, N = ?, L = ?, TDScored = ?, TDConceded = ?, CASInflicted = ?, CASSuffered = ?, PTS = ? WHERE id = ?");
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET ngiocatori = ?, treasury = ?, DF = ?, G = ?, W = ?, N = ?, L = ?, TDScored = ?, TDConceded = ?, CASInflicted = ?, CASSuffered = ?, PTS = ?, value = ?, ready = ? WHERE id = ?");
         int i = 0;
         ps.setInt(++i, t.ngiocatori);
         ps.setInt(++i, t.treasury);
@@ -196,8 +200,29 @@ public class TeamDao {
         ps.setInt(++i, t.casInflicted);
         ps.setInt(++i, t.casSuffered);
         ps.setInt(++i, t.points);
+        ps.setInt(++i, t.value);
+        ps.setBoolean(++i, t.isReady());
         ps.setInt(++i, t.getId());
         ps.executeUpdate();
         ps.close();
+    }
+
+    public static synchronized void saveSponsor(int id, String sponsor) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET sponsor = ? WHERE id = ?");
+        ps.setString(1, sponsor);
+        ps.setInt(2, id);
+        ps.executeUpdate();
+        ps.close();
+    }
+
+    public static synchronized String getCoach(int id) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("SELECT coach FROM team WHERE id = ?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        String result = rs.getString(1);
+        rs.close();
+        ps.close();
+        return result;
     }
 }

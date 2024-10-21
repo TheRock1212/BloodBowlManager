@@ -24,8 +24,8 @@ public class ResultGame extends ResultTable {
         this.tA = TeamDao.getTeam(this.teamA, App.getLeague().getId()).getFirst();
         this.playersH = PlayerDao.getStarting(this.tH.getId());
         this.playersA = PlayerDao.getStarting(this.tA.getId());
-        PlayerDao.setMng(this.tH.getId());
-        PlayerDao.setMng(this.tA.getId());
+        PlayerDao.setMng(this.tH);
+        PlayerDao.setMng(this.tA);
         this.killedH = new ArrayList<>();
         this.killedA = new ArrayList<>();
     }

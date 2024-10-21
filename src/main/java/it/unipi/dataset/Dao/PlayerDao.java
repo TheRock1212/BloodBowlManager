@@ -2,6 +2,7 @@ package it.unipi.dataset.Dao;
 
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Model.Player;
+import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Team;
 
 import java.sql.PreparedStatement;
@@ -18,7 +19,7 @@ public class PlayerDao {
      * @param pp array contenente i giocatori
      * @throws SQLException
      */
-    public static synchronized void addPlayer(Player[] pp) throws SQLException {
+    public static synchronized void addPlayer(List<Player> pp) throws SQLException {
         PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO player(number, name, player_template, team, unspentSPP, SPP, new_skill, MA_inc, ST_inc, AG_inc, PA_inc, AV_inc, MA_dec, ST_dec, AG_dec, PA_dec, AV_dec, NIG, MNG, val, TD, CAS, K, CP, D, I, lev, status, isjourney) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         for(Player p : pp) {
             if(p == null)
@@ -310,6 +311,8 @@ public class PlayerDao {
      * @throws SQLException
      */
     public static synchronized void setDead(List<Integer> players) throws SQLException {
+        if(players.isEmpty())
+            return;
         PreparedStatement ps;
         for(Integer p : players) {
             ps = App.getConnection().prepareStatement("UPDATE player SET status = 0 WHERE id = ?");
@@ -340,13 +343,61 @@ public class PlayerDao {
 
     /**
      * Aggiorna i giocatori che saltano la partita
-     * @param team id del team
+     * @param t team
      * @throws SQLException
      */
-    public static synchronized void setMng(int team) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE player SET MNG = 0 WHERE team = ?");
+    public static synchronized void setMng(Team t) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("SELECT * FROM player WHERE status = 1 AND MNG = 1 AND team = ?");
+        ps.setInt(1, t.getId());
+        ResultSet rs = ps.executeQuery();
+        List<Player> starting = new ArrayList<>();
+        while(rs.next()) {
+            starting.add(new Player(rs));
+        }
+        List<PlayerTemplate> pt = new ArrayList<>();
+        int value = 0;
+        for(Player p : starting) {
+            pt.add(PlayerTemplateDao.getPlayer(p.getTemplate()));
+        }
+        for(int i = 0; i< starting.size(); i++) {
+            value += starting.get(i).value + pt.get(i).cost;
+        }
+        t.value += value;
+        TeamDao.updateTeam(t, true);
+        ps = App.getConnection().prepareStatement("UPDATE player SET MNG = 0 WHERE team = ?");
+        ps.setInt(1, t.getId());
+        ps.executeUpdate();
+        ps.close();
+    }
+
+    public static synchronized int countPlayers(int team) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("SELECT COUNT(*) FROM player WHERE status = 1 AND MNG = 0 AND team = ?");
+        ps.setInt(1, team);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int cont = rs.getInt(1);
+        ps.close();
+        rs.close();
+        return cont;
+    }
+
+    public static synchronized void deletePlayers(int team) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("DELETE FROM player WHERE team = ?");
         ps.setInt(1, team);
         ps.executeUpdate();
         ps.close();
+    }
+
+    public static synchronized List<Player> getPlayers(int league) throws SQLException {
+        List<Player> players = new ArrayList<>();
+        PreparedStatement ps = App.getConnection().prepareStatement("SELECT P.* FROM player P JOIN team T ON P.team = T.id WHERE T.league = ?");
+        ps.setInt(1, league);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            players.add(new Player(rs));
+        }
+        rs.close();
+        ps.close();
+        return players;
     }
 }

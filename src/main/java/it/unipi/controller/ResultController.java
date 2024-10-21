@@ -1,13 +1,11 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Dao.PlayerDao;
-import it.unipi.dataset.Dao.PlayerTemplateDao;
-import it.unipi.dataset.Dao.ResultDao;
-import it.unipi.dataset.Dao.TeamDao;
+import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Result;
+import it.unipi.dataset.Model.Team;
 import it.unipi.utility.Fixture;
 import it.unipi.utility.State;
 import javafx.fxml.FXML;
@@ -18,6 +16,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class ResultController {
     private static State stato;
@@ -30,16 +32,20 @@ public class ResultController {
     @FXML private Spinner<Integer> dfH, dfA, winH, winA;
     @FXML private DatePicker play;
     @FXML private ComboBox<Integer> mvpH, mvpA;
+    @FXML private CheckBox conH, conA;
 
     //Sezione Overview
     @FXML private Label homeTd, homeCas, awayTd, awayCas, homeTeam, awayTeam, scorerTDH, scorerTDA, scorerCASH, scorerCASA, scorerKILLH, scorerKILLA, scorerCPH, scorerCPA, scorerDECH, scorerDECA, scorerINTH, scorerINTA;
     private static String tdh = "", tda = "", cash = "", casa = "", kh = "", ka = "", cph = "", cpa = "", dh = "", da = "", ih = "", ia = "";
 
     //Sezione SetEvent
-    @FXML private Label title, active, vittima, inf;
+    @FXML private Label title, active, vittima, inf, qty;
     @FXML private ComboBox<String> team, entity;
     @FXML private ComboBox<Integer> player, suff;
     @FXML private Button set;
+    @FXML private CheckBox nuffle, star_active, star_victim;
+    @FXML private Spinner<Integer> spp;
+    @FXML private ComboBox<String> star_active_combo, star_victim_combo;
 
 
     private Stage stage = new Stage();
@@ -59,18 +65,22 @@ public class ResultController {
             case SELECTMODE: {
                 teamH.setText(App.getResult().home);
                 teamA.setText(App.getResult().away);
-                SpinnerValueFactory<Integer> win = new SpinnerValueFactory.IntegerSpinnerValueFactory(5000, 200000, 5000, 5000);
+                SpinnerValueFactory<Integer> win = new SpinnerValueFactory.IntegerSpinnerValueFactory(-100000, 200000, 5000, 5000);
                 winH.setValueFactory(win);
-                win = new SpinnerValueFactory.IntegerSpinnerValueFactory(5000, 200000, 5000, 5000);
+                win = new SpinnerValueFactory.IntegerSpinnerValueFactory(-100000, 200000, 5000, 5000);
                 winA.setValueFactory(win);
                 SpinnerValueFactory<Integer> df = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1, 0, 1);
                 dfH.setValueFactory(df);
                 df = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1, 0, 1);
                 dfA.setValueFactory(df);
+                Comparator<Player> comparator = Comparator.comparingInt(Player::getNumber);
+                App.getResult().getPlayersH().sort(comparator);
+                App.getResult().getPlayersA().sort(comparator);
                 for(Player p : App.getResult().getPlayersH())
                     mvpH.getItems().add(p.number);
                 for(Player p : App.getResult().getPlayersA())
                     mvpA.getItems().add(p.number);
+
                 break;
             }
             case OVERVIEW: {
@@ -100,8 +110,10 @@ public class ResultController {
                 inf.setVisible(false);
                 vittima.setVisible(false);
                 entity.setVisible(false);
+                nuffle.setVisible(false);
                 team.getItems().add(App.getResult().home);
                 team.getItems().add(App.getResult().away);
+                star_victim.setVisible(false);
                 break;
             }
             case SETCAS: {
@@ -116,6 +128,7 @@ public class ResultController {
                 inf.setVisible(false);
                 vittima.setVisible(false);
                 entity.setVisible(false);
+                star_victim.setVisible(false);
                 team.getItems().add(App.getResult().home);
                 team.getItems().add(App.getResult().away);
                 break;
@@ -126,6 +139,8 @@ public class ResultController {
                 inf.setVisible(false);
                 vittima.setVisible(false);
                 entity.setVisible(false);
+                nuffle.setVisible(false);
+                star_victim.setVisible(false);
                 team.getItems().add(App.getResult().home);
                 team.getItems().add(App.getResult().away);
                 break;
@@ -136,6 +151,8 @@ public class ResultController {
                 inf.setVisible(false);
                 vittima.setVisible(false);
                 entity.setVisible(false);
+                nuffle.setVisible(false);
+                star_victim.setVisible(false);
                 team.getItems().add(App.getResult().home);
                 team.getItems().add(App.getResult().away);
                 break;
@@ -144,8 +161,26 @@ public class ResultController {
                 title.setText("Add INF");
                 active.setVisible(false);
                 player.setVisible(false);
+                nuffle.setVisible(false);
+                star_active.setVisible(false);
                 team.getItems().add(App.getResult().home);
                 team.getItems().add(App.getResult().away);
+                break;
+            }
+            case SETEXTRA: {
+                suff.setVisible(false);
+                inf.setVisible(false);
+                vittima.setVisible(false);
+                entity.setVisible(false);
+                nuffle.setVisible(false);
+                star_active.setVisible(false);
+                star_victim.setVisible(false);
+                qty.setVisible(true);
+                team.getItems().add(App.getResult().home);
+                team.getItems().add(App.getResult().away);
+                spp.setVisible(true);
+                SpinnerValueFactory<Integer> s = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 0, 1);
+                spp.setValueFactory(s);
                 break;
             }
         }
@@ -173,20 +208,46 @@ public class ResultController {
         App.getResult().winh = winH.getValue();
         App.getResult().wina = winA.getValue();
         App.getResult().date = Date.valueOf(play.getValue());
-        for(Player p : App.getResult().getPlayersH())
-            if(mvpH.getValue() == p.number) {
-                p.spp += 4;
-                p.unspentSPP += 4;
-            }
-        for(Player p : App.getResult().getPlayersA())
-            if(mvpA.getValue() == p.number) {
-                p.spp += 4;
-                p.unspentSPP += 4;
-            }
+        if(conH.isSelected()) {
+            for(Player p : App.getResult().getPlayersA())
+                if(mvpH.getValue() == p.number) {
+                    p.spp += 4;
+                    p.unspentSPP += 4;
+                }
+            for(Player p : App.getResult().getPlayersA())
+                if(mvpA.getValue() == p.number) {
+                    p.spp += 4;
+                    p.unspentSPP += 4;
+                }
+        } else if(conA.isSelected()) {
+            for(Player p : App.getResult().getPlayersH())
+                if(mvpH.getValue() == p.number) {
+                    p.spp += 4;
+                    p.unspentSPP += 4;
+                }
+            for(Player p : App.getResult().getPlayersH())
+                if(mvpA.getValue() == p.number) {
+                    p.spp += 4;
+                    p.unspentSPP += 4;
+                }
+        } else {
+            for (Player p : App.getResult().getPlayersH())
+                if (mvpH.getValue() == p.number) {
+                    p.spp += 4;
+                    p.unspentSPP += 4;
+                }
+            for (Player p : App.getResult().getPlayersA())
+                if (mvpA.getValue() == p.number) {
+                    p.spp += 4;
+                    p.unspentSPP += 4;
+                }
+        }
         App.getResult().gettH().df = Math.max(0, App.getResult().gettH().df + App.getResult().dfh);
         App.getResult().gettA().df = Math.max(0, App.getResult().gettA().df + App.getResult().dfa);
         App.getResult().gettH().treasury += (App.getResult().winh / 1000);
         App.getResult().gettA().treasury += (App.getResult().wina / 1000);
+        App.getResult().gettH().setReady(false);
+        App.getResult().gettA().setReady(false);
         Stage stage = (Stage) play.getScene().getWindow();
         stage.close();
         setStato(State.OVERVIEW);
@@ -301,6 +362,15 @@ public class ResultController {
         stage.show();
     }
 
+    @FXML public void setExtra() throws IOException {
+        setStato(State.SETEXTRA);
+        scene = new Scene(App.load("result/set_event"), 250, 400);
+        stage.setScene(scene);
+        stage.setTitle("Set EXTRA");
+        stage.setResizable(false);
+        stage.show();
+    }
+
     @FXML public void set() throws IOException, SQLException {
         switch(getStato()) {
             case SETTD: {
@@ -308,6 +378,12 @@ public class ResultController {
                     App.getResult().tdh++;
                     App.getResult().gettH().tdScored++;
                     App.getResult().gettA().tdConceded++;
+                    if(star_active.isSelected()) {
+                        if(!tdh.isEmpty())
+                            tdh += ", ";
+                        tdh += star_active_combo.getValue();
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersH()) {
                         if(p.number == player.getValue()) {
                             p.td++;
@@ -324,6 +400,12 @@ public class ResultController {
                     App.getResult().tda++;
                     App.getResult().gettA().tdScored++;
                     App.getResult().gettH().tdConceded++;
+                    if(star_active.isSelected()) {
+                        if(!tda.isEmpty())
+                            tda += ", ";
+                        tda += star_active_combo.getValue();
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersA()) {
                         if(p.number == player.getValue()) {
                             p.td++;
@@ -345,9 +427,24 @@ public class ResultController {
                     App.getResult().gettA().casSuffered++;
                     if(entity.getValue().equals("DEAD"))
                         App.getResult().killh++;
+                    if(star_active.isSelected()) {
+                        if(!cash.isEmpty())
+                            cash += ", ";
+                        cash += star_active_combo.getValue();
+                        if(entity.getValue().equals("DEAD")) {
+                            if(!kh.isEmpty())
+                                kh += ", ";
+                            kh += star_active_combo.getValue();
+                        }
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersH()) {
                         if(p.number == player.getValue()) {
                             p.cas++;
+                            if(nuffle.isSelected()) {
+                                p.spp++;
+                                p.unspentSPP++;
+                            }
                             p.spp += 2;
                             p.unspentSPP += 2;
                             if(!cash.isEmpty())
@@ -358,15 +455,21 @@ public class ResultController {
                                     kh += ", ";
                                 kh += p.name;
                                 p.kill++;
+                                if(star_active.isSelected() && App.getLeague().isSppStar()) {
+                                    p.spp += 2;
+                                    p.unspentSPP += 2;
+                                }
                             }
                             break;
                         }
+                    }
+                    if(star_active.isSelected()) {
+                        break;
                     }
                     if(!entity.getValue().equals("BH")) {
                         int i = 0;
                         for (Player p : App.getResult().getPlayersA()) {
                             if (p.number == suff.getValue()) {
-                                p.mng = true;
                                 addInf(i, false);
                                 break;
                             }
@@ -380,6 +483,17 @@ public class ResultController {
                     App.getResult().gettH().casSuffered++;
                     if(entity.getValue().equals("DEAD"))
                         App.getResult().killa++;
+                    if(star_active.isSelected()) {
+                        if(!casa.isEmpty())
+                            casa += ", ";
+                        casa += star_active_combo.getValue();
+                        if(entity.getValue().equals("DEAD")) {
+                            if(!ka.isEmpty())
+                                ka += ", ";
+                            ka += star_active_combo.getValue();
+                        }
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersA()) {
                         if(p.number == player.getValue()) {
                             p.cas++;
@@ -393,15 +507,21 @@ public class ResultController {
                                     ka += ", ";
                                 ka += p.name;
                                 p.kill++;
+                                if(star_active.isSelected() && App.getLeague().isSppStar()) {
+                                    p.spp += 2;
+                                    p.unspentSPP += 2;
+                                }
                             }
                             break;
                         }
+                    }
+                    if(star_active.isSelected()) {
+                        break;
                     }
                     if(!entity.getValue().equals("BH")) {
                         int i = 0;
                         for (Player p : App.getResult().getPlayersH()) {
                             if (p.number == suff.getValue()) {
-                                p.mng = true;
                                 addInf(i, true);
                                 break;
                             }
@@ -414,9 +534,19 @@ public class ResultController {
             case SETCP: {
                 if(team.getValue().equals(App.getResult().home)) {
                     App.getResult().cph++;
+                    if(star_active.isSelected()) {
+                        if(!cph.isEmpty())
+                            cph += ", ";
+                        cph += star_active_combo.getValue();
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersH()) {
                         if(p.number == player.getValue()) {
                             p.cp++;
+                            if(nuffle.isSelected()) {
+                                p.spp++;
+                                p.unspentSPP++;
+                            }
                             p.spp ++;
                             p.unspentSPP++;
                             if(!cph.isEmpty())
@@ -428,6 +558,12 @@ public class ResultController {
                 }
                 else {
                     App.getResult().cpa++;
+                    if(star_active.isSelected()) {
+                        if(!cpa.isEmpty())
+                            cpa += ", ";
+                        cpa += star_active_combo.getValue();
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersA()) {
                         if(p.number == player.getValue()) {
                             p.cp++;
@@ -445,6 +581,12 @@ public class ResultController {
             case SETDEC: {
                 if(team.getValue().equals(App.getResult().home)) {
                     App.getResult().dech++;
+                    if(star_active.isSelected()) {
+                        if(!dh.isEmpty())
+                            dh += ", ";
+                        dh += star_active_combo.getValue();
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersH()) {
                         if(p.number == player.getValue()) {
                             p.def++;
@@ -459,6 +601,12 @@ public class ResultController {
                 }
                 else {
                     App.getResult().deca++;
+                    if(star_active.isSelected()) {
+                        if(!da.isEmpty())
+                            da += ", ";
+                        da += star_active_combo.getValue();
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersA()) {
                         if(p.number == player.getValue()) {
                             p.def++;
@@ -476,6 +624,12 @@ public class ResultController {
             case SETINT: {
                 if(team.getValue().equals(App.getResult().home)) {
                     App.getResult().inth++;
+                    if(star_active.isSelected()) {
+                        if(!ih.isEmpty())
+                            ih += ", ";
+                        ih += star_active_combo.getValue();
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersH()) {
                         if(p.number == player.getValue()) {
                             p.inter++;
@@ -490,6 +644,12 @@ public class ResultController {
                 }
                 else {
                     App.getResult().inta++;
+                    if(star_active.isSelected()) {
+                        if(!ia.isEmpty())
+                            ia += ", ";
+                        ia += star_active_combo.getValue();
+                        break;
+                    }
                     for(Player p : App.getResult().getPlayersA()) {
                         if(p.number == player.getValue()) {
                             p.inter++;
@@ -505,8 +665,13 @@ public class ResultController {
                 break;
             }
             case SETINF: {
+                if(star_active.isSelected()) {
+                    break;
+                }
                 if(team.getValue().equals(App.getResult().home)) {
                     int i = 0;
+                    if(entity.getValue().equals("BH"))
+                        break;
                     for(Player p : App.getResult().getPlayersH()) {
                         if (p.number == suff.getValue()) {
                             addInf(i, true);
@@ -517,6 +682,8 @@ public class ResultController {
                 }
                 else {
                     int i = 0;
+                    if(entity.getValue().equals("BH"))
+                        break;
                     for(Player p : App.getResult().getPlayersA()) {
                         if (p.number == suff.getValue()) {
                             addInf(i, false);
@@ -525,6 +692,22 @@ public class ResultController {
                         i++;
                     }
                 }
+                break;
+            }
+            case SETEXTRA: {
+                if(star_victim.isSelected()) {
+                    break;
+                }
+                if(team.getValue().equals(App.getResult().home)) {
+                    for(Player p : App.getResult().getPlayersH()) {
+                        if(p.number == player.getValue()) {
+                            p.spp += spp.getValue();
+                            p.unspentSPP += spp.getValue();
+                            break;
+                        }
+                    }
+                }
+                break;
             }
         }
         Stage stage = (Stage) set.getScene().getWindow();
@@ -541,6 +724,11 @@ public class ResultController {
         else
             p = App.getResult().getPlayersA().get(i);
         PlayerTemplate pt = PlayerTemplateDao.getPlayer(p.getTemplate());
+        if(home)
+            App.getResult().gettH().value -= (p.value + pt.cost);
+        else
+            App.getResult().gettA().value -= (p.value + pt.cost);
+        p.mng = true;
         switch(entity.getValue()) {
             case "NIG": {
                 p.nig = (p.nig < 4) ? p.nig + 1 : p.nig;
@@ -550,10 +738,10 @@ public class ResultController {
                 if(p.getMaDec() < 4 && (pt.ma + p.getMaInc() - p.getMaDec()) > 1) {
                     if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
                         p.value -= 5;
-                        if(home)
+                        /*if(home)
                             App.getResult().gettH().value -= 5;
                         else
-                            App.getResult().gettA().value -= 5;
+                            App.getResult().gettA().value -= 5;*/
                     }
                     p.setMaDec(p.getMaDec() + 1);
                 }
@@ -563,10 +751,10 @@ public class ResultController {
                 if(p.getStDec() < 4 && (pt.st + p.getStInc() - p.getStDec()) > 1) {
                     if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
                         p.value -= 5;
-                        if(home)
+                        /*if(home)
                             App.getResult().gettH().value -= 5;
                         else
-                            App.getResult().gettA().value -= 5;
+                            App.getResult().gettA().value -= 5;*/
                     }
                     p.setStDec(p.getStDec() + 1);
                 }
@@ -576,10 +764,10 @@ public class ResultController {
                 if(p.getAgDec() < 4 && (pt.ag - p.getAgInc() + p.getAgDec()) < 6) {
                     if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
                         p.value -= 5;
-                        if(home)
+                        /*if(home)
                             App.getResult().gettH().value -= 5;
                         else
-                            App.getResult().gettA().value -= 5;
+                            App.getResult().gettA().value -= 5;*/
                     }
                     p.setAgDec(p.getAgDec() + 1);
                 }
@@ -589,10 +777,10 @@ public class ResultController {
                 if(p.getPaDec() < 4 && (pt.pa - p.getPaInc() + p.getPaDec()) < 7) {
                     if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
                         p.value -= 5;
-                        if(home)
+                        /*if(home)
                             App.getResult().gettH().value -= 5;
                         else
-                            App.getResult().gettA().value -= 5;
+                            App.getResult().gettA().value -= 5;*/
                     }
                     p.setPaDec(p.getPaDec() + 1);
                 }
@@ -602,23 +790,26 @@ public class ResultController {
                 if(p.getAvDec() < 4 && (pt.av + p.getAvInc() - p.getAvDec()) > 3) {
                     if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
                         p.value -= 5;
-                        if(home)
+                        /*if(home)
                             App.getResult().gettH().value -= 5;
                         else
-                            App.getResult().gettA().value -= 5;
+                            App.getResult().gettA().value -= 5;*/
                     }
                     p.setAvDec(p.getAvDec() + 1);
                 }
                 break;
             }
             case "DEAD": {
+                //PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
                 if(home) {
                     App.getResult().getKilledH().add(p.getId());
                     App.getResult().gettH().ngiocatori--;
+                    //App.getResult().gettH().value -= (template.cost + p.value);
                 }
                 else {
                     App.getResult().getKilledA().add(p.getId());
                     App.getResult().gettA().ngiocatori--;
+                    //App.getResult().gettA().value -= (template.cost + p.value);
                 }
             }
         }
@@ -627,18 +818,23 @@ public class ResultController {
     @FXML public void sendResult() throws IOException, SQLException {
         setResult();
         ResultDao.setResult(new Result(App.getResult()));
+        PlayerDao.updateResults(App.getResult().getPlayersH());
+        if(!App.getResult().getKilledH().isEmpty())
+            PlayerDao.setDead(App.getResult().getKilledH());
+        //setUpJourneyman(true);
+        if(!App.getResult().getKilledA().isEmpty())
+            PlayerDao.setDead(App.getResult().getKilledA());
+        PlayerDao.updateResults(App.getResult().getPlayersA());
+        //setUpJourneyman(false);
         TeamDao.updateResult(App.getResult().gettH());
         TeamDao.updateResult(App.getResult().gettA());
-        PlayerDao.updateResults(App.getResult().getPlayersH());
-        PlayerDao.updateResults(App.getResult().getPlayersA());
-        PlayerDao.setDead(App.getResult().getKilledH());
-        PlayerDao.setDead(App.getResult().getKilledA());
         Stage stage = (Stage) homeTeam.getScene().getWindow();
         stage.close();
         App.setRoot("dashboard");
     }
 
     private void setResult() {
+        tdh = tda = cash = casa = kh = ka = cph = cpa = dh = da = ih = ia = "";
         App.getResult().gettH().g++;
         App.getResult().gettA().g++;
         if(App.getResult().tdh > App.getResult().tda) {
@@ -677,6 +873,58 @@ public class ResultController {
                 App.getResult().gettA().points++;
             if(App.getResult().tda == 0)
                 App.getResult().gettH().points++;
+        }
+
+    }
+
+    @FXML public void setActive() throws SQLException {
+        if(star_active.isSelected()) {
+            player.setVisible(false);
+            star_active_combo.setVisible(true);
+            star_active_combo.getItems().clear();
+            List<String> stars;
+            if(team.getValue().equals(App.getResult().home))
+                stars = StarPlayerDao.getStar(App.getResult().gettH().getRace());
+            else
+                stars = StarPlayerDao.getStar(App.getResult().gettA().getRace());
+            for(String s : stars)
+                star_active_combo.getItems().add(s);
+        }
+        else {
+            star_active_combo.getItems().clear();
+            star_active_combo.setVisible(false);
+            player.setVisible(true);
+        }
+    }
+
+    @FXML public void setVictim() throws SQLException {
+        if(star_victim.isSelected()) {
+            suff.setVisible(false);
+            star_victim_combo.setVisible(true);
+            star_victim_combo.getItems().clear();
+            List<String> stars;
+            if(team.getValue().equals(App.getResult().home))
+                stars = StarPlayerDao.getStar(App.getResult().gettA().getRace());
+            else
+                stars = StarPlayerDao.getStar(App.getResult().gettH().getRace());
+            for(String s : stars)
+                star_victim_combo.getItems().add(s);
+        }
+        else {
+            star_victim_combo.getItems().clear();
+            star_victim_combo.setVisible(false);
+            suff.setVisible(true);
+        }
+    }
+
+    @FXML public void setConceiding() throws SQLException {
+        if(conH.isSelected()) {
+            mvpH.getItems().clear();
+            mvpH.getItems().addAll(mvpA.getItems());
+        }
+        else if(conA.isSelected()) {
+            mvpA.getItems().clear();
+            mvpA.getItems().addAll(mvpH.getItems());
         }
     }
 }
