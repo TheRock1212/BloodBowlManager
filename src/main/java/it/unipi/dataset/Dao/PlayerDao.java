@@ -405,4 +405,31 @@ public class PlayerDao {
         ps.close();
         return players;
     }
+
+    public static synchronized int getStatistic(int team, String name) throws SQLException {
+        String sql = "SELECT SUM(";
+        switch(name) {
+            case "kill": {
+                sql += "K";
+                break;
+            }
+            case "cp": {
+                sql += "CP";
+                break;
+            }
+            case "int": {
+                sql += "I";
+                break;
+            }
+        }
+        sql += ") FROM player WHERE team = ?";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        ps.setInt(1, team);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int result = rs.getInt(1);
+        ps.close();
+        rs.close();
+        return result;
+    }
 }

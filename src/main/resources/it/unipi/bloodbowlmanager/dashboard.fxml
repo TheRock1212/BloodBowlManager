@@ -69,5 +69,16 @@
             </AnchorPane>
          </content>
       </Tab>
+      <Tab text="Statistic Teams">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TableView fx:id="statsTeam" layoutY="26.0" prefHeight="643.0" prefWidth="1001.0" />
+                  <ComboBox fx:id="tipoTeam" layoutX="846.0" layoutY="1.0" onAction="#changeSortTeam" prefWidth="150.0" />
+                  <Label layoutX="767.0" layoutY="5.0" text="Choose One:" />
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
    </tabs>
 </TabPane>

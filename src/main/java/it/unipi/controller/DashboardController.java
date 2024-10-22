@@ -39,7 +39,10 @@ public class DashboardController {
     @FXML private TableView<PlayerStatistic> stats;
     private ObservableList<PlayerStatistic> pl;
 
-    @FXML private ComboBox<String> tipo;
+    @FXML private TableView<TeamStatistic> statsTeam;
+    private ObservableList<TeamStatistic> ts;
+
+    @FXML private ComboBox<String> tipo, tipoTeam;
 
     @FXML private MenuItem fixture, result;
 
@@ -168,6 +171,16 @@ public class DashboardController {
 
         tipo.getSelectionModel().selectFirst();
 
+        tipoTeam.getItems().add("Best Offence");
+        tipoTeam.getItems().add("Best Defence");
+        tipoTeam.getItems().add("Most Roughtest");
+        tipoTeam.getItems().add("Best Toughtest");
+        tipoTeam.getItems().add("Best Killers");
+        tipoTeam.getItems().add("Most Passes");
+        tipoTeam.getItems().add("Most Interceptions");
+
+        tipoTeam.getSelectionModel().selectFirst();
+
         //Colonne tabella statistiche
         TableColumn image = new TableColumn(" ");
         image.setCellValueFactory(new PropertyValueFactory<ImageView, PlayerStatistic>("img"));
@@ -191,6 +204,20 @@ public class DashboardController {
         pl = FXCollections.observableArrayList();
         stats.setItems(pl);
 
+        //Colonne tabella statistiche
+        TableColumn nameTeamSt = new TableColumn("Name");
+        nameTeamSt.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn coachTeam = new TableColumn("Coach");
+        coachTeam.setCellValueFactory(new PropertyValueFactory<>("coach"));
+
+        TableColumn stat = new TableColumn("Stat");
+        stat.setCellValueFactory(new PropertyValueFactory<>("value"));
+
+        statsTeam.getColumns().addAll(nameTeamSt, coachTeam, stat);
+        ts = FXCollections.observableArrayList();
+        statsTeam.setItems(ts);
+
         getTable();
 
         if(!res.isEmpty())
@@ -211,6 +238,7 @@ public class DashboardController {
         List<Team> teams = TeamDao.getTeam(0, App.getLeague().getId());
         rl.addAll(teams);
         tl.addAll(teams);
+
         Comparator<Team> comparator = Comparator.comparingInt(Team::getPoints);
         comparator = comparator.reversed();
         FXCollections.sort(rl, comparator);
@@ -231,6 +259,13 @@ public class DashboardController {
         Comparator<PlayerStatistic> comp = Comparator.comparingInt(PlayerStatistic::getValue);
         comp = comp.reversed();
         FXCollections.sort(pl, comp);
+
+        for(Team team : teams) {
+            ts.add(new TeamStatistic(team));
+        }
+        Comparator<TeamStatistic> comp2 = Comparator.comparingInt(TeamStatistic::getValue);
+        comp2 = comp2.reversed();
+        FXCollections.sort(ts, comp2);
     }
 
     @FXML public void createTeam() throws IOException {
@@ -307,5 +342,16 @@ public class DashboardController {
         }
         //App.setRoot("dashboard");
         FXCollections.sort(pl, Comparator.comparingInt(PlayerStatistic::getValue).reversed());
+    }
+
+    @FXML public void changeSortTeam() throws IOException {
+        for(TeamStatistic t : ts) {
+            t.setValue(tipoTeam.getValue());
+        }
+        //App.setRoot("dashboard");
+        if(tipoTeam.getValue().equals("Best Defence") || tipoTeam.getValue().equals("Most Toughtest"))
+            FXCollections.sort(ts, Comparator.comparingInt(TeamStatistic::getValue));
+        else
+            FXCollections.sort(ts, Comparator.comparingInt(TeamStatistic::getValue).reversed());
     }
 }
