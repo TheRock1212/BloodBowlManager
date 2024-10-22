@@ -110,7 +110,7 @@ public class TeamController {
         t.setCoach(coach.getText());
         t.setName(teamName.getText());
         t.setTreasury(Integer.valueOf(treasury.getText()));
-        t.value = t.treasury - Integer.parseInt(treasury.getText()) - (t.df - 1) * 10;
+        t.value = App.getLeague().getTreasury() - Integer.parseInt(treasury.getText()) - (t.df - 1) * 10;
         t.setLeague(App.getLeague().getId());
         t.setRound(0);
         t.setRace(r.getId());

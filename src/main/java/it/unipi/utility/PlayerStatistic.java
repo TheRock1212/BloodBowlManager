@@ -12,6 +12,7 @@ import java.sql.SQLException;
 public class PlayerStatistic {
     public String name;
     public String coach;
+    public String role;
     public int spp;
     public int td;
     public int cas;
@@ -37,6 +38,7 @@ public class PlayerStatistic {
         this.dec = p.getDef();
         this.inte = p.getInter();
         this.value = this.spp;
+        this.role = ti.position;
     }
 
     public String getName() {
@@ -158,5 +160,13 @@ public class PlayerStatistic {
 
     public void setCoach(String coach) {
         this.coach = coach;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

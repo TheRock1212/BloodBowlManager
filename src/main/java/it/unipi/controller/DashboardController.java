@@ -175,6 +175,9 @@ public class DashboardController {
         TableColumn namePlayer = new TableColumn("Name");
         namePlayer.setCellValueFactory(new PropertyValueFactory<>("name"));
 
+        TableColumn role = new TableColumn("Position");
+        role.setCellValueFactory(new PropertyValueFactory<>("role"));
+
         TableColumn coachPlayer = new TableColumn("Coach");
         coachPlayer.setCellValueFactory(new PropertyValueFactory<>("coach"));
 
@@ -184,7 +187,7 @@ public class DashboardController {
         TableColumn statistics = new TableColumn("Stat");
         statistics.setCellValueFactory(new PropertyValueFactory<>("value"));
 
-        stats.getColumns().addAll(image, namePlayer, nameTeam, coachPlayer, statistics);
+        stats.getColumns().addAll(image, namePlayer, role, nameTeam, coachPlayer, statistics);
         pl = FXCollections.observableArrayList();
         stats.setItems(pl);
 

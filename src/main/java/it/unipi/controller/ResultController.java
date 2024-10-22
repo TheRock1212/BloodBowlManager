@@ -52,6 +52,7 @@ public class ResultController {
     private Scene scene;
 
     private static Scene overview;
+    private static boolean raisedH, raisedA;
 
     public void initialize() {
         switch (stato) {
@@ -80,7 +81,7 @@ public class ResultController {
                     mvpH.getItems().add(p.number);
                 for(Player p : App.getResult().getPlayersA())
                     mvpA.getItems().add(p.number);
-
+                raisedH = raisedA =true;
                 break;
             }
             case OVERVIEW: {
@@ -724,10 +725,16 @@ public class ResultController {
         else
             p = App.getResult().getPlayersA().get(i);
         PlayerTemplate pt = PlayerTemplateDao.getPlayer(p.getTemplate());
-        if(home)
-            App.getResult().gettH().value -= (p.value + pt.cost);
-        else
-            App.getResult().gettA().value -= (p.value + pt.cost);
+        if(home) {
+            if(!RaceDao.hasLowCostLineman(App.getResult().gettH().getId()))
+                App.getResult().gettH().value -= (p.value + pt.cost);
+            else App.getResult().gettH().value -= p.value;
+        }
+        else {
+            if(!RaceDao.hasLowCostLineman(App.getResult().gettH().getId()))
+                App.getResult().gettA().value -= (p.value + pt.cost);
+            else App.getResult().gettA().value -= p.value;
+        }
         p.mng = true;
         switch(entity.getValue()) {
             case "NIG": {
@@ -804,12 +811,25 @@ public class ResultController {
                 if(home) {
                     App.getResult().getKilledH().add(p.getId());
                     App.getResult().gettH().ngiocatori--;
+                    if(RaceDao.hasRaisedRule(App.getResult().gettA().getId()) && raisedA) {
+                        raisedA = false;
+                        PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
+                        String skills = template.skill + p.skill;
+                        if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && PlayerDao.countPlayers(App.getResult().gettA().getId(), false) < 16)
+                            PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettA().getJourneyman(), App.getResult().gettA().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false));
+                    }
                     //App.getResult().gettH().value -= (template.cost + p.value);
                 }
                 else {
                     App.getResult().getKilledA().add(p.getId());
                     App.getResult().gettA().ngiocatori--;
-                    //App.getResult().gettA().value -= (template.cost + p.value);
+                    if(RaceDao.hasRaisedRule(App.getResult().gettH().getId()) && raisedH) {
+                        raisedH = false;
+                        PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
+                        String skills = template.skill + p.skill;
+                        if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && PlayerDao.countPlayers(App.getResult().gettH().getId(), false) < 16)
+                            PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettH().getJourneyman(), App.getResult().gettH().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false));
+                    }
                 }
             }
         }

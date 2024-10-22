@@ -313,7 +313,7 @@ public class ManagementController {
             }
         }
         //List<Player> listPlayers = PlayerDao.getStarting(App.getTeam().getId());
-        int nPlayer = PlayerDao.countPlayers(App.getTeam().getId());
+        int nPlayer = PlayerDao.countPlayers(App.getTeam().getId(), true);
         List<Player> journey = new ArrayList<>();
         int number = 100;
         while(nPlayer < 11) {

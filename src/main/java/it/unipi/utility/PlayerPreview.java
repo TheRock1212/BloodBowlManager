@@ -65,7 +65,7 @@ public class PlayerPreview {
         this.AV = ti.getAv() + p.getAvInc() - p.getAvDec();
         this.NIG = p.getNig();
         this.MNG = p.isMng();
-        if(RaceDao.hasSpecial(ti.getRace()))
+        if(RaceDao.hasLowCostLineman(ti.getRace()) && ti.maxQty > 10)
             this.val = p.getValue();
         else
             this.val = ti.getCost() + p.getValue();

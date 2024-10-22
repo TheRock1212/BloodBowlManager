@@ -360,7 +360,9 @@ public class PlayerDao {
             pt.add(PlayerTemplateDao.getPlayer(p.getTemplate()));
         }
         for(int i = 0; i< starting.size(); i++) {
-            value += starting.get(i).value + pt.get(i).cost;
+            if(!RaceDao.hasLowCostLineman(t.getId()))
+                value += starting.get(i).value + pt.get(i).cost;
+            else value += starting.get(i).value;
         }
         t.value += value;
         TeamDao.updateTeam(t, true);
@@ -370,8 +372,11 @@ public class PlayerDao {
         ps.close();
     }
 
-    public static synchronized int countPlayers(int team) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("SELECT COUNT(*) FROM player WHERE status = 1 AND MNG = 0 AND team = ?");
+    public static synchronized int countPlayers(int team, boolean journey) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM player WHERE status = 1 AND MNG = 0 AND team = ?";
+        if(!journey)
+            sql += " AND isjourney = 0";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
         ps.setInt(1, team);
         ResultSet rs = ps.executeQuery();
         rs.next();

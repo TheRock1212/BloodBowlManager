@@ -151,7 +151,7 @@ public class PlayerPurchaseController {
             error.setVisible(true);
             return;
         }
-        boolean rules = RaceDao.hasSpecial(App.getTeam().getRace());
+        boolean rules = RaceDao.hasLowCostLineman(App.getTeam().getRace());
         int value = 0, cont = 0;
         Player[] players = new Player[16];
         for(int i = 0; i < pt.size(); i++) {

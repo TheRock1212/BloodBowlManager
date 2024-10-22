@@ -69,7 +69,7 @@ public class RaceDao {
      * @return true se ha la regola, false altrimenti
      * @throws SQLException
      */
-    public static synchronized boolean hasSpecial(int id) throws SQLException{
+    public static synchronized boolean hasLowCostLineman(int id) throws SQLException{
         PreparedStatement st = App.getConnection().prepareStatement("SELECT special_1, special_2, special_3 FROM race WHERE id = ?");
         st.setInt(1, id);
         ResultSet rs = st.executeQuery();
@@ -80,5 +80,18 @@ public class RaceDao {
         st.close();
         rs.close();
         return spe.contains("Low Cost Lineman");
+    }
+
+    public static synchronized boolean hasRaisedRule(int id) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("SELECT special_1, special_2, special_3 FROM race WHERE id = ?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        String spe = "";
+        while(rs.next()){
+            spe = rs.getString("special_1") + " " + rs.getString("special_2") + " " + rs.getString("special_3");
+        }
+        ps.close();
+        rs.close();
+        return spe.contains("Masters of Undead") || spe.contains("Vampire Lord");
     }
 }
