@@ -1,5 +1,9 @@
 package it.unipi.controller;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.PlayerDao;
 import it.unipi.dataset.Dao.PlayerTemplateDao;
@@ -15,10 +19,14 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -353,5 +361,9 @@ public class DashboardController {
             FXCollections.sort(ts, Comparator.comparingInt(TeamStatistic::getValue));
         else
             FXCollections.sort(ts, Comparator.comparingInt(TeamStatistic::getValue).reversed());
+    }
+
+    @FXML public void createPDF() throws IOException, SQLException, DocumentException {
+        PDFManager.generatePDF(teamList.getSelectionModel().getSelectedItem());
     }
 }

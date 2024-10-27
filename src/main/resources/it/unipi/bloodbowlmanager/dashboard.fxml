@@ -29,6 +29,7 @@
                            <items>
                               <MenuItem fx:id="EditTeam" mnemonicParsing="false" onAction="#openTeamManagement" text="Edit" />
                               <MenuItem fx:id="removeItem" mnemonicParsing="false" onAction="#deleteTeam" text="Remove" />
+                              <MenuItem fx:id="pdf" mnemonicParsing="false" onAction="#createPDF" text="Generate PDF" />
                            </items>
                         </ContextMenu>
                      </contextMenu>

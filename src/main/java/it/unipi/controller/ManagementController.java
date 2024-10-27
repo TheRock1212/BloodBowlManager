@@ -345,4 +345,6 @@ public class ManagementController {
             journey.setVisible(false);
         }
     }
+
+    @FXML public void takeJourney() throws SQLException, IOException {}
 }

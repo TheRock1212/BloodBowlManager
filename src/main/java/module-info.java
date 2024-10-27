@@ -10,6 +10,8 @@ module it.unipi.bloodbowlmanager {
     //requires eu.hansolo.tilesfx;
     requires java.sql;
     requires mysql.connector.j;
+    requires java.desktop;
+    requires itextpdf;
 
     opens it.unipi.controller to javafx.fxml;
     opens it.unipi.bloodbowlmanager to javafx.fxml;
