@@ -488,6 +488,18 @@ public class PlayerController {
         ManagementController.getStage().setScene(scene);
     }
 
+    @FXML public void takeJourney() throws IOException, SQLException {
+        App.getTeam().treasury -= App.getPlayer().val;
+        App.getTeam().ngiocatori++;
+        App.getPlayer().setJourney(false);
+        App.getPlayer().setNewSkills("");
+        setNaming(true);
+        sta.setTitle("Edit Name");
+        sc = new Scene(App.load("player/edit_name"), 320, 200);
+        sta.setScene(sc);
+        sta.show();
+    }
+
     public static boolean islUp() {
         return lUp;
     }

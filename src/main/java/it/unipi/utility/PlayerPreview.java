@@ -42,6 +42,7 @@ public class PlayerPreview {
     public int D;
     public int I;
     private int lev;
+    private boolean journey;
     public String position;
 
     public PlayerPreview(TemplateImage ti, Player p) throws SQLException {
@@ -85,6 +86,7 @@ public class PlayerPreview {
         this.newVal = p.getValue();
         this.primary = ti.primary;
         this.secondary = ti.secondary;
+        this.journey = p.isJourney();
     }
 
     public PlayerPreview(PlayerPreview pp) {
@@ -119,6 +121,7 @@ public class PlayerPreview {
         this.newVal = pp.getNewVal();
         this.primary = pp.getPrimary();
         this.secondary = pp.getSecondary();
+        this.journey = pp.isJourney();
     }
 
     public int getId() {
@@ -383,5 +386,13 @@ public class PlayerPreview {
 
     public void setSecondary(String secondary) {
         this.secondary = secondary;
+    }
+
+    public boolean isJourney() {
+        return journey;
+    }
+
+    public void setJourney(boolean journey) {
+        this.journey = journey;
     }
 }

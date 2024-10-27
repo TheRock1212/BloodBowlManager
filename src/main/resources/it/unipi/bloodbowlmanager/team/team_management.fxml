@@ -12,11 +12,12 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.controller.ManagementController">
    <children>
-      <TableView fx:id="players" layoutY="-2.0" prefHeight="631.0" prefWidth="1000.0">
+      <TableView fx:id="players" layoutY="-2.0" onContextMenuRequested="#checkJourney" prefHeight="631.0" prefWidth="1000.0">
          <contextMenu>
             <ContextMenu>
                <items>
                   <MenuItem fx:id="edit" mnemonicParsing="false" onAction="#switchToPlayerPreview" text="Edit" />
+                  <MenuItem fx:id="journey" mnemonicParsing="false" onAction="#takeJourney" text="Purchase" visible="false"/>
                   <MenuItem fx:id="fire" mnemonicParsing="false" onAction="#deletePlayer" text="Fire" />
                </items>
             </ContextMenu>

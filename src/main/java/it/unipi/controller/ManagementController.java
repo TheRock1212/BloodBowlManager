@@ -37,7 +37,7 @@ public class ManagementController {
     @FXML private RadioButton option;
     @FXML private ComboBox<Integer> rr, ac, ch;
     @FXML private Button readyButton, purButton, spoButton;
-    @FXML private MenuItem edit, fire;
+    @FXML private MenuItem edit, fire, journey;
 
     private static Scene scene;
     private static Stage stage = new Stage();
@@ -329,5 +329,20 @@ public class ManagementController {
             TeamDao.updateTeam(App.getTeam(), false);
         }
         App.setRoot("team/team_management");
+    }
+
+    @FXML public void checkJourney() throws SQLException, IOException {
+        PlayerPreview tmp = players.getSelectionModel().getSelectedItem();
+        if(tmp.isJourney()) {
+            journey.setDisable(false);
+            fire.setVisible(false);
+            journey.setVisible(true);
+            if(App.getTeam().treasury < tmp.val || App.getTeam().isReady() || App.getTeam().ngiocatori < 16)
+                journey.setDisable(true);
+        }
+        else {
+            fire.setVisible(true);
+            journey.setVisible(false);
+        }
     }
 }
