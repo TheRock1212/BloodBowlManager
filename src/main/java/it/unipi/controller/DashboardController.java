@@ -1,9 +1,5 @@
 package it.unipi.controller;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.PlayerDao;
 import it.unipi.dataset.Dao.PlayerTemplateDao;
@@ -54,7 +50,7 @@ public class DashboardController {
 
     @FXML private MenuItem fixture, result;
 
-    @FXML private Button addTeam, groups, playoff, close;
+    @FXML private Button addTeam, groups, playoff, close, pdfs;
 
     public Stage stage = new Stage();
     public Scene scene;
@@ -234,6 +230,7 @@ public class DashboardController {
 
         if(tl.size() == App.getLeague().getNTeams()) {
             addTeam.setVisible(false);
+            pdfs.setVisible(true);
             fixture.setDisable(false);
             if(App.getLeague().getGroups() > 1)
                 groups.setVisible(true);
@@ -363,7 +360,13 @@ public class DashboardController {
             FXCollections.sort(ts, Comparator.comparingInt(TeamStatistic::getValue).reversed());
     }
 
-    @FXML public void createPDF() throws IOException, SQLException, DocumentException {
+    @FXML public void createPDF() throws IOException, SQLException {
         PDFManager.generatePDF(teamList.getSelectionModel().getSelectedItem());
+    }
+
+    @FXML public void generatePDFs() throws IOException, SQLException {
+        for(Team t : tl) {
+            PDFManager.generatePDF(t);
+        }
     }
 }

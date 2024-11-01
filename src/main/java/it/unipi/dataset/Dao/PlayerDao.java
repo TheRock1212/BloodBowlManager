@@ -4,6 +4,7 @@ import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Team;
+import it.unipi.utility.PlayerPreview;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -431,5 +432,23 @@ public class PlayerDao {
         ps.close();
         rs.close();
         return result;
+    }
+
+    public static synchronized String getQty(int team, PlayerTemplate pt) throws SQLException {
+        String res = "";
+        PreparedStatement ps = App.getConnection().prepareStatement("SELECT COUNT(*) FROM player WHERE team = ? AND player_template = ? AND status = 1 and isjourney = 0");
+        ps.setInt(1, team);
+        ps.setInt(2, pt.getId());
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        res = rs.getString(1) + " / ";
+        ps = App.getConnection().prepareStatement("SELECT max_qty FROM player_template WHERE id = ?");
+        ps.setInt(1, pt.getId());
+        rs = ps.executeQuery();
+        rs.next();
+        res += rs.getString(1);
+        ps.close();
+        rs.close();
+        return res;
     }
 }

@@ -11,7 +11,11 @@ module it.unipi.bloodbowlmanager {
     requires java.sql;
     requires mysql.connector.j;
     requires java.desktop;
-    requires itextpdf;
+
+    requires kernel;
+    requires layout;
+    requires io;
+    requires styled.xml.parser;
 
     opens it.unipi.controller to javafx.fxml;
     opens it.unipi.bloodbowlmanager to javafx.fxml;

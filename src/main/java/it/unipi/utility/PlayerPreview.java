@@ -2,6 +2,7 @@ package it.unipi.utility;
 
 import it.unipi.dataset.Dao.RaceDao;
 import it.unipi.dataset.Model.Player;
+import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Race;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
@@ -13,6 +14,7 @@ public class PlayerPreview {
     private int id;
     private String newSkills;
     private int templateId;
+    private int team;
     private int newMA;
     private int newST;
     private int newAG;
@@ -87,6 +89,7 @@ public class PlayerPreview {
         this.primary = ti.primary;
         this.secondary = ti.secondary;
         this.journey = p.isJourney();
+        this.team = p.getTeam();
     }
 
     public PlayerPreview(PlayerPreview pp) {
@@ -122,6 +125,50 @@ public class PlayerPreview {
         this.primary = pp.getPrimary();
         this.secondary = pp.getSecondary();
         this.journey = pp.isJourney();
+        this.team = pp.getTeam();
+    }
+
+    public PlayerPreview(PlayerTemplate pt, Player p) throws SQLException {
+        this.id = p.getId();
+        this.templateId = p.getTemplate();
+        this.number = p.getNumber();
+        this.name = p.getName();
+        this.unspentSPP = p.getUnspentSPP();
+        this.SPP = p.getSpp();
+        this.newSkills = p.getSkill();
+        if(pt.getSkill().isEmpty())
+            this.skill = p.getSkill();
+        else
+            this.skill = pt.getSkill() + "," + p.getSkill();
+        this.MA = pt.getMa() + p.getMaInc() - p.getMaDec();
+        this.ST = pt.getSt() + p.getStInc() - p.getStDec();
+        this.AG = pt.getAg() - p.getAgInc() + p.getAgDec();
+        this.PA = pt.getPa() - p.getPaInc() + p.getPaDec();
+        this.AV = pt.getAv() + p.getAvInc() - p.getAvDec();
+        this.NIG = p.getNig();
+        this.MNG = p.isMng();
+        if(RaceDao.hasLowCostLineman(pt.getRace()) && pt.maxQty > 10)
+            this.val = p.getValue();
+        else
+            this.val = pt.getCost() + p.getValue();
+        this.TD = p.getTd();
+        this.CAS = p.getCas();
+        this.K = p.getKill();
+        this.CP = p.getCp();
+        this.D = p.getDef();
+        this.I = p.getInter();
+        this.lev = p.getLevel();
+        this.position = pt.getPosition();
+        this.newMA = p.getMaInc();
+        this.newST = p.getStInc();
+        this.newAG = p.getAgInc();
+        this.newPA = p.getPaInc();
+        this.newAV = p.getAvInc();
+        this.newVal = p.getValue();
+        this.primary = pt.primary;
+        this.secondary = pt.secondary;
+        this.journey = p.isJourney();
+        this.team = p.getTeam();
     }
 
     public int getId() {
@@ -394,5 +441,13 @@ public class PlayerPreview {
 
     public void setJourney(boolean journey) {
         this.journey = journey;
+    }
+
+    public int getTeam() {
+        return team;
+    }
+
+    public void setTeam(int team) {
+        this.team = team;
     }
 }
