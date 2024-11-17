@@ -1,11 +1,14 @@
 package it.unipi.utility;
 
 import it.unipi.dataset.Dao.PlayerDao;
+import it.unipi.dataset.Dao.RaceDao;
 import it.unipi.dataset.Model.Team;
+import javafx.scene.image.Image;
 
 import java.sql.SQLException;
 
 public class TeamStatistic {
+    private Image img;
     public String name;
     public String coach;
     public int tdFor;
@@ -28,6 +31,7 @@ public class TeamStatistic {
         this.cp = PlayerDao.getStatistic(t.getId(), "cp");
         this.inter = PlayerDao.getStatistic(t.getId(), "int");
         this.value = this.tdFor;
+        this.img = new Image(getClass().getResource("/it/unipi/bloodbowlmanager/race/" + RaceDao.getRace(t.getRace()).url + ".png").toExternalForm());
     }
 
     public String getName() {
@@ -137,5 +141,13 @@ public class TeamStatistic {
                 break;
             }
         }
+    }
+
+    public Image getImg() {
+        return img;
+    }
+
+    public void setImg(Image img) {
+        this.img = img;
     }
 }

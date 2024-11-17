@@ -731,7 +731,7 @@ public class ResultController {
             else App.getResult().gettH().value -= p.value;
         }
         else {
-            if(!RaceDao.hasLowCostLineman(App.getResult().gettH().getId()))
+            if(!RaceDao.hasLowCostLineman(App.getResult().gettA().getId()))
                 App.getResult().gettA().value -= (p.value + pt.cost);
             else App.getResult().gettA().value -= p.value;
         }
@@ -796,7 +796,7 @@ public class ResultController {
             case "AV-": {
                 if(p.getAvDec() < 4 && (pt.av + p.getAvInc() - p.getAvDec()) > 3) {
                     if((p.getMaDec() + p.getStDec() + p.getAgDec() + p.getPaDec() + p.getAvDec()) == 0) {
-                        p.value -= 5;
+                            p.value -= 5;
                         /*if(home)
                             App.getResult().gettH().value -= 5;
                         else

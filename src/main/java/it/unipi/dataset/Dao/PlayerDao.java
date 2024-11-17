@@ -3,6 +3,7 @@ package it.unipi.dataset.Dao;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.PlayerTemplate;
+import it.unipi.dataset.Model.Result;
 import it.unipi.dataset.Model.Team;
 import it.unipi.utility.PlayerPreview;
 

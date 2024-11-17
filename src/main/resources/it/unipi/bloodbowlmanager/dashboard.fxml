@@ -16,7 +16,14 @@
    <tabs>
       <Tab closable="false" text="Standings">
          <content>
-            <TableView fx:id="rankingTable" prefHeight="335.0" prefWidth="600.0" />
+            <TableView fx:id="rankingTable" prefHeight="335.0" prefWidth="600.0">
+               <contextMenu>
+                  <ContextMenu>
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Print PDF" onAction="#printStandings"/>
+                    </items>
+                  </ContextMenu>
+               </contextMenu></TableView>
          </content>
       </Tab>
       <Tab closable="false" text="Rosters">
@@ -67,6 +74,7 @@
                   <TableView fx:id="stats" layoutY="26.0" prefHeight="643.0" prefWidth="1001.0" />
                   <ComboBox fx:id="tipo" layoutX="846.0" layoutY="1.0" onAction="#changeSort" prefWidth="150.0" />
                   <Label layoutX="767.0" layoutY="5.0" text="Choose One:" />
+                  <Button mnemonicParsing="false" onAction="#printStatsPlayer" text="Print PDF" />
                </children>
             </AnchorPane>
          </content>
@@ -78,6 +86,7 @@
                   <TableView fx:id="statsTeam" layoutY="26.0" prefHeight="643.0" prefWidth="1001.0" />
                   <ComboBox fx:id="tipoTeam" layoutX="846.0" layoutY="1.0" onAction="#changeSortTeam" prefWidth="150.0" />
                   <Label layoutX="767.0" layoutY="5.0" text="Choose One:" />
+                  <Button layoutX="1.0" layoutY="-1.0" mnemonicParsing="false" onAction="#printStatsTeam" text="Print PDF" />
                </children>
             </AnchorPane>
          </content>

@@ -1,10 +1,7 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Dao.PlayerDao;
-import it.unipi.dataset.Dao.PlayerTemplateDao;
-import it.unipi.dataset.Dao.ResultDao;
-import it.unipi.dataset.Dao.TeamDao;
+import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Result;
@@ -18,14 +15,18 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -244,7 +245,7 @@ public class DashboardController {
         rl.addAll(teams);
         tl.addAll(teams);
 
-        Comparator<Team> comparator = Comparator.comparingInt(Team::getPoints);
+        Comparator<Team> comparator = Comparator.comparingDouble(Team::getDiscr);
         comparator = comparator.reversed();
         FXCollections.sort(rl, comparator);
 
@@ -365,8 +366,31 @@ public class DashboardController {
     }
 
     @FXML public void generatePDFs() throws IOException, SQLException {
-        for(Team t : tl) {
-            PDFManager.generatePDF(t);
+        /*FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save PDF File");
+        //fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF File", "*.pdf"));
+        File selectedFile = fileChooser.showSaveDialog(pdfs.getScene().getWindow());
+        if (selectedFile != null) {
+            String dest = selectedFile.getAbsolutePath();*/
+            for (Team t : tl) {
+                PDFManager.generatePDF(t);
+            }
+        //}
+    }
+
+    @FXML public void printStatsPlayer() throws IOException {
+        PDFManager.statsPlayer(pl);
+    }
+
+    @FXML public void printStatsTeam() throws IOException {
+        PDFManager.statsTeam(ts);
+    }
+
+    @FXML public void printStandings() throws IOException, SQLException {
+        List<Image> images = new ArrayList<>();
+        for(Team t : rl) {
+            images.add(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/race/" + RaceDao.getRace(t.getRace()).url + ".png").toExternalForm()));
         }
+        PDFManager.standings(rl, images);
     }
 }

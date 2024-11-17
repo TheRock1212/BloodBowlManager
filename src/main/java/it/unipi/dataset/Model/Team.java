@@ -36,6 +36,8 @@ public class Team {
     private int journeyman;
     public String sponsor;
     private boolean ready;
+    private int delta;
+    private double discr;
 
     public Team() {
 
@@ -100,6 +102,8 @@ public class Team {
         this.journeyman = journeyman;
         this.sponsor = sponsor;
         this.ready = true;
+        this.delta = this.tdScored * 3 + this.casInflicted * 2;
+        this.discr = this.points + ((double) this.delta / 10000) + ((double) this.tdNet / 100000) + ((double) this.casNet / 1000000);
     }
 
     public Team(ResultSet rs) throws SQLException {
@@ -131,6 +135,8 @@ public class Team {
         this.journeyman = rs.getInt("journeyman");
         this.sponsor = rs.getString("sponsor");
         this.ready = rs.getBoolean("ready");
+        this.delta = this.tdScored * 3 + this.casInflicted * 2;
+        this.discr = this.points + ((double) this.delta / 10000) + ((double) this.tdNet / 100000) + ((double) this.casNet / 1000000);
     }
 
     public int getId() {
@@ -355,5 +361,21 @@ public class Team {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+
+    public int getDelta() {
+        return delta;
+    }
+
+    public void setDelta(int delta) {
+        this.delta = delta;
+    }
+
+    public double getDiscr() {
+        return discr;
+    }
+
+    public void setDiscr(double discr) {
+        this.discr = discr;
     }
 }
