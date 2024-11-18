@@ -71,8 +71,18 @@ public class PDFManager {
         Style inc = new Style()
                 .setBold()
                 .setFontColor(ColorConstants.GREEN);
-        //Table ind = new Table(UnitValue.createPercentArray(new float[] {67, 33, 33}));
-        Table table = new Table(UnitValue.createPercentArray(new float[] {2.56f, 11.82f, 12.85f, 2.56f, 2.56f, 2.56f, 2.56f, 2.56f, 37.7f, 5.64f, 7.69f, 7.69f}));
+
+        List<Result> results =  ResultDao.getResults();
+        Team foe = null;
+        List<Team> teams = null;
+        for(Result r : results) {
+            if((r.teamH == t.getId() || r.teamA == t.getId()) && !r.isPlayed()) {
+                teams = TeamDao.getTeam(r.teamH == t.getId() ? r.teamA : r.teamH, App.getLeague().getId());
+                break;
+            }
+        }
+        foe = teams.getFirst();
+        Table table = new Table(UnitValue.createPercentArray(new float[] {2.56f, 11.82f, 12.85f, 3.06f, 2.56f, 2.56f, 2.56f, 3.06f, 37.7f, 6.64f, 7.69f, 5.69f}));
         table.setWidth(UnitValue.createPercentValue(100));
         table.setFixedLayout();
         //table.setMaxWidth(600);
@@ -83,6 +93,9 @@ public class PDFManager {
         ind.addHeaderCell(new Cell().add(new Paragraph("INDUCEMENTS"))).addStyle(h);
         ind.addHeaderCell(new Cell().add(new Paragraph("QTY"))).addStyle(h);
         ind.addHeaderCell(new Cell().add(new Paragraph("COST"))).addStyle(h);*/
+
+
+
         for(String header : headerRoster) {
             table.addHeaderCell(new Cell().add(new Paragraph(header)).addStyle(h));
         }
@@ -278,17 +291,8 @@ public class PDFManager {
                 case 10: {
                     Cell teamH = new Cell(1, 2).add(new Paragraph("PETTY CASH")).addStyle(h);
                     table.addCell(teamH);
-                    List<Result> res =  ResultDao.getResults();
-                    Team foe = null;
-                    List<Team> teams = null;
-                    for(Result r : res) {
-                        if((r.teamH == t.getId() || r.teamA == t.getId()) && !r.isPlayed()) {
-                            teams = TeamDao.getTeam(r.teamH == t.getId() ? r.teamA : r.teamH, App.getLeague().getId());
-                            break;
-                        }
-                    }
-                    foe = teams.getFirst();
-                    Cell team = new Cell(1, 3).add(new Paragraph(Integer.toString(foe.value - t.value))).addStyle(b);
+
+                    Cell team = new Cell(1, 3).add(new Paragraph(String.valueOf((foe.value - t.value) < 0 ? 0 : Integer.toString(foe.value - t.value)))).addStyle(b);
                     table.addCell(team);
                     break;
                 }
@@ -337,11 +341,43 @@ public class PDFManager {
         String nrs = Arrays.toString(nr);
         Cell numbers = new Cell(1, 7).add(new Paragraph(nrs)).addStyle(b).setBold();
         table.addCell(numbers);
-        //Table ind = new Table(3);
+
+        document.add(table.setFixedLayout());
+
+        if((foe.value - t.value) > 15) {
+
+            document.add(new AreaBreak(PageSize.A4));
+
+            //document.setPageSize(PageSize.A4);
+
+            Table ind = new Table(new float[]{70f, 15f, 15f});
+            ind.setWidth(UnitValue.createPercentValue(100));
+            ind.addCell(new Cell().add(new Paragraph("INDUCEMENTS")).addStyle(h));
+            ind.addCell(new Cell().add(new Paragraph("COST")).addStyle(h));
+            ind.addCell(new Cell().add(new Paragraph("QTY")).addStyle(h));
+
+            List<Inducements> inducements = InducementsDao.getInducements(t, foe.value - t.value);
+            for(Inducements i : inducements) {
+                ind.addCell(new Cell().add(new Paragraph(i.name)).addStyle(b));
+                ind.addCell(new Cell().add(new Paragraph(i.cost + ".000")).addStyle(b));
+                ind.addCell(new Cell().add(new Paragraph(Integer.toString(i.qty))).addStyle(b));
+            }
+
+            ind.addCell(new Cell(1, 2).add(new Paragraph("STAR PLAYER")).addStyle(h));
+            ind.addCell(new Cell().add(new Paragraph("COST")).addStyle(h));
+
+            List<StarPlayer> stars = StarPlayerDao.getStar(t.getRace(), foe.value - t.value);
+
+            for(StarPlayer s : stars) {
+                ind.addCell(new Cell(1,2 ).add(new Paragraph(s.name)).addStyle(b));
+                ind.addCell(new Cell().add(new Paragraph(s.cost + ".000")).addStyle(b));
+            }
+
+            document.add(ind.setFixedLayout());
+        }
 
 
-        document.add(table.setMarginRight(0));
-        //document.add(ind.setFixedPosition(1, 100, 400, 10));
+
 
         document.close();
     }
