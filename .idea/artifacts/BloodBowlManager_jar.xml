@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="BloodBowlManager:jar">
+  <artifact type="jar" name="BloodBowlManager:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/BloodBowlManager_jar</output-path>
     <root id="archive" name="BloodBowlManager.jar">
       <element id="module-output" name="BloodBowlManager" />
@@ -25,21 +25,6 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/eu/hansolo/tilesfx/21.0.3/tilesfx-21.0.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/kordamp/bootstrapfx/bootstrapfx-core/0.4.0/bootstrapfx-core-0.4.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/21.0.2/javafx-base-21.0.2-mac-aarch64.jar" path-in-jar="/" />
-      <element id="library" level="project" name="Maven: com.itextpdf:kernel:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:barcodes:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:bouncy-castle-adapter:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:bouncy-castle-connector:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:commons:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:font-asian:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:forms:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:hyph:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:io:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:layout:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:pdfa:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:pdfua:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:sign:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:styled-xml-parser:8.0.5" />
-      <element id="library" level="project" name="Maven: com.itextpdf:svg:8.0.5" />
     </root>
   </artifact>
 </component>
