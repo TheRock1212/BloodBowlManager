@@ -37,7 +37,8 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-swing/21/javafx-swing-21.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/bouncycastle/bcutil-jdk18on/1.75/bcutil-jdk18on-1.75.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/eu/hansolo/tilesfx/21.0.3/tilesfx-21.0.3.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/21.0.2/javafx-graphics-21.0.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/kordamp/bootstrapfx/bootstrapfx-core/0.4.0/bootstrapfx-core-0.4.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/21.0.2/javafx-base-21.0.2-mac-aarch64.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
