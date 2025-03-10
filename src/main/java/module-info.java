@@ -15,7 +15,7 @@ module it.unipi.bloodbowlmanager {
     requires kernel;
     requires layout;
     requires io;
-    requires styled.xml.parser;
+    //requires styled.xml.parser;
 
     opens it.unipi.controller to javafx.fxml;
     opens it.unipi.bloodbowlmanager to javafx.fxml;

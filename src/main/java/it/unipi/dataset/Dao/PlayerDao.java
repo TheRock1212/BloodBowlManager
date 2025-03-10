@@ -452,4 +452,32 @@ public class PlayerDao {
         rs.close();
         return res;
     }
+
+    public static boolean hasMNG(int team) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM player WHERE status = 1 AND isJourney = 0 AND MNG = 1 AND team = ?";
+        boolean res = false;
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        ps.setInt(1, team);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            res = rs.getInt(1) > 0;
+        }
+        ps.close();
+        rs.close();
+        return res;
+    }
+
+    public static List<Player> getMNG(int team) throws SQLException {
+        List<Player> players = new ArrayList<>();
+        String sql = "SELECT * FROM player WHERE status = 1 AND MNG = 1 AND isJourney = 0 AND team = ?";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        ps.setInt(1, team);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            players.add(new Player(rs));
+        }
+        rs.close();
+        ps.close();
+        return players;
+    }
 }

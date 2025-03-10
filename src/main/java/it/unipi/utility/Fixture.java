@@ -8,6 +8,7 @@ import it.unipi.dataset.Model.Result;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class Fixture {
     private ArrayList<Integer> teams;
@@ -39,14 +40,16 @@ public class Fixture {
                 teams.add(0);
             Collections.shuffle(teams);
             giornata = new Pair[App.getLeague().getNTeams() / 2];
+            List<Pair[]> giornate = new ArrayList<>();
             for(int i = 0; i < n; i++) {
                for(int home = 0, away = teams.size() - 1; home < teams.size() / 2; home++, away--) {
                    giornata[home] = new Pair(teams.get(home), teams.get(away));
                    System.out.println(giornata[home].toString());
                }
                changePairings();
-               ResultDao.addResult(giornata);
+               giornate.add(giornata);
             }
+            ResultDao.addResult(giornate);
         }
     }
 

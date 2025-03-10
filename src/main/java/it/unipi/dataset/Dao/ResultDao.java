@@ -15,16 +15,18 @@ public class ResultDao {
 
     /**
      * Aggiunge i risultati contenuti in pairs
-     * @param pairs Contiene tutti gli accoppiamenti
+     * @param giornate Contiene il calendario
      * @throws SQLException
      */
-    public static synchronized void addResult(Pair[] pairs) throws SQLException {
+    public static synchronized void addResult(List<Pair[]> giornate) throws SQLException {
         PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO results(league, teamH, teamA) VALUES(?, ?, ?)");
-        for(Pair pair : pairs) {
-            ps.setInt(1, App.getLeague().getId());
-            ps.setInt(2, pair.home);
-            ps.setInt(3, pair.away);
-            ps.addBatch();
+        for(Pair[] giornata : giornate) {
+            for (Pair pair : giornata) {
+                ps.setInt(1, App.getLeague().getId());
+                ps.setInt(2, pair.home);
+                ps.setInt(3, pair.away);
+                ps.addBatch();
+            }
         }
         ps.executeBatch();
         ps.close();
