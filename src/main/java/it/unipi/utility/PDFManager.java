@@ -15,6 +15,7 @@ import com.itextpdf.layout.Style;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.properties.AreaBreakType;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
@@ -147,7 +148,7 @@ public class PDFManager {
                         else if(player.AG < temp.ag)
                             table.addCell(new Paragraph(player.AG + "+").addStyle(inc)).addStyle(b);
                         else
-                            table.addCell(Integer.toString(player.AG)).addStyle(b);
+                            table.addCell(player.AG + "+").addStyle(b);
                         break;
                     case 6:
                         String plc = player.PA == 7 ? "-" : player.PA + "+";
@@ -330,17 +331,115 @@ public class PDFManager {
             res += ", " + r.special2;
         if(!r.special3.isEmpty())
             res += ", " + r.special3;
-        Cell rules = new Cell(1, 7).add(new Paragraph(res)).addStyle(b);
+        Cell rules = new Cell(1, 5).add(new Paragraph(res)).addStyle(b);
         table.addCell(rules);
 
-        Cell numbersH = new Cell(1, 5).add(new Paragraph("NUMBERS TAKEN")).addStyle(h);
-        table.addCell(numbersH);
+        Cell rerollH = new Cell(1, 1).add(new Paragraph("COST REROLL")).addStyle(h);
+        table.addCell(rerollH);
 
-        int[] nr = PlayerDao.getPlayerNumbers(t);
-        Arrays.sort(nr);
-        String nrs = Arrays.toString(nr);
-        Cell numbers = new Cell(1, 7).add(new Paragraph(nrs)).addStyle(b).setBold();
-        table.addCell(numbers);
+        Cell reroll = new Cell(1, 1).add(new Paragraph(r.reroll * 2 + ".000")).addStyle(b);
+        table.addCell(reroll);
+
+
+        if(PlayerDao.hasMNG(t.getId())) {
+            Cell numbersH = new Cell(1, 12).add(new Paragraph("MISSING PLAYERS")).addStyle(h);
+            table.addCell(numbersH);
+
+
+            //Generazione Corpo tabella
+            List<Player> pm = PlayerDao.getMNG(t.getId());
+            List<PlayerPreview> ppm = new ArrayList<>();
+            for (Player pla : pm) {
+                for (PlayerTemplate temp : pt) {
+                    if (pla.getTemplate() == temp.getId()) {
+                        ppm.add(new PlayerPreview(temp, pla));
+                    }
+                }
+            }
+            ppm.sort(comp);
+
+            for(PlayerPreview player : ppm) {
+                PlayerTemplate temp = PlayerTemplateDao.getPlayer(player.getTemplateId());
+                for (int i = 0; i < nrColumn; i++) {
+                    switch (i) {
+                        case 0:
+                            table.addCell(Integer.toString(player.number)).addStyle(b);
+                            break;
+                        case 1:
+                            table.addCell(player.name).addStyle(b);
+                            break;
+                        case 2:
+                            table.addCell(player.position).addStyle(b);
+                            break;
+                        case 3:
+                            if (player.MA < temp.ma)
+                                table.addCell(new Paragraph(Integer.toString(player.MA)).addStyle(inf)).addStyle(b);
+                            else if (player.MA > temp.ma)
+                                table.addCell(new Paragraph(Integer.toString(player.MA)).addStyle(inc)).addStyle(b);
+                            else
+                                table.addCell(Integer.toString(player.MA)).addStyle(b);
+                            break;
+                        case 4:
+                            if (player.ST < temp.st)
+                                table.addCell(new Paragraph(Integer.toString(player.ST)).addStyle(inf)).addStyle(b);
+                            else if (player.ST > temp.st)
+                                table.addCell(new Paragraph(Integer.toString(player.ST)).addStyle(inc)).addStyle(b);
+                            else
+                                table.addCell(Integer.toString(player.ST)).addStyle(b);
+                            break;
+                        case 5:
+                            if (player.AG > temp.ag)
+                                table.addCell(new Paragraph(player.AG + "+").addStyle(inf)).addStyle(b);
+                            else if (player.AG < temp.ag)
+                                table.addCell(new Paragraph(player.AG + "+").addStyle(inc)).addStyle(b);
+                            else
+                                table.addCell(player.AG + "+").addStyle(b);
+                            break;
+                        case 6:
+                            String plc = player.PA == 7 ? "-" : player.PA + "+";
+                            if (player.PA > temp.pa)
+                                table.addCell(new Paragraph(plc).addStyle(inf)).addStyle(b);
+                            else if (player.PA < temp.pa)
+                                table.addCell(new Paragraph(plc).addStyle(inc)).addStyle(b);
+                            else
+                                table.addCell(plc).addStyle(b);
+                            break;
+                        case 7:
+                            if (player.AV > temp.av)
+                                table.addCell(new Paragraph(player.AV + "+").addStyle(inc)).addStyle(b);
+                            else if (player.AV < temp.av)
+                                table.addCell(new Paragraph(player.AV + "+").addStyle(inf)).addStyle(b);
+                            else
+                                table.addCell(player.AV + "+").addStyle(b);
+                            break;
+                        case 8:
+                            Paragraph par = new Paragraph();
+                            String resm = player.skill.replace(player.getNewSkills(), "");
+                            par.add(resm).addStyle(b);
+                            if (!player.getNewSkills().isEmpty()) {
+                                par.add(new Text(player.getNewSkills()).setBold()).addStyle(b);
+                            }
+
+                            String nig = "";
+                            if (player.getNIG() > 0)
+                                nig = " - " + player.getNIG() + " NI";
+                            par.add(nig);
+                            table.addCell(par).addStyle(b);
+                            break;
+                        case 9:
+                            table.addCell(Integer.toString(player.SPP)).addStyle(b);
+                            break;
+                        case 10:
+                            table.addCell(Integer.toString(player.unspentSPP)).addStyle(b);
+                            break;
+                        case 11:
+                            table.addCell(player.val + ".000").addStyle(b);
+                            break;
+                    }
+                }
+            }
+
+        }
 
         document.add(table.setFixedLayout());
 
@@ -350,27 +449,127 @@ public class PDFManager {
 
             //document.setPageSize(PageSize.A4);
 
-            Table ind = new Table(new float[]{70f, 15f, 15f});
+            Table ind = new Table(new float[]{20f, 2.56f, 3.56f, 2.56f, 2.56f, 2.56f, 3.56f, 57f, 6f});
             ind.setWidth(UnitValue.createPercentValue(100));
-            ind.addCell(new Cell().add(new Paragraph("INDUCEMENTS")).addStyle(h));
+            ind.addCell(new Cell(1, 7).add(new Paragraph("INDUCEMENTS")).addStyle(h));
             ind.addCell(new Cell().add(new Paragraph("COST")).addStyle(h));
             ind.addCell(new Cell().add(new Paragraph("QTY")).addStyle(h));
 
             List<Inducements> inducements = InducementsDao.getInducements(t, foe.value - t.value);
             for(Inducements i : inducements) {
-                ind.addCell(new Cell().add(new Paragraph(i.name)).addStyle(b));
+                ind.addCell(new Cell(1, 7).add(new Paragraph(i.name)).addStyle(b));
                 ind.addCell(new Cell().add(new Paragraph(i.cost + ".000")).addStyle(b));
                 ind.addCell(new Cell().add(new Paragraph(Integer.toString(i.qty))).addStyle(b));
             }
 
-            ind.addCell(new Cell(1, 2).add(new Paragraph("STAR PLAYER")).addStyle(h));
-            ind.addCell(new Cell().add(new Paragraph("COST")).addStyle(h));
-
             List<StarPlayer> stars = StarPlayerDao.getStar(t.getRace(), foe.value - t.value);
 
-            for(StarPlayer s : stars) {
-                ind.addCell(new Cell(1,2 ).add(new Paragraph(s.name)).addStyle(b));
-                ind.addCell(new Cell().add(new Paragraph(s.cost + ".000")).addStyle(b));
+            if(!stars.isEmpty()) {
+                ind.addCell(new Cell(1, 2).add(new Paragraph("STAR PLAYER")).addStyle(h));
+                ind.addCell(new Cell(1, 1).add(new Paragraph("MA")).addStyle(h));
+                ind.addCell(new Cell(1, 1).add(new Paragraph("ST")).addStyle(h));
+                ind.addCell(new Cell(1, 1).add(new Paragraph("AG")).addStyle(h));
+                ind.addCell(new Cell(1, 1).add(new Paragraph("PA")).addStyle(h));
+                ind.addCell(new Cell(1, 1).add(new Paragraph("AV")).addStyle(h));
+                ind.addCell(new Cell(1, 1).add(new Paragraph("SKILL")).addStyle(h));
+                ind.addCell(new Cell().add(new Paragraph("COST")).addStyle(h));
+
+                //Controllo se ci sono star player ingaggiabili a coppia
+                HashMap<String, StarPlayer> map = new HashMap<>();
+                for(StarPlayer sp : stars) {
+                    if("Crumbleberry".equals(sp.name)) {
+                        map.put(sp.name, sp);
+                    } else if("Grak".equals(sp.name)) {
+                        map.put(sp.name, sp);
+                    } else if("Dribl".equals(sp.name)) {
+                        map.put(sp.name, sp);
+                    } else if("Drull".equals(sp.name)) {
+                        map.put(sp.name, sp);
+                    } else if("Lucien Swift".equals(sp.name)) {
+                        map.put(sp.name, sp);
+                    } else if("Valen Swift".equals(sp.name)) {
+                        map.put(sp.name, sp);
+                    }
+                }
+
+                //Tolgo i singoli star dalla lista
+                if(!map.isEmpty()) {
+                    for(StarPlayer sp : map.values()) {
+                        stars.remove(sp);
+                    }
+                }
+
+
+                for (StarPlayer s : stars) {
+                    ind.addCell(new Cell(1, 2).add(new Paragraph(s.name)).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.ma))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.st))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.ag + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.pa == 7 ? "-" : s.pa + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.av + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.skill)).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.cost + ".000")).addStyle(b));
+                }
+
+                if(map.containsKey("Grak")) {
+                    StarPlayer s = map.get("Grak");
+                    ind.addCell(new Cell(1, 2).add(new Paragraph(s.name)).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.ma))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.st))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.ag + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.pa == 7 ? "-" : s.pa + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.av + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.skill)).addStyle(b));
+                    ind.addCell(new Cell(2, 1).add(new Paragraph(s.cost + ".000")).addStyle(b).setVerticalAlignment(VerticalAlignment.MIDDLE));
+                    s = map.get("Crumbleberry");
+                    ind.addCell(new Cell(1, 2).add(new Paragraph(s.name)).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.ma))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.st))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.ag + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.pa == 7 ? "-" : s.pa + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.av + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.skill)).addStyle(b));
+                }
+
+                if(map.containsKey("Dribl")) {
+                    StarPlayer s = map.get("Dribl");
+                    ind.addCell(new Cell(1, 2).add(new Paragraph(s.name)).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.ma))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.st))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.ag + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.pa == 7 ? "-" : s.pa + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.av + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.skill)).addStyle(b));
+                    ind.addCell(new Cell(2, 1).add(new Paragraph(s.cost + ".000")).addStyle(b).setVerticalAlignment(VerticalAlignment.MIDDLE));
+                    s = map.get("Drull");
+                    ind.addCell(new Cell(1, 2).add(new Paragraph(s.name)).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.ma))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.st))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.ag + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.pa == 7 ? "-" : s.pa + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.av + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.skill)).addStyle(b));
+                }
+
+                if(map.containsKey("Lucien Swift")) {
+                    StarPlayer s = map.get("Lucien Swift");
+                    ind.addCell(new Cell(1, 2).add(new Paragraph(s.name)).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.ma))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.st))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.ag + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.pa == 7 ? "-" : s.pa + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.av + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.skill)).addStyle(b));
+                    ind.addCell(new Cell(2, 1).add(new Paragraph(s.cost + ".000")).addStyle(b).setVerticalAlignment(VerticalAlignment.MIDDLE));
+                    s = map.get("Valen Swift");
+                    ind.addCell(new Cell(1, 2).add(new Paragraph(s.name)).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.ma))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(Integer.toString(s.st))).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.ag + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.pa == 7 ? "-" : s.pa + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.av + "+")).addStyle(b));
+                    ind.addCell(new Cell().add(new Paragraph(s.skill)).addStyle(b));
+                }
             }
 
             document.add(ind.setFixedLayout());

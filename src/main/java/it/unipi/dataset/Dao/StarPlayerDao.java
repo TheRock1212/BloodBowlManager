@@ -94,67 +94,47 @@ public class StarPlayerDao {
         ResultSet rs = ps.executeQuery();
         rs.next();
         Race r = new Race(rs);
-        ps = App.getConnection().prepareStatement("SELECT * FROM star_player WHERE rules = 'ANY' AND cost <= ?");
-        ps.setInt(1, petty);
-        rs = ps.executeQuery();
-        while (rs.next()) {
-            model.add(new StarPlayer(rs));
-        }
-        ps = App.getConnection().prepareStatement("SELECT * FROM star_player WHERE rules like ? AND cost <= ?");
-        ps.setString(1, "%" + r.special1 + "%");
-        ps.setInt(2, petty);
-        rs = ps.executeQuery();
-        while (rs.next()) {
-            model.add(new StarPlayer(rs));
-        }
+        String sql = " SELECT * FROM star_player WHERE cost <= ? AND ( rules LIKE '%Any%' ";
+
+        sql += " OR rules LIKE ? ";
         if(r.special1.contains("Favoured of") && !r.special1.equals("Favoured of...")) {
-            ps = App.getConnection().prepareStatement("SELECT * FROM star_player WHERE rules LIKE ? AND cost <= ?");
-            ps.setString(1, "%Favoured of...%");
-            ps.setInt(2, petty);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                model.add(new StarPlayer(rs));
-            }
+            sql += " OR rules LIKE '%Favoured of...%' ";
         }
         if(!r.special2.isEmpty()) {
-            ps = App.getConnection().prepareStatement("SELECT * FROM star_player WHERE rules like ? AND cost <= ?");
-            ps.setString(1, "%" + r.special2 + "%");
-            ps.setInt(2, petty);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                model.add(new StarPlayer(rs));
-            }
+            sql += " OR rules LIKE ?";
             if(r.special2.contains("Favoured of") && !r.special2.equals("Favoured of...")) {
-                ps = App.getConnection().prepareStatement("SELECT * FROM star_player WHERE rules LIKE ? AND cost <= ?");
-                ps.setString(1, "%Favoured of...%");
-                ps.setInt(2, petty);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    model.add(new StarPlayer(rs));
-                }
+                sql += " OR rules LIKE '%Favoured of...%' ";
             }
         }
         if(!r.special3.isEmpty()) {
-            ps = App.getConnection().prepareStatement("SELECT * FROM star_player WHERE rules like ? AND cost <= ?");
-            ps.setString(1, "%" + r.special3 + "%");
-            ps.setInt(2, petty);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                model.add(new StarPlayer(rs));
-            }
+            sql += " OR rules LIKE ?";
             if(r.special3.contains("Favoured of") && !r.special3.equals("Favoured of...")) {
-                ps = App.getConnection().prepareStatement("SELECT * FROM star_player WHERE rules LIKE ? AND cost <= ?");
-                ps.setString(1, "%Favoured of...%");
-                ps.setInt(2, petty);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    model.add(new StarPlayer(rs));
-                }
+                sql += " OR rules LIKE '%Favoured of...%' ";
             }
         }
+        sql += " ) ";
+        ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, petty);
+        ps.setString(++i, "%" + r.special1 + "%");
+        if(!r.special2.isEmpty()) {
+            ps.setString(++i, "%" + r.special2 + "%");
+        }
+        if(!r.special3.isEmpty()) {
+            ps.setString(++i, "%" + r.special3 + "%");
+        }
+
+        rs = ps.executeQuery();
+        while (rs.next()) {
+            model.add(new StarPlayer(rs));
+        }
+
+        ps.close();
+        rs.close();
+
         int index = -1;
         if((r.special1 + " " + r.special2 + " " + r.special3).contains("Sylvanian Spotlight")) {
-            for(int i = 0; i < model.size(); i++) {
+            for(i = 0; i < model.size(); i++) {
                 if(model.get(i).getName().contains("Morg'n'Thorg")) {
                     index = i;
                 }

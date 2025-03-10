@@ -314,7 +314,7 @@ public class PlayerController {
                     error.setVisible(true);
                 }
                 else {
-                    if(s.equals("Block") && !App.getPlayer().skill.contains("Blocks"))
+                    if(s.equals("Block") && !App.getPlayer().skill.contains("Blocks") && !App.getPlayer().skill.contains("Blocker") )
                         error.setVisible(true);
                     else if(s.equals("Catch") && !App.getPlayer().skill.contains("Diving Catch"))
                         error.setVisible(true);

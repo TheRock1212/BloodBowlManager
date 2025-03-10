@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.2</junit.version>
-        <itext.version>8.0.5</itext.version>
+        <itext.version>7.2.6</itext.version>
     </properties>
 
     <dependencies>
@@ -86,16 +86,26 @@
             <scope>test</scope>
         </dependency>
 
+
         <dependency>
             <groupId>com.itextpdf</groupId>
-            <artifactId>itext-core</artifactId>
+            <artifactId>layout</artifactId>
             <version>${itext.version}</version>
-            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>com.itextpdf</groupId>
-            <artifactId>bouncy-castle-adapter</artifactId>
+            <artifactId>kernel</artifactId>
             <version>${itext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>io</artifactId>
+            <version>${itext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.18</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -135,13 +145,20 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>it.unipi.bloodbowlmanager/it.unipi.bloodbowlmanager.App</mainClass>
+                            <mainClass>it.unipi.bloodbowlmanager.A</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
+                            <modulePaths>
+                                <modulePath>${java.home}/lib</modulePath>
+                            </modulePaths>
+                            <options>
+                                <option>--add-modules</option>
+                                <option>javafx.controls,javafx.fxml</option>
+                            </options>
                         </configuration>
                     </execution>
                 </executions>
