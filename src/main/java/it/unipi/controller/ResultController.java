@@ -52,7 +52,7 @@ public class ResultController {
     private Scene scene;
 
     private static Scene overview;
-    private static boolean raisedH, raisedA;
+    private static boolean raisedH = true, raisedA = true;
 
     public void initialize() {
         switch (stato) {
@@ -822,13 +822,14 @@ public class ResultController {
                     App.getResult().getKilledH().add(p.getId());
                     App.getResult().gettH().ngiocatori--;
                     if(RaceDao.hasRaisedRule(App.getResult().gettA().getRace()) && raisedA) {
-                        raisedA = false;
                         PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
                         String skills = template.skill + p.skill;
                         if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && PlayerDao.countPlayers(App.getResult().gettA().getId(), false) < 16) {
+                            raisedA = false;
                             PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettA().getJourneyman(), App.getResult().gettA().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false));
                             PlayerTemplate newPlayer = PlayerTemplateDao.getPlayer(App.getResult().gettA().getJourneyman());
                             App.getResult().gettA().value += newPlayer.cost;
+                            App.getResult().gettA().ngiocatori++;
                         }
                     }
                     //App.getResult().gettH().value -= (template.cost + p.value);
@@ -837,13 +838,14 @@ public class ResultController {
                     App.getResult().getKilledA().add(p.getId());
                     App.getResult().gettA().ngiocatori--;
                     if(RaceDao.hasRaisedRule(App.getResult().gettH().getRace()) && raisedH) {
-                        raisedH = false;
                         PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
                         String skills = template.skill + p.skill;
                         if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && PlayerDao.countPlayers(App.getResult().gettH().getId(), false) < 16) {
+                            raisedH = false;
                             PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettH().getJourneyman(), App.getResult().gettH().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false));
                             PlayerTemplate newPlayer = PlayerTemplateDao.getPlayer(App.getResult().gettH().getJourneyman());
                             App.getResult().gettH().value += newPlayer.cost;
+                            App.getResult().gettH().ngiocatori++;
                         }
                     }
                 }
@@ -866,6 +868,7 @@ public class ResultController {
         TeamDao.updateResult(App.getResult().gettA());
         Stage stage = (Stage) homeTeam.getScene().getWindow();
         stage.close();
+        raisedA = raisedH = true;
         App.setRoot("dashboard");
     }
 

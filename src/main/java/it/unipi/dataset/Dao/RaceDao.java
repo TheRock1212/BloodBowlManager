@@ -92,6 +92,6 @@ public class RaceDao {
         }
         ps.close();
         rs.close();
-        return spe.contains("Masters of Undead") || spe.contains("Vampire Lord");
+        return spe.contains("Masters of Undeath") || spe.contains("Vampire Lord");
     }
 }
