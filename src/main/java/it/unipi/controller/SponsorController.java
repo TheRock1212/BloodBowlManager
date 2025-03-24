@@ -1,19 +1,24 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
+import it.unipi.dataset.Dao.PlayerDao;
+import it.unipi.dataset.Model.Player;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 public class SponsorController {
 
-    @FXML private Label labelCont, labelMag;
+    @FXML private Label labelCont, labelMag, playerLabel;
     @FXML private RadioButton continuativo, major;
     @FXML private ToggleGroup choose;
     @FXML private Spinner<Integer> nCont;
     @FXML private ComboBox<String> mag;
+    @FXML private ComboBox<Integer> player;
 
 
     @FXML public void initialize() {
@@ -27,6 +32,8 @@ public class SponsorController {
         mag.getItems().add("Steelhelm' Sporting");
         mag.getItems().add("McMurty Burger");
         mag.setVisible(false);
+        playerLabel.setVisible(false);
+        player.setVisible(false);
     }
 
     @FXML public void set() {
@@ -42,17 +49,35 @@ public class SponsorController {
             mag.setVisible(true);
             labelMag.setVisible(true);
         }
+        playerLabel.setVisible(false);
+        player.setVisible(false);
     }
 
-    @FXML public void save() throws IOException {
+    @FXML public void save() throws IOException, SQLException {
         if(continuativo.isSelected()) {
             App.getTeam().sponsor = nCont.getValue() + " Ongoings";
         }
         else {
             App.getTeam().sponsor = mag.getValue();
+            if("Farblast & Sons".equals(mag.getValue())) {
+                Player p = PlayerDao.getPlayerByNumber(App.getTeam().getId(), player.getValue());
+                p.skill += "Bombardier,Loner(4+),Secret Weapon,";
+                PlayerDao.updatePlayer(p, true);
+            }
         }
         Stage stage = (Stage) labelCont.getScene().getWindow();
         stage.close();
         App.setRoot("team/team_management");
+    }
+
+    @FXML public void checkMag() throws IOException, SQLException {
+        if("Farblast & Sons".equals(mag.getValue())) {
+            List<Player> lineman = PlayerDao.getLinemans(App.getTeam().getId());
+            for(Player p : lineman) {
+                player.getItems().add(p.number);
+            }
+            player.setVisible(true);
+            playerLabel.setVisible(true);
+        }
     }
 }

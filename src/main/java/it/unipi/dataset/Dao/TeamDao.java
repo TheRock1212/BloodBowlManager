@@ -225,4 +225,17 @@ public class TeamDao {
         ps.close();
         return result;
     }
+
+    public static boolean isLineman(int team, int template) throws SQLException {
+        String sql = "SELECT 1 FROM team WHERE id = ? AND journeyman = ?";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, team);
+        ps.setInt(++i, template);
+        ResultSet rs = ps.executeQuery();
+        boolean result = rs.next();
+        rs.close();
+        ps.close();
+        return result;
+    }
 }

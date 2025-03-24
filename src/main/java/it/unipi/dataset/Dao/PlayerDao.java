@@ -480,4 +480,36 @@ public class PlayerDao {
         ps.close();
         return players;
     }
+
+    public static List<Player> getLinemans(int team) throws SQLException {
+        List<Player> players = new ArrayList<>();
+        String sql = "SELECT * FROM player p INNER JOIN team t ON p.team = t.id WHERE status = 1 AND team = ? AND p.player_template = t.journeyman ORDER BY p.number";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, team);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            players.add(new Player(rs));
+        }
+        rs.close();
+        ps.close();
+        return players;
+    }
+
+    public static Player getPlayerByNumber(int team, int number) throws SQLException {
+        String sql = "SELECT * FROM player WHERE team = ? AND number = ? AND status = 1";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, team);
+        ps.setInt(++i, number);
+        ResultSet rs = ps.executeQuery();
+        Player p = null;
+        while(rs.next()) {
+            p = new Player(rs);
+            break;
+        }
+        rs.close();
+        ps.close();
+        return p;
+    }
 }

@@ -1,10 +1,7 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Dao.PlayerDao;
-import it.unipi.dataset.Dao.PlayerTemplateDao;
-import it.unipi.dataset.Dao.RaceDao;
-import it.unipi.dataset.Dao.TeamDao;
+import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Race;
@@ -293,7 +290,7 @@ public class ManagementController {
 
     @FXML public void changeSponsor() throws IOException{
         Stage stage = new Stage();
-        Scene scene = new Scene(App.load("team/sponsor"), 200, 250);
+        Scene scene = new Scene(App.load("team/sponsor"), 200, 320);
         stage.setScene(scene);
         stage.setTitle("Sponsor");
         stage.setResizable(false);
@@ -303,6 +300,15 @@ public class ManagementController {
     @FXML public void setReady() throws SQLException, IOException {
         //List<Player> listPlayers = PlayerDao.getStarting(App.getTeam().getId());
         App.getTeam().setReady(true);
+        if(ResultDao.isLastOfRegular(App.getLeague().getId(), App.getTeam().getId())) {
+            List<Player> players = PlayerDao.getMNG(App.getTeam().getId());
+            for(Player p : players) {
+                PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
+                p.setMng(false);
+                App.getTeam().value += (p.value + template.cost);
+            }
+            PlayerDao.updateResults(players);
+        }
         Player[] jrm = PlayerDao.getJourneymans(App.getTeam());
         PlayerTemplate pt = PlayerTemplateDao.getJourneyman(App.getTeam().getJourneyman());
         if(jrm != null) {
@@ -328,6 +334,7 @@ public class ManagementController {
         if(checkPurchase()) {
             TeamDao.updateTeam(App.getTeam(), false);
         }
+
         App.setRoot("team/team_management");
     }
 

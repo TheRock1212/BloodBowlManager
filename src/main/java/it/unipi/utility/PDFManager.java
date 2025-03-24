@@ -35,8 +35,8 @@ import java.util.List;
 public class PDFManager {
     private static final String[] headerRoster = {"#", "PLAYER NAME", "TYPE", "MA", "ST", "AG", "PA", "AV", "SKILLS", "TotalSPP", "UnspentSPP", "COST"};
     private static final int nrColumn = 12;
-    private static final String TAHOMA = "src/main/resources/fonts/Tahoma.ttf";
-    private static final String TAHOMA_BOLD = "src/main/resources/fonts/Tahoma Bold.ttf";
+    private static final String TAHOMA = PDFManager.class.getResource("/fonts/Tahoma.ttf").toExternalForm(); //"src/main/resources/it/unipi/bloodbowlmanager/fonts/Tahoma.ttf";
+    private static final String TAHOMA_BOLD = PDFManager.class.getResource("/fonts/Tahoma Bold.ttf").toExternalForm();
 
     public static final String[] catStatPlayer = {"Best Players", "Best Scorers", "Most Vicious", "Best Killers", "Best Passers", "Best Interceptors"};
     public static final String[] catStatTeam = {"Best Offence", "Best Defence", "Most Roughtest", "Most Toughtest", "Best Killers", "Most Passes", "Most Interceptions"};

@@ -3,6 +3,7 @@ package it.unipi.controller;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.PlayerDao;
 import it.unipi.dataset.Dao.SkillDao;
+import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.Skill;
 import javafx.event.EventHandler;
@@ -262,9 +263,18 @@ public class PlayerController {
         Skill s = new Skill();
         String[] skills;
         if(pri) {
-            String[] primary = new String[App.getPlayer().getPrimary().length()];
-            for(; i < App.getPlayer().getPrimary().length(); i++)
-                primary[i] = Character.toString(App.getPlayer().getPrimary().charAt(i));
+            String[] primary;
+            if("Farblast & Sons".equals(App.getTeam().getSponsor()) && TeamDao.isLineman(App.getTeam().getId(), App.getPlayer().getTemplateId()) && App.getPlayer().getNewSkills().contains("Bombardier")) {
+                primary = new String[App.getPlayer().getPrimary().length() + 1];
+                for(; i < App.getPlayer().getPrimary().length() - 1; i++)
+                    primary[i] = Character.toString(App.getPlayer().getPrimary().charAt(i));
+                primary[primary.length - 1] = "P";
+            } else {
+                primary = new String[App.getPlayer().getPrimary().length()];
+                for(; i < App.getPlayer().getPrimary().length(); i++)
+                    primary[i] = Character.toString(App.getPlayer().getPrimary().charAt(i));
+            }
+
             skills = new String[App.getPlayer().getPrimary().length()];
             skills = SkillDao.getSkill(primary);
         }

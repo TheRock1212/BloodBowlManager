@@ -85,4 +85,21 @@ public class ResultDao {
         s.setInt(1, league);
         s.executeUpdate();
     }
+
+    public static boolean isLastOfRegular(int league, int team) throws SQLException {
+        String sql = "SELECT COUNT(*) AS STILLTOBE FROM results WHERE date IS NULL AND league = ? AND (teamH = ? OR teamA = ?)";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, league);
+        ps.setInt(++i, team);
+        ps.setInt(++i, team);
+        ResultSet rs = ps.executeQuery();
+        boolean result = false;
+        while(rs.next()) {
+            result = rs.getInt(1) == 0;
+        }
+        rs.close();
+        ps.close();
+        return result;
+    }
 }
