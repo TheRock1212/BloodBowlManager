@@ -26,7 +26,11 @@ import it.unipi.dataset.Model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -46,7 +50,17 @@ public class PDFManager {
 
     public static void generatePDF(Team t) throws IOException, SQLException {
         //PdfWriter writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/GSBowl III/Prova Roster/" + t.coach + ".pdf");
-        PdfWriter writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/GSBowl III/Prova Roster/" + t.coach + ".pdf");
+        PdfWriter writer;
+        try {
+            writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Roster/" + t.coach + ".pdf");
+        } catch (Exception e) {
+            //Files.createDirectories(Paths.get("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName()));
+            File roster = new File("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Roster/" + t.coach + ".pdf");
+            roster.getParentFile().mkdirs();
+            roster.createNewFile();
+            writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Roster/" + t.coach + ".pdf");
+        }
+
         //PdfWriter writer = new PdfWriter(dest + t.coach + ".pdf");
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf, PageSize.A4.rotate());
@@ -82,7 +96,8 @@ public class PDFManager {
                 break;
             }
         }
-        foe = teams.getFirst();
+        if(teams != null && !teams.isEmpty())
+            foe = teams.getFirst();
         Table table = new Table(UnitValue.createPercentArray(new float[] {2.56f, 11.82f, 12.85f, 3.06f, 2.56f, 2.56f, 2.56f, 3.06f, 37.7f, 6.64f, 7.69f, 5.69f}));
         table.setWidth(UnitValue.createPercentValue(100));
         table.setFixedLayout();
@@ -292,8 +307,12 @@ public class PDFManager {
                 case 10: {
                     Cell teamH = new Cell(1, 2).add(new Paragraph("PETTY CASH")).addStyle(h);
                     table.addCell(teamH);
-
-                    Cell team = new Cell(1, 3).add(new Paragraph(String.valueOf((foe.value - t.value) < 0 ? 0 : Integer.toString(foe.value - t.value)))).addStyle(b);
+                    Cell team;
+                    try {
+                        team = new Cell(1, 3).add(new Paragraph(String.valueOf((foe.value - t.value) < 0 ? 0 : Integer.toString(foe.value - t.value)))).addStyle(b);
+                    } catch(Exception e) {
+                        team = new Cell(1, 3).add(new Paragraph("0")).addStyle(b);
+                    }
                     table.addCell(team);
                     break;
                 }
@@ -443,7 +462,7 @@ public class PDFManager {
 
         document.add(table.setFixedLayout());
 
-        if((foe.value - t.value) > 15) {
+        if(foe != null && (foe.value - t.value) > 15) {
 
             document.add(new AreaBreak(PageSize.A4));
 
@@ -582,7 +601,17 @@ public class PDFManager {
     }
 
     public static void statsPlayer(ObservableList<PlayerStatistic> ps) throws IOException {
-        PdfWriter writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/GSBowl III/Prova Misc/Player Stats.pdf");
+        PdfWriter writer;
+        try {
+            writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Player Stats.pdf");
+        } catch (Exception e) {
+            //Files.createDirectories(Paths.get("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName()));
+            File roster = new File("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Player Stats.pdf");
+            roster.getParentFile().mkdirs();
+            roster.createNewFile();
+            writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Player Stats.pdf");
+        }
+        //PdfWriter writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/GSBowl III/Prova Misc/Player Stats.pdf");
         //PdfWriter writer = new PdfWriter(dest + t.coach + ".pdf");
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf, PageSize.A4);
@@ -667,7 +696,17 @@ public class PDFManager {
     }
 
     public static void statsTeam(ObservableList<TeamStatistic> ts) throws IOException {
-        PdfWriter writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/GSBowl III/Prova Misc/Team Stats.pdf");
+        PdfWriter writer;
+        try {
+            writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Team Stats.pdf");
+        } catch (Exception e) {
+            //Files.createDirectories(Paths.get("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName()));
+            File roster = new File("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Team Stats.pdf");
+            roster.getParentFile().mkdirs();
+            roster.createNewFile();
+            writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Team Stats.pdf");
+        }
+        //PdfWriter writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/GSBowl III/Prova Misc/Team Stats.pdf");
         //PdfWriter writer = new PdfWriter(dest + t.coach + ".pdf");
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf, PageSize.A4);
@@ -752,7 +791,16 @@ public class PDFManager {
     }
 
     public static void standings(ObservableList<Team> rl, List<javafx.scene.image.Image> images) throws IOException, SQLException {
-        PdfWriter writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/GSBowl III/Prova Misc/Classifica.pdf");
+        PdfWriter writer;
+        try {
+            writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Classifica.pdf");
+        } catch (Exception e) {
+            //Files.createDirectories(Paths.get("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName()));
+            File roster = new File("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Classifica.pdf");
+            roster.getParentFile().mkdirs();
+            roster.createNewFile();
+            writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/" + App.getLeague().getName() + "/Classifica.pdf");
+        }
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf, PageSize.A4.rotate());
         PdfFont body = PdfFontFactory.createFont(TAHOMA, PdfEncodings.WINANSI);
