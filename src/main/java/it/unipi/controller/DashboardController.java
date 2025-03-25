@@ -332,12 +332,13 @@ public class DashboardController {
         int cont = 0;
         for(int i = 0; i <= riga; i++) {
 
+            if(i == (App.getLeague().getNTeams() / 2))
+                cont++;
             if(cont < giornata && !res.get(i).played)
                 return false;
             if(cont == giornata)
                 return true;
-            if(i % 5 == 4)
-                cont++;
+
         }
         return false;
     }

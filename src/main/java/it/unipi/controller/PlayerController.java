@@ -266,7 +266,7 @@ public class PlayerController {
             String[] primary;
             if("Farblast & Sons".equals(App.getTeam().getSponsor()) && TeamDao.isLineman(App.getTeam().getId(), App.getPlayer().getTemplateId()) && App.getPlayer().getNewSkills().contains("Bombardier")) {
                 primary = new String[App.getPlayer().getPrimary().length() + 1];
-                for(; i < App.getPlayer().getPrimary().length() - 1; i++)
+                for(; i < App.getPlayer().getPrimary().length(); i++)
                     primary[i] = Character.toString(App.getPlayer().getPrimary().charAt(i));
                 primary[primary.length - 1] = "P";
             } else {
