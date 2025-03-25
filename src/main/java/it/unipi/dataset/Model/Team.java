@@ -38,12 +38,15 @@ public class Team {
     private boolean ready;
     private int delta;
     private double discr;
+    private boolean active;
+    private int cards;
+    private String stadium;
 
     public Team() {
 
     }
 
-    public Team(int id, String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman, String sponsor, boolean ready) {
+    public Team(int id, String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman, String sponsor, boolean ready, boolean active, int cards, String stadium) {
         this.id = id;
         this.coach = coach;
         this.name = name;
@@ -72,9 +75,12 @@ public class Team {
         this.journeyman = journeyman;
         this.sponsor = sponsor;
         this.ready = ready;
+        this.active = active;
+        this.cards = cards;
+        this.stadium = stadium;
     }
 
-    public Team(String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman, String sponsor) {
+    public Team(String coach, String name, int race, int league, int ngiocatori, int nreroll, boolean apothecary, int cheerleader, int assistant, int df, int treasury, int g, int w, int n, int l, int tdScored, int tdConceded, int casInflicted, int casSuffered, int points, int value, int round, int journeyman, String sponsor, boolean active, int cards, String stadium) {
         this.coach = coach;
         this.name = name;
         this.race = race;
@@ -104,6 +110,9 @@ public class Team {
         this.ready = true;
         this.delta = this.tdScored * 3 + this.casInflicted * 2;
         this.discr = this.points + ((double) this.delta / 10000) + ((double) this.tdNet / 100000) + ((double) this.casNet / 1000000);
+        this.active = active;
+        this.cards = cards;
+        this.stadium = stadium;
     }
 
     public Team(ResultSet rs) throws SQLException {
@@ -135,6 +144,9 @@ public class Team {
         this.journeyman = rs.getInt("journeyman");
         this.sponsor = rs.getString("sponsor");
         this.ready = rs.getBoolean("ready");
+        this.active = rs.getBoolean("active");
+        this.cards = rs.getInt("cards");
+        this.stadium = rs.getString("stadium");
         this.delta = this.tdScored * 3 + this.casInflicted * 2;
         this.discr = this.points + ((double) this.delta / 10000) + ((double) this.tdNet / 100000) + ((double) this.casNet / 1000000);
     }
@@ -377,5 +389,29 @@ public class Team {
 
     public void setDiscr(double discr) {
         this.discr = discr;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public int getCards() {
+        return cards;
+    }
+
+    public void setCards(int cards) {
+        this.cards = cards;
+    }
+
+    public String getStadium() {
+        return stadium;
+    }
+
+    public void setStadium(String stadium) {
+        this.stadium = stadium;
     }
 }

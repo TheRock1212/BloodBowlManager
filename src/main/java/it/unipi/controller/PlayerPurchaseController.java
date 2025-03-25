@@ -157,7 +157,7 @@ public class PlayerPurchaseController {
         for(int i = 0; i < pt.size(); i++) {
             if(App.isNewTeam()) {
                 for(int j = 0; j < pt.get(i).cb.getValue(); j++) {
-                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false);
+                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
                     if(pt.get(i).getMaxQty() > 10 && rules)
                         value += 0;
                     else
@@ -166,7 +166,7 @@ public class PlayerPurchaseController {
             }
             else{
                 for(int j = 0; j < (pt.get(i).cb.getValue() - (int)pt.get(i).cb.getItems().get(0)); j++) {
-                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false);
+                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
                     if(pt.get(i).getMaxQty() > 10 && rules)
                         value += 0;
                     else

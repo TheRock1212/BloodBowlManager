@@ -176,7 +176,7 @@ public class ManagementController {
             TeamDao.updateTeam(App.getTeam(), false);
         }
         TeamDao.updateTeam(App.getTeam(), true);
-        TeamDao.saveSponsor(App.getTeam().getId(), App.getTeam().getSponsor());
+        TeamDao.saveSponsor(App.getTeam().getId(), App.getTeam().getSponsor(), 0);
         App.setRoot("dashboard");
     }
 

@@ -1,0 +1,45 @@
+<component name="ArtifactManager">
+  <artifact name="BloodBowlManager:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/BloodBowlManager_jar2</output-path>
+    <root id="root">
+      <element id="archive" name="BloodBowlManager.jar">
+        <element id="module-output" name="BloodBowlManager" />
+      </element>
+      <element id="library" level="project" name="Maven: org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0" />
+      <element id="library" level="project" name="Maven: com.mysql:mysql-connector-j:8.0.33" />
+      <element id="library" level="project" name="Maven: eu.hansolo:tilesfx:21.0.3" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.18" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-base:21.0.2" />
+      <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.20.0" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-base:mac-aarch64:21.0.2" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-fxml:21.0.2" />
+      <element id="library" level="project" name="Maven: com.dlsc.formsfx:formsfx-core:11.6.0" />
+      <element id="library" level="project" name="Maven: org.kordamp.ikonli:ikonli-core:12.3.1" />
+      <element id="library" level="project" name="Maven: eu.hansolo:toolboxfx:21.0.3" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-fxml:mac-aarch64:21.0.2" />
+      <element id="library" level="project" name="Maven: org.bouncycastle:bcutil-jdk18on:1.75" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-controls:21.0.2" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-swing:21" />
+      <element id="library" level="project" name="Maven: com.itextpdf:kernel:7.2.6" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-swing:mac-aarch64:21" />
+      <element id="library" level="project" name="Maven: log4j:log4j:1.2.17" />
+      <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-api:2.20.0" />
+      <element id="library" level="project" name="Maven: org.controlsfx:controlsfx:11.2.1" />
+      <element id="library" level="project" name="Maven: eu.hansolo.fx:heatmap:21.0.3" />
+      <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-core:2.20.0" />
+      <element id="library" level="project" name="Maven: org.bouncycastle:bcprov-jdk18on:1.75" />
+      <element id="library" level="project" name="Maven: com.itextpdf:io:7.2.6" />
+      <element id="library" level="project" name="Maven: com.itextpdf:commons:7.2.6" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:mac-aarch64:21.0.2" />
+      <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.21.9" />
+      <element id="library" level="project" name="Maven: eu.hansolo.fx:countries:21.0.3" />
+      <element id="library" level="project" name="Maven: org.bouncycastle:bcpkix-jdk18on:1.75" />
+      <element id="library" level="project" name="Maven: eu.hansolo:toolbox:21.0.5" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.36" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:21.0.2" />
+      <element id="library" level="project" name="Maven: org.kordamp.ikonli:ikonli-javafx:12.3.1" />
+      <element id="library" level="project" name="Maven: com.itextpdf:layout:7.2.6" />
+      <element id="library" level="project" name="Maven: org.openjfx:javafx-controls:mac-aarch64:21.0.2" />
+    </root>
+  </artifact>
+</component>

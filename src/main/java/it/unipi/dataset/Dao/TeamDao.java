@@ -47,7 +47,7 @@ public class TeamDao {
      * @throws SQLException
      */
     public static synchronized void addTeam(Team t) throws SQLException{
-        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO team(coach, name, race, league, ngiocatori, nreroll, apothecary, cheerleader, assistant, DF, treasury, G, W, N, L, TDScored, TDConceded, CASInflicted, CASSuffered, PTS, value, round, journeyman, ready) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO team(coach, name, race, league, ngiocatori, nreroll, apothecary, cheerleader, assistant, DF, treasury, G, W, N, L, TDScored, TDConceded, CASInflicted, CASSuffered, PTS, value, round, journeyman, ready, active, cards) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, t.coach);
         ps.setString(2, t.name);
         ps.setInt(3, t.getRace());
@@ -72,6 +72,8 @@ public class TeamDao {
         ps.setInt(22, t.getRound());
         ps.setInt(23, t.getJourneyman());
         ps.setBoolean(24, t.isReady());
+        ps.setBoolean(25, t.isActive());
+        ps.setInt(26, t.getCards());
         ps.executeUpdate();
         ps.close();
 
@@ -118,7 +120,7 @@ public class TeamDao {
             ps.close();
         }
         else {
-            PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET nreroll = ?,  apothecary = ?, cheerleader = ?, assistant = ?, treasury = ?, value = ?, sponsor = ? WHERE id = ?");
+            PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET nreroll = ?,  apothecary = ?, cheerleader = ?, assistant = ?, treasury = ?, value = ?, sponsor = ?, cards = ? WHERE id = ?");
             ps.setInt(1, t.nreroll);
             ps.setInt(3, t.cheerleader);
             ps.setBoolean(2, t.apothecary);
@@ -126,7 +128,8 @@ public class TeamDao {
             ps.setInt(5, t.treasury);
             ps.setInt(6, t.value);
             ps.setString(7, t.sponsor);
-            ps.setInt(8, t.getId());
+            ps.setInt(8, t.getCards());
+            ps.setInt(9, t.getId());
             ps.executeUpdate();
             ps.close();
         }
@@ -207,10 +210,11 @@ public class TeamDao {
         ps.close();
     }
 
-    public static synchronized void saveSponsor(int id, String sponsor) throws SQLException {
-        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET sponsor = ? WHERE id = ?");
+    public static synchronized void saveSponsor(int id, String sponsor, int cards) throws SQLException {
+        PreparedStatement ps = App.getConnection().prepareStatement("UPDATE team SET sponsor = ?, cards = ? WHERE id = ?");
         ps.setString(1, sponsor);
-        ps.setInt(2, id);
+        ps.setInt(2, cards);
+        ps.setInt(3, id);
         ps.executeUpdate();
         ps.close();
     }

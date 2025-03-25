@@ -37,12 +37,17 @@ public class Player {
     private int level;
     private boolean status;
     public boolean journey;
+    public int season;
+
+    public Player() {
+
+    }
 
     public Player(int nbrJr, String journeyman, int id, int team, int unspentSPP, String s, int i, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey) {
 
     }
 
-    public Player(int id, int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey) {
+    public Player(int id, int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey, int season) {
         this.id = id;
         this.number = number;
         this.name = name;
@@ -73,9 +78,10 @@ public class Player {
         this.level = level;
         this.status = status;
         this.journey = journey;
+        this.season = season;
     }
 
-    public Player(int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey) {
+    public Player(int number, String name, int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey, int season) {
         this.number = number;
         this.name = name;
         this.template = template;
@@ -105,9 +111,10 @@ public class Player {
         this.level = level;
         this.status = status;
         this.journey = journey;
+        this.season = season;
     }
 
-    public Player(int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey) {
+    public Player(int template, int team, int unspentSPP, int spp, String skill, int maInc, int stInc, int agInc, int paInc, int avInc, int maDec, int stDec, int agDec, int paDec, int avDec, int nig, boolean mng, int value, int td, int cas, int kill, int cp, int def, int inter, int level, boolean status, boolean journey, int season) {
         this.template = template;
         this.team = team;
         this.unspentSPP = unspentSPP;
@@ -135,6 +142,7 @@ public class Player {
         this.level = level;
         this.status = status;
         this.journey = journey;
+        this.season = season;
     }
 
     public Player(PlayerPreview pp) {
@@ -194,6 +202,7 @@ public class Player {
         this.level = rs.getInt("lev");
         this.status = rs.getBoolean("status");
         this.journey = rs.getBoolean("isjourney");
+        this.season = rs.getInt("season");
     }
 
     public int getId() {
@@ -434,5 +443,13 @@ public class Player {
 
     public void setJourney(boolean journey) {
         this.journey = journey;
+    }
+
+    public int getSeason() {
+        return season;
+    }
+
+    public void setSeason(int season) {
+        this.season = season;
     }
 }

@@ -36,10 +36,12 @@ public class League {
 
     public boolean sppStar;
 
+    private boolean perennial;
+
     public League() {
     }
 
-    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr, boolean sppStar) {
+    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr, boolean sppStar, boolean perennial) {
         this.id = id;
         this.name = name;
         this.nTeams = nTeams;
@@ -54,9 +56,10 @@ public class League {
         this.playoff = playoff;
         this.tvr = tvr;
         this.sppStar = sppStar;
+        this.perennial = perennial;
     }
 
-    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr, boolean sppStar) {
+    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr, boolean sppStar, boolean perennial) {
         this.name = name;
         this.nTeams = nTeams;
         this.ptsWin = ptsWin;
@@ -70,6 +73,7 @@ public class League {
         this.playoff = playoff;
         this.tvr = tvr;
         this.sppStar = sppStar;
+        this.perennial = perennial;
     }
 
     public League(ResultSet rs) throws SQLException {
@@ -87,6 +91,7 @@ public class League {
         this.playoff = rs.getInt("playoff");
         this.tvr = rs.getBoolean("tvr");
         this.sppStar = rs.getBoolean("spp_star");
+        this.perennial = rs.getBoolean("perennial");
     }
 
     public Integer getId() {
@@ -199,5 +204,13 @@ public class League {
 
     public void setSppStar(boolean sppStar) {
         this.sppStar = sppStar;
+    }
+
+    public boolean isPerennial() {
+        return perennial;
+    }
+
+    public void setPerennial(boolean perennial) {
+        this.perennial = perennial;
     }
 }
