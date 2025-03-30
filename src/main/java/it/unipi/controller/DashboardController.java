@@ -436,6 +436,11 @@ public class DashboardController {
     @FXML public void removeBounty() throws SQLException {
         Bounty bounty = bountyList.getSelectionModel().getSelectedItem();
         bo.remove(bounty);
+        List<Team> teams = TeamDao.getTeam(bounty.getTeam(), App.getLeague().getId());
+        if(!teams.isEmpty()) {
+            Team t = teams.getFirst();
+            t.treasury += bounty.getReward();
+        }
         BountyDao.delete(App.getConnection(), bounty);
     }
 
