@@ -2,9 +2,7 @@ package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.*;
-import it.unipi.dataset.Model.Player;
-import it.unipi.dataset.Model.PlayerTemplate;
-import it.unipi.dataset.Model.Race;
+import it.unipi.dataset.Model.*;
 import it.unipi.utility.PlayerPreview;
 import it.unipi.utility.TemplateImage;
 import javafx.collections.FXCollections;
@@ -265,6 +263,21 @@ public class ManagementController {
         PlayerPreview tmp = players.getSelectionModel().getSelectedItem();
         //Player pl = new Player(App.getTeam().getId(), App.getTeam().getId(), 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 1, true, true);
         PlayerDao.removePlayer(tmp.getId());
+        if(App.getLeague().isPerennial()) {
+            List<Bounty> bounties = BountyDao.getBountyByPlayer(App.getConnection(), tmp.getId());
+            bounties.forEach(bounty -> {
+                try {
+                    List<Team> teams = TeamDao.getTeam(bounty.getTeam(), App.getLeague().getId());
+                    if(!teams.isEmpty()) {
+                        Team t = teams.getFirst();
+                        t.treasury += bounty.getReward();
+                    }
+                    BountyDao.delete(App.getConnection(), bounty);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
         p.remove(tmp);
         App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() - 1);
         if(!tmp.MNG)
