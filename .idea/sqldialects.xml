@@ -9,6 +9,7 @@
     <file url="file://$PROJECT_DIR$/src/main/java/it/unipi/dataset/Dao/RaceDao.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/it/unipi/dataset/Dao/ResultDao.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/it/unipi/dataset/Dao/SkillDao.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/it/unipi/dataset/Dao/StadiumDao.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/it/unipi/dataset/Dao/StarPlayerDao.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/it/unipi/dataset/Dao/TeamDao.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/it/unipi/dataset/Model/League.java" dialect="GenericSQL" />

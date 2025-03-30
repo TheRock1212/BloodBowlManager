@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.controller.ResultController">
+   <children>
+      <Label fx:id="title" alignment="CENTER" layoutX="19.0" layoutY="25.0" prefHeight="30.0" prefWidth="212.0" text="Label">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Label>
+      <Label layoutX="84.0" layoutY="90.0" text="Choose Team:" />
+      <ComboBox fx:id="team" layoutX="50.0" layoutY="120.0" onAction="#setPlayer" prefWidth="150.0" />
+      <ComboBox fx:id="player" layoutX="50.0" layoutY="201.0" prefWidth="150.0" />
+      <Label fx:id="active" alignment="CENTER" layoutX="83.0" layoutY="175.0" text="Choose Player:" />
+      <Button fx:id="set" layoutX="97.0" layoutY="359.0" mnemonicParsing="false" onAction="#set" text="Submit" />
+      <Label fx:id="vittima" layoutX="32.0" layoutY="261.0" text="Choose Victim:" />
+      <Label fx:id="inf" layoutX="192.0" layoutY="261.0" text="Inf:" />
+      <ComboBox fx:id="suff" layoutX="5.0" layoutY="287.0" prefWidth="150.0" />
+      <ComboBox fx:id="entity" layoutX="165.0" layoutY="287.0" prefHeight="27.0" prefWidth="71.0" />
+      <CheckBox fx:id="nuffle" layoutX="75.0" layoutY="326.0" mnemonicParsing="false" text="Nuffle Prayer?" />
+      <Spinner fx:id="spp" layoutX="89.0" layoutY="287.0" prefHeight="26.0" prefWidth="71.0" visible="false" />
+      <Label fx:id="qty" layoutX="102.0" layoutY="261.0" text="Set Qty:" visible="false" />
+      <CheckBox fx:id="star_victim" layoutX="118.0" layoutY="261.0" mnemonicParsing="false" onAction="#setVictim" text="Star?" />
+      <CheckBox fx:id="star_active" layoutX="169.0" layoutY="175.0" mnemonicParsing="false" onAction="#setActive" text="Star?" />
+      <ComboBox fx:id="star_active_combo" layoutX="50.0" layoutY="202.0" prefWidth="150.0" visible="false" />
+      <ComboBox fx:id="star_victim_combo" layoutX="5.0" layoutY="287.0" prefWidth="150.0" visible="false" />
+   </children>
+</Pane>

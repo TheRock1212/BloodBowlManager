@@ -144,6 +144,8 @@ public class ManagementController {
                 option.setDisable(true);
         }
 
+        staLabel.setText(App.getTeam().getStadium());
+
         if(!App.getLeague().isPerennial()) {
             stadium.setVisible(false);
             staLabel.setVisible(false);
@@ -379,7 +381,11 @@ public class ManagementController {
     }
 
     @FXML public void editStadium() throws IOException {
-
+        scene = new Scene(App.load("team/stadium"), 200, 200);
+        stage.setScene(scene);
+        stage.setTitle("Select Stadium");
+        stage.setResizable(false);
+        stage.show();
     }
 
     @FXML public void takeJourney() throws SQLException, IOException {}
