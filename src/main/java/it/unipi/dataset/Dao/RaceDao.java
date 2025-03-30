@@ -17,9 +17,13 @@ public class RaceDao {
      * @return Lista delle razze
      * @throws SQLException
      */
-    public static synchronized List<String> getNames() throws SQLException {
-        Statement st = App.getConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT name FROM race");
+    public static synchronized List<String> getNames(boolean secret) throws SQLException {
+        String query = "SELECT name FROM race";
+        if(!secret) {
+            query += " WHERE secret = 0";
+        }
+        PreparedStatement st = App.getConnection().prepareStatement(query);
+        ResultSet rs = st.executeQuery();
         List<String> names = new ArrayList<>();
         while (rs.next()) {
             names.add(rs.getString("name"));

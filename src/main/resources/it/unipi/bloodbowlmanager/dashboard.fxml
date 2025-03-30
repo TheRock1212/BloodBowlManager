@@ -20,7 +20,7 @@
                <contextMenu>
                   <ContextMenu>
                     <items>
-                      <MenuItem mnemonicParsing="false" text="Print PDF" onAction="#printStandings"/>
+                      <MenuItem mnemonicParsing="false" onAction="#printStandings" text="Print PDF" />
                     </items>
                   </ContextMenu>
                </contextMenu></TableView>
@@ -90,6 +90,25 @@
                </children>
             </AnchorPane>
          </content>
+      </Tab>
+      <Tab fx:id="bounty" text="Bounty">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TableView fx:id="bountyList" prefHeight="671.0" prefWidth="1000.0">
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                              <MenuItem mnemonicParsing="false" text="Add" />
+                              <MenuItem mnemonicParsing="false" text="Modify" />
+                              <MenuItem mnemonicParsing="false" text="Delete" />
+                          </items>
+                        </ContextMenu>
+                     </contextMenu>
+                  </TableView>
+               </children>
+            </AnchorPane>
+        </content>
       </Tab>
    </tabs>
 </TabPane>

@@ -512,4 +512,18 @@ public class PlayerDao {
         ps.close();
         return p;
     }
+
+    public static Player getPlayerById(int id) throws SQLException {
+        String sql = "SELECT * FROM player WHERE id = ?";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        Player p = null;
+        while(rs.next()) {
+            p = new Player(rs);
+        }
+        rs.close();
+        ps.close();
+        return p;
+    }
 }

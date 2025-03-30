@@ -30,10 +30,10 @@ public class ManagementController {
     private Player[] player = new Player[27];
     private Race r = new Race();
 
-    @FXML private Label costRr, treasury, apoUn, apoAcq, error, sponsor, ready;
+    @FXML private Label costRr, treasury, apoUn, apoAcq, error, sponsor, ready, stadium, staLabel;
     @FXML private RadioButton option;
     @FXML private ComboBox<Integer> rr, ac, ch;
-    @FXML private Button readyButton, purButton, spoButton;
+    @FXML private Button readyButton, purButton, spoButton, staBtn;
     @FXML private MenuItem edit, fire, journey;
 
     private static Scene scene;
@@ -86,7 +86,13 @@ public class ManagementController {
         TableColumn image = new TableColumn(" ");
         image.setCellValueFactory(new PropertyValueFactory<ImageView, PlayerPreview>("img"));
 
-        players.getColumns().addAll(image, nr, namePlayer, nomeCol, ma, st, ag, pa, av, skills, unspp, totalspp, mng, nig, Cost);
+        if(App.getLeague().isPerennial()) {
+            TableColumn season = new TableColumn("Season");
+            season.setCellValueFactory(new PropertyValueFactory<>("season"));
+            players.getColumns().addAll(image, nr, namePlayer, nomeCol, ma, st, ag, pa, av, skills, unspp, totalspp, mng, nig, Cost, season);
+        } else {
+            players.getColumns().addAll(image, nr, namePlayer, nomeCol, ma, st, ag, pa, av, skills, unspp, totalspp, mng, nig, Cost);
+        }
         p = FXCollections.observableArrayList();
         players.setItems(p);
 
@@ -138,6 +144,12 @@ public class ManagementController {
             spoButton.setVisible(false);
             if(option.isVisible())
                 option.setDisable(true);
+        }
+
+        if(!App.getLeague().isPerennial()) {
+            stadium.setVisible(false);
+            staLabel.setVisible(false);
+            staBtn.setVisible(false);
         }
     }
 
@@ -323,7 +335,7 @@ public class ManagementController {
         List<Player> journey = new ArrayList<>();
         int number = 100;
         while(nPlayer < 11) {
-            journey.add(new Player(number++, "Journeyman", App.getTeam().getJourneyman(), App.getTeam().getId(), 0, 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, true));
+            journey.add(new Player(number++, "Journeyman", App.getTeam().getJourneyman(), App.getTeam().getId(), 0, 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, true, 0));
             App.getTeam().value += pt.cost;
             nPlayer++;
         }
@@ -351,6 +363,10 @@ public class ManagementController {
             fire.setVisible(true);
             journey.setVisible(false);
         }
+    }
+
+    @FXML public void editStadium() throws IOException {
+
     }
 
     @FXML public void takeJourney() throws SQLException, IOException {}

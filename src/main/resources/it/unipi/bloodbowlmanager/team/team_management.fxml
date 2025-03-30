@@ -17,7 +17,7 @@
             <ContextMenu>
                <items>
                   <MenuItem fx:id="edit" mnemonicParsing="false" onAction="#switchToPlayerPreview" text="Edit" />
-                  <MenuItem fx:id="journey" mnemonicParsing="false" onAction="#takeJourney" text="Purchase" visible="false"/>
+                  <MenuItem fx:id="journey" mnemonicParsing="false" onAction="#takeJourney" text="Purchase" visible="false" />
                   <MenuItem fx:id="fire" mnemonicParsing="false" onAction="#deletePlayer" text="Fire" />
                </items>
             </ContextMenu>
@@ -29,27 +29,27 @@
             <Font size="23.0" />
          </font>
       </Label>
-      <Label layoutX="271.0" layoutY="637.0" text="Reroll: " />
-      <Label layoutX="517.0" layoutY="637.0" text="Cheerleader: 10k" />
-      <Label layoutX="389.0" layoutY="637.0" text="Ass. Coach: 10k" />
+      <Label layoutX="325.0" layoutY="637.0" text="Reroll: " />
+      <Label layoutX="521.0" layoutY="637.0" text="Cheerleader: 10k" />
+      <Label layoutX="415.0" layoutY="637.0" text="Ass. Coach: 10k" />
       <Button fx:id="purButton" layoutX="880.0" layoutY="634.0" mnemonicParsing="false" onAction="#switchToPurchase" text="Purchase Player" />
       <Button layoutX="909.0" layoutY="668.0" mnemonicParsing="false" onAction="#switchToDashboard" text="Done" />
-      <ComboBox fx:id="rr" layoutX="280.0" layoutY="658.0" onAction="#calcValue" prefHeight="27.0" prefWidth="54.0" />
-      <ComboBox fx:id="ac" layoutX="406.0" layoutY="658.0" onAction="#calcValue" prefHeight="27.0" prefWidth="54.0" />
-      <ComboBox fx:id="ch" layoutX="536.0" layoutY="658.0" onAction="#calcValue" prefHeight="27.0" prefWidth="54.0" />
-      <Label fx:id="costRr" layoutX="307.0" layoutY="637.0" text="Label" />
+      <ComboBox fx:id="rr" layoutX="334.0" layoutY="658.0" onAction="#calcValue" prefHeight="27.0" prefWidth="54.0" />
+      <ComboBox fx:id="ac" layoutX="432.0" layoutY="658.0" onAction="#calcValue" prefHeight="27.0" prefWidth="54.0" />
+      <ComboBox fx:id="ch" layoutX="540.0" layoutY="658.0" onAction="#calcValue" prefHeight="27.0" prefWidth="54.0" />
+      <Label fx:id="costRr" layoutX="361.0" layoutY="637.0" text="Label" />
       <Label layoutX="664.0" layoutY="639.0" text="Apothecary" />
       <Label fx:id="apoAcq" layoutX="649.0" layoutY="665.0" text="Already Acquired" />
       <Label fx:id="apoUn" layoutX="668.0" layoutY="665.0" text="Unaviable" />
       <RadioButton fx:id="option" layoutX="671.0" layoutY="665.0" mnemonicParsing="false" onAction="#calcValue" text="50 k" />
       <Label fx:id="error" layoutY="673.0" text="Denaro Insufficiente" textFill="RED" visible="false" />
-      <Label layoutX="149.0" layoutY="637.0" text="Sponsor:" />
-      <Label fx:id="sponsor" alignment="CENTER" layoutX="100.0" layoutY="652.0" prefHeight="17.0" prefWidth="147.0" text="Nessuno">
+      <Label layoutX="220.0" layoutY="639.0" text="Sponsor:" />
+      <Label fx:id="sponsor" alignment="CENTER" layoutX="171.0" layoutY="654.0" prefHeight="17.0" prefWidth="147.0" text="Nessuno">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>
       </Label>
-      <Button fx:id="spoButton" layoutX="143.0" layoutY="669.0" mnemonicParsing="false" onAction="#changeSponsor" text="Change" />
+      <Button fx:id="spoButton" layoutX="214.0" layoutY="671.0" mnemonicParsing="false" onAction="#changeSponsor" text="Change" />
       <Label layoutX="781.0" layoutY="638.0" text="Ready:" />
       <Label fx:id="ready" alignment="CENTER" layoutX="819.0" layoutY="638.0" prefHeight="17.0" prefWidth="37.0" text="false">
          <font>
@@ -57,5 +57,12 @@
          </font>
       </Label>
       <Button fx:id="readyButton" layoutX="782.0" layoutY="661.0" mnemonicParsing="false" onAction="#setReady" text="Set Ready" />
+      <Label fx:id="stadium" layoutX="14.0" layoutY="674.0" text="Stadium:" />
+      <Button fx:id="staBtn" layoutX="85.0" layoutY="641.0" mnemonicParsing="false" onAction="#editStadium" prefHeight="26.0" prefWidth="72.0" text="Stadium" />
+      <Label fx:id="staLabel" alignment="CENTER" layoutX="75.0" layoutY="676.0" prefHeight="17.0" prefWidth="120.0" text="Label">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Label>
    </children>
 </Pane>

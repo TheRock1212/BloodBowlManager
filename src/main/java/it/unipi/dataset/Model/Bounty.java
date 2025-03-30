@@ -8,6 +8,9 @@ public class Bounty {
     private int player;
     private int reward;
 
+    private String nameTeam;
+    private String namePlayer;
+
     public Bounty() {
 
     }
@@ -40,5 +43,21 @@ public class Bounty {
 
     public void setReward(int reward) {
         this.reward = reward;
+    }
+
+    public String getNameTeam() {
+        return nameTeam;
+    }
+
+    public void setNameTeam(String nameTeam) {
+        this.nameTeam = nameTeam;
+    }
+
+    public String getNamePlayer() {
+        return namePlayer;
+    }
+
+    public void setNamePlayer(String namePlayer) {
+        this.namePlayer = namePlayer;
     }
 }

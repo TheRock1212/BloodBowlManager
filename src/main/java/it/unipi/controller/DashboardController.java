@@ -2,10 +2,7 @@ package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.*;
-import it.unipi.dataset.Model.Player;
-import it.unipi.dataset.Model.PlayerTemplate;
-import it.unipi.dataset.Model.Result;
-import it.unipi.dataset.Model.Team;
+import it.unipi.dataset.Model.*;
 import it.unipi.utility.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -47,11 +44,16 @@ public class DashboardController {
     @FXML private TableView<TeamStatistic> statsTeam;
     private ObservableList<TeamStatistic> ts;
 
+    @FXML private TableView<Bounty> bountyList;
+    private ObservableList<Bounty> bo;
+
     @FXML private ComboBox<String> tipo, tipoTeam;
 
     @FXML private MenuItem fixture, result;
 
     @FXML private Button addTeam, groups, playoff, close, pdfs;
+
+    @FXML private Tab bounty;
 
     public Stage stage = new Stage();
     public Scene scene;
@@ -223,6 +225,25 @@ public class DashboardController {
         ts = FXCollections.observableArrayList();
         statsTeam.setItems(ts);
 
+        bounty.setDisable(true);
+
+        if(App.getLeague().isPerennial()) {
+            TableColumn team = new TableColumn("Team");
+            team.setCellValueFactory(new PropertyValueFactory<>("nameTeam"));
+
+            TableColumn player = new TableColumn("Player");
+            player.setCellValueFactory(new PropertyValueFactory<>("namePlayer"));
+
+            TableColumn reward = new TableColumn("Reward");
+            reward.setCellValueFactory(new PropertyValueFactory<>("reward"));
+
+            bountyList.getColumns().addAll(team, player, reward);
+            bo = FXCollections.observableArrayList();
+            bountyList.setItems(bo);
+
+            bounty.setDisable(false);
+        }
+
         getTable();
 
         if(!res.isEmpty())
@@ -272,6 +293,15 @@ public class DashboardController {
         Comparator<TeamStatistic> comp2 = Comparator.comparingInt(TeamStatistic::getValue);
         comp2 = comp2.reversed();
         FXCollections.sort(ts, comp2);
+
+        if(App.getLeague().isPerennial()) {
+            List<Bounty> bounties = BountyDao.getAllBounties(App.getConnection());
+            for(Bounty b : bounties) {
+                b.setNameTeam(TeamDao.getName(b.getTeam()));
+                b.setNamePlayer(PlayerDao.getPlayerById(b.getPlayer()).getName());
+            }
+            bo.addAll(bounties);
+        }
     }
 
     @FXML public void createTeam() throws IOException {

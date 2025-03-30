@@ -826,7 +826,7 @@ public class ResultController {
                         String skills = template.skill + p.skill;
                         if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && PlayerDao.countPlayers(App.getResult().gettA().getId(), false) < 16) {
                             raisedA = false;
-                            PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettA().getJourneyman(), App.getResult().gettA().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false));
+                            PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettA().getJourneyman(), App.getResult().gettA().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 0));
                             PlayerTemplate newPlayer = PlayerTemplateDao.getPlayer(App.getResult().gettA().getJourneyman());
                             App.getResult().gettA().value += newPlayer.cost;
                             App.getResult().gettA().ngiocatori++;
@@ -842,7 +842,7 @@ public class ResultController {
                         String skills = template.skill + p.skill;
                         if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && PlayerDao.countPlayers(App.getResult().gettH().getId(), false) < 16) {
                             raisedH = false;
-                            PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettH().getJourneyman(), App.getResult().gettH().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false));
+                            PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettH().getJourneyman(), App.getResult().gettH().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 0));
                             PlayerTemplate newPlayer = PlayerTemplateDao.getPlayer(App.getResult().gettH().getJourneyman());
                             App.getResult().gettH().value += newPlayer.cost;
                             App.getResult().gettH().ngiocatori++;

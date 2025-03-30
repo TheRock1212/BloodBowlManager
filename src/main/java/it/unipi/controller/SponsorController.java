@@ -19,6 +19,7 @@ public class SponsorController {
     @FXML private Spinner<Integer> nCont;
     @FXML private ComboBox<String> mag;
     @FXML private ComboBox<Integer> player;
+    @FXML private Button card;
 
 
     @FXML public void initialize() {
@@ -34,6 +35,7 @@ public class SponsorController {
         mag.setVisible(false);
         playerLabel.setVisible(false);
         player.setVisible(false);
+        card.setVisible(App.getLeague().isPerennial());
     }
 
     @FXML public void set() {
@@ -79,5 +81,19 @@ public class SponsorController {
             player.setVisible(true);
             playerLabel.setVisible(true);
         }
+    }
+
+    @FXML public void removeSponsor() throws IOException, SQLException {
+        App.getTeam().sponsor = "none";
+        Stage stage = (Stage) labelCont.getScene().getWindow();
+        stage.close();
+        App.setRoot("team/team_management");
+    }
+
+    @FXML public void addCard() throws IOException, SQLException {
+        App.getTeam().setCards(App.getTeam().getCards() + 1);
+        Stage stage = (Stage) labelCont.getScene().getWindow();
+        stage.close();
+        App.setRoot("team/team_management");
     }
 }

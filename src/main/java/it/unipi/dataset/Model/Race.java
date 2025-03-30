@@ -14,12 +14,13 @@ public class Race {
     public boolean apothecary;
     public String special1, special2, special3;
     public String url;
+    private String family;
 
     public Race() {
 
     }
 
-    public Race(int id, String name, int positional, int reroll, boolean apothecary, String special1, String special2, String special3, String url) {
+    public Race(int id, String name, int positional, int reroll, boolean apothecary, String special1, String special2, String special3, String url, String family) {
         this.id = id;
         this.name = name;
         this.positional = positional;
@@ -29,6 +30,7 @@ public class Race {
         this.special2 = special2;
         this.special3 = special3;
         this.url = url;
+        this.family = family;
     }
 
     public Race(ResultSet rs) throws SQLException {
@@ -41,6 +43,7 @@ public class Race {
         this.special2 = rs.getString("special_2");
         this.special3 = rs.getString("special_3");
         this.url = rs.getString("url");
+        this.family = rs.getString("family");
     }
 
     public int getId() {
@@ -113,5 +116,13 @@ public class Race {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getFamily() {
+        return family;
+    }
+
+    public void setFamily(String family) {
+        this.family = family;
     }
 }

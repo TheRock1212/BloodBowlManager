@@ -35,7 +35,7 @@ public class TeamController {
 
     @FXML public void initialize() throws SQLException {
         //ResultSet rs = r.getNames();
-        List<String> names = RaceDao.getNames();
+        List<String> names = RaceDao.getNames(false);
         Collections.sort(names);
         for(String name: names)
             race.getItems().add(name);
