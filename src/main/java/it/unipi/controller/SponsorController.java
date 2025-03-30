@@ -62,7 +62,7 @@ public class SponsorController {
         else {
             App.getTeam().sponsor = mag.getValue();
             if("Farblast & Sons".equals(mag.getValue())) {
-                Player p = PlayerDao.getPlayerByNumber(App.getTeam().getId(), player.getValue());
+                Player p = PlayerDao.getPlayerByNumber(App.getTeam().getId(), player.getValue(), null);
                 p.skill += "Bombardier,Loner(4+),Secret Weapon,";
                 PlayerDao.updatePlayer(p, true);
             }

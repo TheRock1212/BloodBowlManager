@@ -2,10 +2,7 @@ package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.*;
-import it.unipi.dataset.Model.Player;
-import it.unipi.dataset.Model.PlayerTemplate;
-import it.unipi.dataset.Model.Result;
-import it.unipi.dataset.Model.Team;
+import it.unipi.dataset.Model.*;
 import it.unipi.utility.Fixture;
 import it.unipi.utility.State;
 import javafx.fxml.FXML;
@@ -372,7 +369,7 @@ public class ResultController {
         stage.show();
     }
 
-    @FXML public void set() throws IOException, SQLException {
+    @FXML public void  set() throws IOException, SQLException {
         switch(getStato()) {
             case SETTD: {
                 if(team.getValue().equals(App.getResult().home)) {
@@ -819,6 +816,19 @@ public class ResultController {
             case "DEAD": {
                 //PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
                 if(home) {
+                    if(App.getLeague().isPerennial()) {
+                        List<Bounty> bounties = BountyDao.getBountyByPlayer(App.getConnection(), p.getId());
+                        if(!bounties.isEmpty()) {
+                            bounties.forEach(bounty -> {
+                                App.getResult().gettA().treasury += bounty.getReward();
+                                try {
+                                    BountyDao.delete(App.getConnection(), bounty);
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                        }
+                    }
                     App.getResult().getKilledH().add(p.getId());
                     App.getResult().gettH().ngiocatori--;
                     if(RaceDao.hasRaisedRule(App.getResult().gettA().getRace()) && raisedA) {
@@ -835,6 +845,19 @@ public class ResultController {
                     //App.getResult().gettH().value -= (template.cost + p.value);
                 }
                 else {
+                    if(App.getLeague().isPerennial()) {
+                        List<Bounty> bounties = BountyDao.getBountyByPlayer(App.getConnection(), p.getId());
+                        if(!bounties.isEmpty()) {
+                            bounties.forEach(bounty -> {
+                                App.getResult().gettH().treasury += bounty.getReward();
+                                try {
+                                    BountyDao.delete(App.getConnection(), bounty);
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                        }
+                    }
                     App.getResult().getKilledA().add(p.getId());
                     App.getResult().gettA().ngiocatori--;
                     if(RaceDao.hasRaisedRule(App.getResult().gettH().getRace()) && raisedH) {

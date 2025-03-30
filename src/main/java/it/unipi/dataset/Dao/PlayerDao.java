@@ -496,11 +496,18 @@ public class PlayerDao {
         return players;
     }
 
-    public static Player getPlayerByNumber(int team, int number) throws SQLException {
-        String sql = "SELECT * FROM player WHERE team = ? AND number = ? AND status = 1";
+    public static Player getPlayerByNumber(int team, int number, String teamName) throws SQLException {
+        String sql = null;
+        if(team != 0)
+            sql = "SELECT * FROM player WHERE team = ? AND number = ? AND status = 1";
+        else
+            sql = "SELECT * FROM player p LEFT JOIN team t ON p.team = t.id WHERE t.name = ? AND number = ? AND p.status = 1";
         PreparedStatement ps = App.getConnection().prepareStatement(sql);
         int i = 0;
-        ps.setInt(++i, team);
+        if(team != 0)
+            ps.setInt(++i, team);
+        else
+            ps.setString(++i, teamName);
         ps.setInt(++i, number);
         ResultSet rs = ps.executeQuery();
         Player p = null;
@@ -525,5 +532,20 @@ public class PlayerDao {
         rs.close();
         ps.close();
         return p;
+    }
+
+    public static List<Player> getPlayersByTeamName(String name, boolean alive) throws SQLException {
+        List<Player> players = new ArrayList<>();
+        String sql = "SELECT * FROM player p LEFT JOIN team t ON p.team = t.id WHERE t.name = ? AND p.isJourney = 0 AND p.status = " + (alive ? 1 : 0);
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setString(++i, name);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            players.add(new Player(rs));
+        }
+        rs.close();
+        ps.close();
+        return players;
     }
 }

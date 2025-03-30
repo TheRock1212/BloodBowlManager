@@ -424,4 +424,19 @@ public class DashboardController {
         }
         PDFManager.standings(rl, images);
     }
+
+    @FXML public void addBounty() throws IOException {
+        stage.setTitle("Add Bounty");
+        scene = new Scene(App.load("bounty/bounty"), 200, 320);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+    }
+
+    @FXML public void removeBounty() throws SQLException {
+        Bounty bounty = bountyList.getSelectionModel().getSelectedItem();
+        bo.remove(bounty);
+        BountyDao.delete(App.getConnection(), bounty);
+    }
+
 }

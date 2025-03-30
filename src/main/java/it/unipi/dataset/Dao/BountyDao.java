@@ -44,4 +44,19 @@ public class BountyDao {
         rs.close();
         return bounties;
     }
+
+    public static List<Bounty> getBountyByPlayer(Connection con, int player) throws SQLException {
+        String sql = "SELECT * FROM bounty WHERE player = ?";
+        PreparedStatement ps = con.prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, player);
+        ResultSet rs = ps.executeQuery();
+        List<Bounty> bounties = new ArrayList<>();
+        while (rs.next()) {
+            bounties.add(new Bounty(rs));
+        }
+        ps.close();
+        rs.close();
+        return bounties;
+    }
 }

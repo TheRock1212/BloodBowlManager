@@ -242,4 +242,46 @@ public class TeamDao {
         ps.close();
         return result;
     }
+
+    public static List<String> getNames(int league) throws SQLException {
+        String sql = "SELECT name FROM team WHERE league = ?";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, league);
+        ResultSet rs = ps.executeQuery();
+        List<String> names = new ArrayList<>();
+        while(rs.next()) {
+            names.add(rs.getString(1));
+        }
+        rs.close();
+        ps.close();
+        return names;
+    }
+
+    public static int getTreasury(String name) throws SQLException {
+        String sql = "SELECT treasury FROM team WHERE name = ?";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setString(++i, name);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int result = rs.getInt(1);
+        rs.close();
+        ps.close();
+        return result;
+
+    }
+
+    public static Team getTeam(String name) throws SQLException {
+        String sql = "SELECT * FROM team WHERE name = ?";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setString(++i, name);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        Team team = new Team(rs);
+        rs.close();
+        ps.close();
+        return team;
+    }
 }
