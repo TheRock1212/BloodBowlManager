@@ -2,6 +2,7 @@ package it.unipi.dataset.Dao;
 
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Model.Race;
+import it.unipi.dataset.Model.Team;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -97,5 +98,30 @@ public class RaceDao {
         ps.close();
         rs.close();
         return spe.contains("Masters of Undeath") || spe.contains("Vampire Lord");
+    }
+
+    public static List<Race> getRaces(Team t) throws SQLException {
+        List<Race> races = new ArrayList<>();
+        StringBuilder query = new StringBuilder();
+        query.append(" SELECT * ");
+        query.append(" FROM race ");
+        query.append(" WHERE id <> ? ");
+        if(t.getCards() < 5) {
+            query.append(" AND family = ( SELECT family FROM race WHERE id = ? ) ");
+        }
+        query.append(" ORDER BY name ");
+        PreparedStatement st = App.getConnection().prepareStatement(query.toString());
+        int i = 0;
+        st.setInt(++i, t.getRace());
+        if(t.getCards() < 5) {
+            st.setInt(++i, t.getRace());
+        }
+        ResultSet rs = st.executeQuery();
+        while(rs.next()){
+            races.add(new Race(rs));
+        }
+        st.close();
+        rs.close();
+        return races;
     }
 }

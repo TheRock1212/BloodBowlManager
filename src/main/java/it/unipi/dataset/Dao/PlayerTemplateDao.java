@@ -2,6 +2,8 @@ package it.unipi.dataset.Dao;
 
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Model.PlayerTemplate;
+import it.unipi.dataset.Model.Race;
+import it.unipi.dataset.Model.Team;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -80,5 +82,24 @@ public class PlayerTemplateDao {
         st.close();
         rs.close();
         return template;
+    }
+
+    static public int getLonerForOutsidePlayer(int id, Team t) throws SQLException {
+        String sql = " SELECT * FROM player_template pt LEFT JOIN race r ON pt.race = r.id WHERE pt.id = ? ";
+        PreparedStatement st = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        st.setInt(++i, id);
+        ResultSet rs = st.executeQuery();
+        rs.next();
+        Race race = new Race(rs);
+        PlayerTemplate template = new PlayerTemplate(rs);
+        rs.close();
+        st.close();
+        if(template.getRace() == t.getRace() || template.skill.contains("Loner"))
+            return 0;
+        Race raceTeam = RaceDao.getRace(t.getRace());
+        if(raceTeam.getFamily().equals(race.getFamily()))
+            return 2;
+        return 3;
     }
 }

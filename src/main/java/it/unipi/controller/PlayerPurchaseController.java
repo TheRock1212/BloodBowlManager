@@ -37,9 +37,11 @@ public class PlayerPurchaseController {
     @FXML TableView<TemplateImage>  player = new TableView<TemplateImage>();
     private ObservableList<TemplateImage> pt2;
 
-    @FXML private Label treasuryPlayer, error;
+    @FXML private Label treasuryPlayer, error, labelCards, cards;
 
-    @FXML private Button purchase;
+    @FXML private Button purchase, family;
+
+    @FXML private ComboBox<String> otherRace;
 
     private Scene scene;
 
@@ -104,11 +106,25 @@ public class PlayerPurchaseController {
             selectPlayers.setItems(pt);
             treasuryPlayer.setText(Integer.toString(App.getTeam().getTreasury()));
             getTable();
-        }
 
-        if(!App.isNewTeam()) {
-            nrs = PlayerDao.getPlayerNumbers(App.getTeam());
-            names = PlayerDao.getPlayerNames(App.getTeam());
+
+            if (!App.isNewTeam()) {
+                nrs = PlayerDao.getPlayerNumbers(App.getTeam());
+                names = PlayerDao.getPlayerNames(App.getTeam());
+                cards.setText(Integer.toString(App.getTeam().getCards()));
+            }
+
+            if (PlayerDao.getOutsideTeam(App.getTeam()) >= 3 || App.getTeam().getCards() < 2) {
+                family.setVisible(false);
+            }
+
+            otherRace.setVisible(false);
+
+            if (!App.getLeague().isPerennial() || App.isNewTeam()) {
+                labelCards.setVisible(false);
+                cards.setVisible(false);
+                family.setVisible(false);
+            }
         }
 
     }
@@ -157,7 +173,8 @@ public class PlayerPurchaseController {
         for(int i = 0; i < pt.size(); i++) {
             if(App.isNewTeam()) {
                 for(int j = 0; j < pt.get(i).cb.getValue(); j++) {
-                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
+                    int loner = PlayerTemplateDao.getLonerForOutsidePlayer(pt.get(i).getId(), App.getTeam());
+                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, loner == 0 ? "" : ",Loner(" + loner + "+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
                     if(pt.get(i).getMaxQty() > 10 && rules)
                         value += 0;
                     else
@@ -166,7 +183,8 @@ public class PlayerPurchaseController {
             }
             else{
                 for(int j = 0; j < (pt.get(i).cb.getValue() - (int)pt.get(i).cb.getItems().get(0)); j++) {
-                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
+                    int loner = PlayerTemplateDao.getLonerForOutsidePlayer(pt.get(i).getId(), App.getTeam());
+                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, loner == 0 ? "" : ",Loner(" + loner + "+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
                     if(pt.get(i).getMaxQty() > 10 && rules)
                         value += 0;
                     else
@@ -328,6 +346,51 @@ public class PlayerPurchaseController {
         else {
             App.setRoot("team/team_management");
         }
+    }
+
+    @FXML public void populateRaces() throws IOException, SQLException {
+        if(!"Reset".equals(family.getText())) {
+            List<Race> races = RaceDao.getRaces(App.getTeam());
+            races.forEach(race -> otherRace.getItems().add(race.getName()));
+            otherRace.setVisible(true);
+            family.setText("Reset");
+        } else {
+            otherRace.setVisible(false);
+            otherRace.getItems().clear();
+            family.setText("Other Players");
+            pt.clear();
+            getTable();
+        }
+    }
+
+    @FXML public void selectRace() throws SQLException, IOException {
+        String name = otherRace.getValue();
+        if(name == null || name.equals("")) {
+            return;
+        }
+        Race r = RaceDao.getRace(name);
+        List<PlayerTemplate> templates = PlayerTemplateDao.getTemplate(r.getId());
+        pt.clear();
+        templates.forEach(template -> {
+            TemplateImage ti = new TemplateImage(template);
+            ti.img = new ImageView();
+            ti.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
+            ti.cb = new ComboBox<Integer>();
+            int j = 0;
+            if (!App.isNewTeam()) {
+                //Qualcosa per settare j
+                try {
+                    j = PlayerDao.getPositional(ti.getId(), App.getTeam().getId());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            for (; j <= ti.getMaxQty(); j++)
+                ti.cb.getItems().add(j);
+            ti.cb.getSelectionModel().select(0);
+            ti.cb.setOnAction(e -> checkBounds());
+            pt.add(ti);
+        });
     }
 
     public static Player[] getP() {

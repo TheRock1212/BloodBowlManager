@@ -28,7 +28,7 @@ public class ManagementController {
     private Player[] player = new Player[27];
     private Race r = new Race();
 
-    @FXML private Label costRr, treasury, apoUn, apoAcq, error, sponsor, ready, stadium, staLabel;
+    @FXML private Label costRr, treasury, apoUn, apoAcq, error, sponsor, ready, stadium, staLabel, cardLabel, cards;
     @FXML private RadioButton option;
     @FXML private ComboBox<Integer> rr, ac, ch;
     @FXML private Button readyButton, purButton, spoButton, staBtn;
@@ -145,11 +145,14 @@ public class ManagementController {
         }
 
         staLabel.setText(App.getTeam().getStadium());
+        cards.setText(Integer.toString(App.getTeam().getCards()));
 
         if(!App.getLeague().isPerennial()) {
             stadium.setVisible(false);
             staLabel.setVisible(false);
             staBtn.setVisible(false);
+            cardLabel.setVisible(false);
+            cards.setVisible(false);
         }
     }
 

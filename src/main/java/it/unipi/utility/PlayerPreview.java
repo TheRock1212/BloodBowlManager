@@ -46,6 +46,7 @@ public class PlayerPreview {
     private int lev;
     private boolean journey;
     public String position;
+    public int season;
 
     public PlayerPreview(TemplateImage ti, Player p) throws SQLException {
         this.id = p.getId();
@@ -90,6 +91,7 @@ public class PlayerPreview {
         this.secondary = ti.secondary;
         this.journey = p.isJourney();
         this.team = p.getTeam();
+        this.season = p.getSeason();
     }
 
     public PlayerPreview(PlayerPreview pp) {
@@ -126,6 +128,7 @@ public class PlayerPreview {
         this.secondary = pp.getSecondary();
         this.journey = pp.isJourney();
         this.team = pp.getTeam();
+        this.season = pp.getSeason();
     }
 
     public PlayerPreview(PlayerTemplate pt, Player p) throws SQLException {
@@ -169,6 +172,7 @@ public class PlayerPreview {
         this.secondary = pt.secondary;
         this.journey = p.isJourney();
         this.team = p.getTeam();
+        this.season = p.getSeason();
     }
 
     public int getId() {
@@ -449,5 +453,13 @@ public class PlayerPreview {
 
     public void setTeam(int team) {
         this.team = team;
+    }
+
+    public int getSeason() {
+        return season;
+    }
+
+    public void setSeason(int season) {
+        this.season = season;
     }
 }

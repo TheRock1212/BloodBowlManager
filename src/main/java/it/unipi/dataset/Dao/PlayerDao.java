@@ -548,4 +548,20 @@ public class PlayerDao {
         ps.close();
         return players;
     }
+
+    static public int getOutsideTeam(Team team) throws SQLException {
+        int result = 0;
+        String sql = " SELECT COUNT(*) AS OUTSIDE FROM player WHERE status = 1 AND isjourney = 0 AND team = ? AND player_template NOT IN ( SELECT id FROM player_template WHERE race = ?) ";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, team.getId());
+        ps.setInt(++i, team.getRace());
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()) {
+            result = rs.getInt(1);
+        }
+        rs.close();
+        ps.close();
+        return result;
+    }
 }

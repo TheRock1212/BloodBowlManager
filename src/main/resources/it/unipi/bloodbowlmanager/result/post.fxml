@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.controller.ResultController">
+   <children>
+      <Label fx:id="teamH" alignment="CENTER" layoutY="22.0" prefHeight="29.0" prefWidth="198.0" text="Label">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="teamA" alignment="CENTER" layoutX="198.0" layoutY="22.0" prefHeight="29.0" prefWidth="198.0" text="Label">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="74.0" layoutY="97.0" text="New DF:" />
+      <Label layoutX="273.0" layoutY="97.0" text="New DF:" />
+      <Label layoutX="71.0" layoutY="160.0" text="Winnings:" />
+      <Label layoutX="270.0" layoutY="160.0" text="Winnings:" />
+      <Label layoutX="186.0" layoutY="289.0" text="Date:" />
+      <Spinner fx:id="dfH" layoutX="63.0" layoutY="119.0" prefHeight="26.0" prefWidth="70.0" />
+      <Spinner fx:id="dfA" layoutX="262.0" layoutY="119.0" prefHeight="26.0" prefWidth="70.0" />
+      <Spinner fx:id="winH" layoutX="36.0" layoutY="188.0" prefHeight="26.0" prefWidth="123.0" />
+      <Spinner fx:id="winA" layoutX="236.0" layoutY="188.0" prefHeight="26.0" prefWidth="123.0" />
+      <DatePicker fx:id="play" layoutX="121.0" layoutY="312.0" prefHeight="26.0" prefWidth="159.0" />
+      <Button layoutX="168.0" layoutY="350.0" mnemonicParsing="false" onAction="#switchToOverview" text="Choose" />
+      <Label layoutX="83.0" layoutY="227.0" text="MVP:" />
+      <Label layoutX="282.0" layoutY="227.0" text="MVP:" />
+      <ComboBox fx:id="mvpH" layoutX="61.0" layoutY="254.0" prefHeight="26.0" prefWidth="76.0" />
+      <ComboBox fx:id="mvpA" layoutX="258.0" layoutY="254.0" prefHeight="26.0" prefWidth="76.0" />
+      <CheckBox fx:id="conH" layoutX="51.0" layoutY="58.0" mnemonicParsing="false" onAction="#setConceiding" text="Conceiding?" />
+      <CheckBox fx:id="conA" layoutX="252.0" layoutY="58.0" mnemonicParsing="false" onAction="#setConceiding" text="Conceiding?" />
+   </children>
+</Pane>
