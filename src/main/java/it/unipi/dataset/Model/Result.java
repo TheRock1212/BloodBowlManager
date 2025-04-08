@@ -30,8 +30,9 @@ public class Result {
     public int wina;
     public boolean played;
     public Date date;
+    private boolean playoff;
 
-    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date) {
+    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date, boolean playoff) {
         this.league = league;
         this.teamH = teamH;
         this.teamA = teamA;
@@ -53,6 +54,7 @@ public class Result {
         this.wina = wina;
         this.played = played;
         this.date = date;
+        this.playoff = playoff;
     }
 
     public Result() {
@@ -81,9 +83,10 @@ public class Result {
         this.wina = r.wina;
         this.played = r.played;
         this.date = r.date;
+        this.playoff = r.playoff;
     }
 
-    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date) {
+    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date, boolean playoff) {
         this.id = id;
         this.league = league;
         this.teamH = teamH;
@@ -106,6 +109,7 @@ public class Result {
         this.wina = wina;
         this.played = played;
         this.date = date;
+        this.playoff = playoff;
     }
 
     public Result(ResultSet rs) throws SQLException {
@@ -131,6 +135,7 @@ public class Result {
         this.wina = rs.getInt("winA");
         this.played = rs.getBoolean("played");
         this.date = rs.getDate("date");
+        this.playoff = rs.getBoolean("playoff");
     }
 
     public Result(ResultGame rg) {
@@ -156,6 +161,7 @@ public class Result {
         this.wina = rg.wina;
         this.played = rg.played;
         this.date = rg.date;
+        this.playoff = rg.isPlayoff();
     }
 
     public Result(int league, int teamH, int teamA) {
@@ -349,5 +355,13 @@ public class Result {
         res[0] = TeamDao.getName(getTeamH());
         res[1] = TeamDao.getName(getTeamA());
         return res;
+    }
+
+    public boolean isPlayoff() {
+        return playoff;
+    }
+
+    public void setPlayoff(boolean playoff) {
+        this.playoff = playoff;
     }
 }

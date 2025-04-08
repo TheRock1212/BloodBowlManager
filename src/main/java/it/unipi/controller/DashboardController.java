@@ -6,6 +6,7 @@ import it.unipi.dataset.Model.*;
 import it.unipi.utility.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,6 +15,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -54,6 +57,8 @@ public class DashboardController {
     @FXML private Button addTeam, groups, playoff, close, pdfs;
 
     @FXML private Tab bounty;
+
+    @FXML private TabPane pane;
 
     public Stage stage = new Stage();
     public Scene scene;
@@ -226,6 +231,7 @@ public class DashboardController {
         statsTeam.setItems(ts);
 
         bounty.setDisable(true);
+        playoff.setVisible(false);
 
         if(App.getLeague().isPerennial()) {
             TableColumn team = new TableColumn("Team");
@@ -256,9 +262,49 @@ public class DashboardController {
             fixture.setDisable(false);
             if(App.getLeague().getGroups() > 1)
                 groups.setVisible(true);
-            if(App.getLeague().getPlayoff() > 2)
+            if(App.getLeague().getPlayoff() > 2 && ResultDao.isAllPlayed(App.getLeague().getId()))
                 playoff.setVisible(true);
         }
+
+        teamList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    if(mouseEvent.getClickCount() == 2){
+                        try {
+                            openTeamManagement();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
+        resultList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    if(mouseEvent.getClickCount() == 2){
+                        try {
+                            addResult();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
+        switch(App.getReturnState()) {
+            case ROSTERS -> pane.getSelectionModel().select(1);
+            case RESULTS -> pane.getSelectionModel().select(2);
+            case STATS_PLAYER -> pane.getSelectionModel().select(3);
+            case STATS_TEAM -> pane.getSelectionModel().select(4);
+            case BOUNTY -> pane.getSelectionModel().select(5);
+            default -> pane.getSelectionModel().select(0);
+        }
+
     }
 
     private void getTable() throws SQLException {
@@ -310,6 +356,7 @@ public class DashboardController {
         stage.setScene(scene);
         stage.setTitle("Team Creation");
         stage.setResizable(false);
+        App.setReturnState(Tabs.ROSTERS);
         stage.show();
     }
 
@@ -324,11 +371,13 @@ public class DashboardController {
     @FXML public void openTeamManagement() throws IOException {
         App.setTeam(teamList.getSelectionModel().getSelectedItem());
         App.setNewTeam(false);
+        App.setReturnState(Tabs.ROSTERS);
         App.setRoot("team/team_management");
     }
 
     @FXML public void addFixture() throws IOException {
         ResultController.setStato(State.FIXTURE);
+        App.setReturnState(Tabs.RESULTS);
         stage.setTitle("Select Fixtures");
         scene = new Scene(App.load("result/mode"), 200, 300);
         stage.setScene(scene);
@@ -345,6 +394,7 @@ public class DashboardController {
             stage.show();
             return;
         }
+        App.setReturnState(Tabs.RESULTS);
         ResultController.setStato(State.SELECTMODE);
         App.setResult(new ResultGame(resultList.getSelectionModel().getSelectedItem()));
         stage.setTitle("Post-Game Phase");
@@ -358,17 +408,15 @@ public class DashboardController {
         int riga = resultList.getSelectionModel().getSelectedIndex();
         if(res.get(riga).played)
             return false;
-        int giornata = riga / (App.getLeague().getNTeams() / 2);
-        int cont = 0;
+        int giornate = (riga / (App.getLeague().getNTeams() / 2));
+        int cont = 1;
         for(int i = 0; i <= riga; i++) {
-
-            if(i == (App.getLeague().getNTeams() / 2))
+            if(i % (App.getLeague().getNTeams() / 2) == 0)
                 cont++;
-            if(cont < giornata && !res.get(i).played)
+            if(cont < giornate && !res.get(i).played)
                 return false;
-            if(cont == giornata)
+            if(cont == giornate)
                 return true;
-
         }
         return false;
     }
@@ -427,6 +475,7 @@ public class DashboardController {
 
     @FXML public void addBounty() throws IOException {
         stage.setTitle("Add Bounty");
+        App.setReturnState(Tabs.BOUNTY);
         scene = new Scene(App.load("bounty/bounty"), 200, 320);
         stage.setScene(scene);
         stage.setResizable(false);

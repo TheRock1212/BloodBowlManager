@@ -4,10 +4,12 @@ import it.unipi.dataset.Model.League;
 import it.unipi.dataset.Model.Team;
 import it.unipi.utility.PlayerPreview;
 import it.unipi.utility.ResultGame;
+import it.unipi.utility.Tabs;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,6 +28,7 @@ public class App extends Application {
     private static boolean naming = false;
     private static PlayerPreview player;
     private static ResultGame result;
+    private static Tabs returnState;
 
     @Override
     public void start(Stage stage) throws IOException, SQLException, ClassNotFoundException {
@@ -33,6 +36,7 @@ public class App extends Application {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection co = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/bblm", "root", "root");
         setConnection(co);
+        returnState = Tabs.STANDINGS;
         scene = new Scene(loadFXML("league/league_dashboard"), 1000, 700);
         stage.setTitle("Blood Bowl League Manager");
         stage.setScene(scene);
@@ -118,5 +122,13 @@ public class App extends Application {
 
     public static void setResult(ResultGame result) {
         App.result = result;
+    }
+
+    public static Tabs getReturnState() {
+        return returnState;
+    }
+
+    public static void setReturnState(Tabs returnState) {
+        App.returnState = returnState;
     }
 }

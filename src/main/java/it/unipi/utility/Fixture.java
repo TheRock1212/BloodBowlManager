@@ -23,9 +23,11 @@ public class Fixture {
      * @param n il numero di giornate da generare
      * @throws SQLException
      */
-    public void RoundRobin(int n) throws SQLException {
+    public void RoundRobin(int n, boolean collapse) throws SQLException {
         Result r = new Result();
         int gironi = App.getLeague().getGroups();
+        if(collapse)
+            gironi = 1;
         for(int gr = 0; gr < gironi; gr++) {
             int[] tms;
             if(gironi == 1)

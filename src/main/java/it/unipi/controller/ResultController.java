@@ -57,6 +57,7 @@ public class ResultController {
                 for(int i = 2; i < App.getLeague().getNTeams(); i++)
                     rounds.getItems().add(i);
                 mode.getItems().add("Round Robin");
+                mode.getItems().add("RR Collapse Groups");
                 //mode.getItems().add("One at a Time");
                 break;
             }
@@ -194,7 +195,8 @@ public class ResultController {
 
     @FXML public void setFixture() throws SQLException, IOException {
         Fixture fixture = new Fixture();
-        fixture.RoundRobin(rounds.getValue());
+        boolean collapse = mode.getValue().contains("Collapse");
+        fixture.RoundRobin(rounds.getValue(), collapse);
         Stage stage = (Stage) rounds.getScene().getWindow();
         stage.close();
         App.setRoot("dashboard");

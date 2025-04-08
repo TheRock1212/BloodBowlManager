@@ -5,10 +5,13 @@ import it.unipi.dataset.Dao.LeagueDao;
 import it.unipi.dataset.Model.League;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -67,6 +70,21 @@ public class LeagueController {
             leagueTable.setItems(ol);
 
             getLeagues();
+
+            leagueTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                        if(mouseEvent.getClickCount() == 2){
+                            try {
+                                open();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            });
         }
         else {
             SpinnerValueFactory<Integer> pts = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 1);

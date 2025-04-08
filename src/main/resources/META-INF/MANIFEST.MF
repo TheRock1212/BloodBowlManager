@@ -1,3 +1,16 @@
 Manifest-Version: 1.0
-Main-Class: it.unipi.bloodbowlmanager.App
+Main-Class: it.unipi.bloodbowlmanager.Launcher
+Class-Path: javafx-graphics-21.0.2.jar formsfx-core-11.6.0.jar javafx-sw
+ ing-21.jar mysql-connector-j-8.0.33.jar javafx-base-21.0.2-mac-aarch64.
+ jar javafx-swing-21-mac-aarch64.jar toolbox-21.0.5.jar io-7.2.6.jar log
+ 4j-1.2.17.jar slf4j-log4j12-1.7.18.jar protobuf-java-3.21.9.jar javafx-
+ fxml-21.0.2.jar countries-21.0.3.jar ikonli-javafx-12.3.1.jar slf4j-api
+ -1.7.36.jar toolboxfx-21.0.3.jar log4j-core-2.20.0.jar javafx-graphics-
+ 21.0.2-mac-aarch64.jar bcprov-jdk18on-1.75.jar heatmap-21.0.3.jar ikonl
+ i-core-12.3.1.jar jarbundler-core-3.3.0.jar javafx-controls-21.0.2.jar 
+ bootstrapfx-core-0.4.0.jar commons-7.2.6.jar javafx-controls-21.0.2-mac
+ -aarch64.jar bcutil-jdk18on-1.75.jar log4j-slf4j-impl-2.20.0.jar ant-1.
+ 9.3.jar kernel-7.2.6.jar layout-7.2.6.jar bcpkix-jdk18on-1.75.jar log4j
+ -api-2.20.0.jar javafx-fxml-21.0.2-mac-aarch64.jar tilesfx-21.0.3.jar c
+ ontrolsfx-11.2.1.jar javafx-base-21.0.2.jar ant-launcher-1.9.3.jar
 

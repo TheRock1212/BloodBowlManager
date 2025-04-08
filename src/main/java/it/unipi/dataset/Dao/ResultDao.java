@@ -102,4 +102,20 @@ public class ResultDao {
         ps.close();
         return result;
     }
+
+    static public boolean isAllPlayed(int league) throws SQLException {
+        boolean result = true;
+        String sql = " SELECT * FROM results WHERE league = ? AND played = 0 ";
+        PreparedStatement ps = App.getConnection().prepareStatement(sql);
+        int i = 0;
+        ps.setInt(++i, league);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            result = false;
+            break;
+        }
+        ps.close();
+        rs.close();
+        return result;
+    }
 }
