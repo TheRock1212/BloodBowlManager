@@ -37,8 +37,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class PDFManager {
-    private static final String[] headerRoster = {"#", "PLAYER NAME", "TYPE", "MA", "ST", "AG", "PA", "AV", "SKILLS", "TotalSPP", "UnspentSPP", "COST"};
-    private static final int nrColumn = 12;
+    private static final String[] headerRoster = {"#", "PLAYER NAME", "TYPE", "MA", "ST", "AG", "PA", "AV", "SKILLS", "TotalSPP", "UnspentSPP", "COST", "Season"};
+    private static final int nrColumn = 13;
     private static final String TAHOMA = PDFManager.class.getResource("/fonts/Tahoma.ttf").toExternalForm(); //"src/main/resources/it/unipi/bloodbowlmanager/fonts/Tahoma.ttf";
     private static final String TAHOMA_BOLD = PDFManager.class.getResource("/fonts/Tahoma Bold.ttf").toExternalForm();
 
@@ -98,7 +98,11 @@ public class PDFManager {
         }
         if(teams != null && !teams.isEmpty())
             foe = teams.getFirst();
-        Table table = new Table(UnitValue.createPercentArray(new float[] {2.56f, 11.82f, 12.85f, 3.06f, 2.56f, 2.56f, 2.56f, 3.06f, 37.7f, 6.64f, 7.69f, 5.69f}));
+        Table table = null;
+        if(App.getLeague().isPerennial())
+            table =new Table(UnitValue.createPercentArray(new float[] {2.56f, 11.82f, 12.85f, 3.06f, 2.56f, 2.56f, 2.56f, 3.06f, 37.7f, 5.00f, 6.69f, 4.69f, 3.64f}));
+        else
+            table = new Table(UnitValue.createPercentArray(new float[] {2.56f, 11.82f, 12.85f, 3.06f, 2.56f, 2.56f, 2.56f, 3.06f, 37.7f, 6.64f, 7.69f, 5.69f}));
         table.setWidth(UnitValue.createPercentValue(100));
         table.setFixedLayout();
         //table.setMaxWidth(600);
@@ -113,6 +117,8 @@ public class PDFManager {
 
 
         for(String header : headerRoster) {
+            if(!App.getLeague().isPerennial() && header.equals(headerRoster[headerRoster.length - 1]))
+                break;
             table.addHeaderCell(new Cell().add(new Paragraph(header)).addStyle(h));
         }
         //Generazione Corpo tabella
@@ -131,6 +137,8 @@ public class PDFManager {
         for(PlayerPreview player : pp) {
             PlayerTemplate temp = PlayerTemplateDao.getPlayer(player.getTemplateId());
             for(int i = 0; i < nrColumn; i++) {
+                if(!App.getLeague().isPerennial() && i == (nrColumn - 1))
+                    break;
                 switch(i) {
                     case 0:
                         table.addCell(Integer.toString(player.number)).addStyle(b);
@@ -205,6 +213,9 @@ public class PDFManager {
                     case 11:
                         table.addCell(player.val + ".000").addStyle(b);
                         break;
+                    case 12:
+                        table.addCell(Integer.toString(player.season)).addStyle(b);
+                        break;
                 }
             }
         }
@@ -229,7 +240,7 @@ public class PDFManager {
         table.addCell(costH);
         Cell primH = new Cell(1, 1).add(new Paragraph("PRIMARY")).addStyle(h);
         table.addCell(primH);
-        Cell secondH = new Cell(1, 1).add(new Paragraph("SECONDARY")).addStyle(h);
+        Cell secondH = new Cell(1, App.getLeague().isPerennial() ? 2 : 1).add(new Paragraph("SECONDARY")).addStyle(h);
         table.addCell(secondH);
 
         for(int i = 0; i < 11; i++) {
@@ -284,10 +295,19 @@ public class PDFManager {
                     break;
                 }
                 case 7: {
-                    Cell teamH = new Cell(1, 2).add(new Paragraph("SPONSOR")).addStyle(h);
+                    Cell teamH = new Cell(1, 2).add(new Paragraph(App.getLeague().isPerennial() ? "SPONSOR / CARD" : "SPONSOR")).addStyle(h);
                     table.addCell(teamH);
-                    Cell team = new Cell(1, 3).add(new Paragraph(t.sponsor)).addStyle(b);
-                    table.addCell(team);
+                    Cell team = null;
+                    if(App.getLeague().isPerennial()) {
+                        team = new Cell(1, 1).add(new Paragraph(t.sponsor)).addStyle(b);
+                        table.addCell(team);
+                        Cell card = new Cell(1, 2).add(new Paragraph(Integer.toString(t.getCards()))).addStyle(b);
+                        table.addCell(card);
+                    }
+                    else {
+                        team = new Cell(1, 3).add(new Paragraph(t.sponsor)).addStyle(b);
+                        table.addCell(team);
+                    }
                     break;
                 }
                 case 8: {
@@ -326,7 +346,7 @@ public class PDFManager {
                 table.addCell(cost);
                 Cell prim = new Cell(1, 1).add(new Paragraph(pt.get(i).primary)).addStyle(b);
                 table.addCell(prim);
-                Cell second = new Cell(1, 1).add(new Paragraph(pt.get(i).secondary)).addStyle(b);
+                Cell second = new Cell(1, App.getLeague().isPerennial() ? 2 : 1).add(new Paragraph(pt.get(i).secondary)).addStyle(b);
                 table.addCell(second);
             }
             else {
@@ -338,7 +358,7 @@ public class PDFManager {
                 table.addCell(cost);
                 Cell prim = new Cell(1, 1).add(new Paragraph()).addStyle(empty);
                 table.addCell(prim);
-                Cell second = new Cell(1, 1).add(new Paragraph()).addStyle(empty);
+                Cell second = new Cell(1, App.getLeague().isPerennial() ? 2 : 1).add(new Paragraph()).addStyle(empty);
                 table.addCell(second);
             }
         }
@@ -356,12 +376,12 @@ public class PDFManager {
         Cell rerollH = new Cell(1, 1).add(new Paragraph("COST REROLL")).addStyle(h);
         table.addCell(rerollH);
 
-        Cell reroll = new Cell(1, 1).add(new Paragraph(r.reroll * 2 + ".000")).addStyle(b);
+        Cell reroll = new Cell(1, App.getLeague().isPerennial() ? 2 : 1).add(new Paragraph(r.reroll * 2 + ".000")).addStyle(b);
         table.addCell(reroll);
 
 
         if(PlayerDao.hasMNG(t.getId())) {
-            Cell numbersH = new Cell(1, 12).add(new Paragraph("MISSING PLAYERS")).addStyle(h);
+            Cell numbersH = new Cell(1, App.getLeague().isPerennial() ? 13 : 12).add(new Paragraph("MISSING PLAYERS")).addStyle(h);
             table.addCell(numbersH);
 
 
@@ -380,6 +400,8 @@ public class PDFManager {
             for(PlayerPreview player : ppm) {
                 PlayerTemplate temp = PlayerTemplateDao.getPlayer(player.getTemplateId());
                 for (int i = 0; i < nrColumn; i++) {
+                    if(!App.getLeague().isPerennial() && i == (nrColumn - 1))
+                        break;
                     switch (i) {
                         case 0:
                             table.addCell(Integer.toString(player.number)).addStyle(b);
@@ -453,6 +475,9 @@ public class PDFManager {
                             break;
                         case 11:
                             table.addCell(player.val + ".000").addStyle(b);
+                            break;
+                        case 12:
+                            table.addCell(Integer.toString(player.season)).addStyle(b);
                             break;
                     }
                 }

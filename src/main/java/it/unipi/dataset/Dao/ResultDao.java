@@ -87,7 +87,7 @@ public class ResultDao {
     }
 
     public static boolean isLastOfRegular(int league, int team) throws SQLException {
-        String sql = "SELECT COUNT(*) AS STILLTOBE FROM results WHERE date IS NULL AND league = ? AND (teamH = ? OR teamA = ?)";
+        String sql = "SELECT IF((SELECT 1 FROM results r2 WHERE r2.playoff = 1 LIMIT 1) IS NOT NULL, 1, COUNT(*)) AS STILLTOBE FROM results WHERE date IS NULL AND league = ? AND (teamH = ? OR teamA = ?)";
         PreparedStatement ps = App.getConnection().prepareStatement(sql);
         int i = 0;
         ps.setInt(++i, league);
