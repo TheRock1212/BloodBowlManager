@@ -5,6 +5,8 @@ import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.*;
 import it.unipi.utility.PlayerPreview;
 import it.unipi.utility.TemplateImage;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -39,8 +41,9 @@ public class ManagementController {
 
     private static Scene scene;
     private static Stage stage = new Stage();
+    private String data;
 
-    @FXML public void initialize() throws SQLException {
+    @FXML public void initialize() throws Exception {
         //Creazione tabella per info e selezione giocatori
         TableColumn nomeCol = new TableColumn("Position");
         nomeCol.setCellValueFactory(new PropertyValueFactory<>("position"));
@@ -97,7 +100,9 @@ public class ManagementController {
         p = FXCollections.observableArrayList();
         players.setItems(p);
 
-        r = RaceDao.getRace(App.getTeam().getRace());
+        Connection.params.put("id", App.getTeam().getRace());
+        data = Connection.getConnection("/api/v1/race/race", Connection.GET, null);
+        r = JsonExploiter.getObjectFromJson(Race.class, data);
 
         getTable();
         //Metto il tesoro rimanente e le altre informazioni relative alle razze
@@ -174,13 +179,18 @@ public class ManagementController {
         }
     }
 
-    public void getTable() throws SQLException{
+    public void getTable() throws Exception{
         //Ottengono informazioni relative atutti i giocatori acquistabili da quella razza
         int cont;
-        List<Player> players = PlayerDao.getPlayers(App.getTeam().getId(), true);
+        Connection.params.put("team", App.getTeam().getId());
+        Connection.params.put("alive", true);
+        data = Connection.getConnection("/api/v1/player/players", Connection.GET, null);
+        List<Player> players = JsonExploiter.getListFromJson(Player.class, data);
         for(cont = 0; cont < players.size(); cont++)
             player[cont] = players.get(cont);
-        List<PlayerTemplate> templates = PlayerTemplateDao.getTemplate(App.getTeam().getRace());
+        Connection.params.put("race", App.getTeam().getRace());
+        data = Connection.getConnection("/api/v1/playerTemplate/template", Connection.GET, null);
+        List<PlayerTemplate> templates = JsonExploiter.getListFromJson(PlayerTemplate.class, data);
         TemplateImage[] ti = new TemplateImage[r.getPositional()];
         cont = 0;
         for(PlayerTemplate pt : templates) {
@@ -202,14 +212,11 @@ public class ManagementController {
     }
 
     @FXML
-    public void switchToDashboard() throws IOException, SQLException {
+    public void switchToDashboard() throws Exception {
         //Controllo se è stato acquistato qualcosa. In caso positivo, salvo il nuovo contenuto
-        if(checkPurchase()) {
             //App.getTeam().updateStaff();
-            TeamDao.updateTeam(App.getTeam(), false);
-        }
-        TeamDao.updateTeam(App.getTeam(), true);
-        TeamDao.saveSponsor(App.getTeam().getId(), App.getTeam().getSponsor(), 0);
+        Connection.getConnection("api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
+        //Connection.getConnection("api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
         App.setRoot("dashboard");
     }
 
@@ -269,7 +276,7 @@ public class ManagementController {
     public void switchToPurchase() throws IOException, SQLException {
         App.setNewTeam(false);
         if(checkPurchase()) {
-            TeamDao.updateTeam(App.getTeam(), false);
+            Connection.getConnection("api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
         }
         scene = new Scene(App.load("player/player_purchase"), 600, 400);
         stage.setScene(scene);
@@ -285,18 +292,25 @@ public class ManagementController {
     public void deletePlayer() throws SQLException, IOException {
         PlayerPreview tmp = players.getSelectionModel().getSelectedItem();
         //Player pl = new Player(App.getTeam().getId(), App.getTeam().getId(), 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 1, true, true);
-        PlayerDao.removePlayer(tmp.getId());
+        Connection.params.put("id", tmp.getId());
+        Connection.getConnection("api/v1/player/fire", Connection.GET, null);
         if(App.getLeague().isPerennial()) {
-            List<Bounty> bounties = BountyDao.getBountyByPlayer(App.getConnection(), tmp.getId());
+            Connection.params.put("player", tmp.getId());
+            data = Connection.getConnection("/api/v1/bounty/player", Connection.GET, null);
+            List<Bounty> bounties = JsonExploiter.getListFromJson(Bounty.class, data);
             bounties.forEach(bounty -> {
                 try {
-                    List<Team> teams = TeamDao.getTeam(bounty.getTeam(), App.getLeague().getId());
+                    Connection.params.put("id", bounty.getTeam());
+                    Connection.params.put("league", App.getLeague().getId());
+                    data = Connection.getConnection("/api/v1/team/teams", Connection.GET, null);
+                    List<Team> teams = JsonExploiter.getListFromJson(Team.class, data);
                     if(!teams.isEmpty()) {
                         Team t = teams.getFirst();
                         t.treasury += bounty.getReward();
+                        Connection.getConnection("/api/v1/team/add", Connection.POST, JsonExploiter.toJson(t));
                     }
-                    BountyDao.delete(App.getConnection(), bounty);
-                } catch (SQLException e) {
+                    Connection.getConnection("/api/v1/bounty/remove", Connection.POST, JsonExploiter.toJson(bounty));
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
@@ -305,7 +319,7 @@ public class ManagementController {
         App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() - 1);
         if(!tmp.MNG)
             App.getTeam().value -= tmp.val;
-        TeamDao.updateTeam(App.getTeam(), true);
+        Connection.getConnection("/api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
     }
 
     //Apre una scena di riepilogo del giocatore selezionato
@@ -348,26 +362,30 @@ public class ManagementController {
     @FXML public void setReady() throws SQLException, IOException {
         //List<Player> listPlayers = PlayerDao.getStarting(App.getTeam().getId());
         App.getTeam().setReady(true);
-        if(ResultDao.isLastOfRegular(App.getLeague().getId(), App.getTeam().getId())) {
-            List<Player> players = PlayerDao.getMNG(App.getTeam().getId());
-            for(Player p : players) {
-                PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
-                p.setMng(false);
-                App.getTeam().value += (p.value + template.cost);
-            }
-            PlayerDao.updateResults(players);
+        Connection.params.put("league", App.getLeague().getId());
+        Connection.params.put("team", App.getTeam().getId());
+        if(Boolean.getBoolean(Connection.getConnection("/api/v1/result/lastOfRegular", Connection.GET, null))) {
+            data = Connection.getConnection("/api/v1/player/mng", Connection.POST, JsonExploiter.toJson(App.getTeam()));
+            App.setTeam(JsonExploiter.getObjectFromJson(Team.class, data));
         }
-        Player[] jrm = PlayerDao.getJourneymans(App.getTeam());
-        PlayerTemplate pt = PlayerTemplateDao.getJourneyman(App.getTeam().getJourneyman());
-        if(jrm != null) {
+        Connection.params.put("team", App.getTeam().getId());
+        data = Connection.getConnection("/api/v1/player/journey", Connection.GET, null);
+        List<Player> jrm = JsonExploiter.getListFromJson(Player.class, data);
+        Connection.params.put("id", App.getTeam().getJourneyman());
+        data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
+        PlayerTemplate pt = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
+        if(!jrm.isEmpty()) {
             for(Player p : jrm) {
                 if(!p.mng)
                     App.getTeam().value -= pt.cost;
-                PlayerDao.deletePlayer(p.getId());
+                Connection.params.put("id", p.getId());
+                Connection.getConnection("/api/v1/player/delete", Connection.GET, null);
             }
         }
         //List<Player> listPlayers = PlayerDao.getStarting(App.getTeam().getId());
-        int nPlayer = PlayerDao.countPlayers(App.getTeam().getId(), true);
+        Connection.params.put("team", App.getTeam().getId());
+        Connection.params.put("journey", true);
+        int nPlayer = Integer.parseInt(Connection.getConnection("/api/v1/player/count", Connection.GET, null));
         List<Player> journey = new ArrayList<>();
         int number = 100;
         while(nPlayer < 11) {
@@ -376,12 +394,9 @@ public class ManagementController {
             nPlayer++;
         }
         if(!journey.isEmpty()) {
-            PlayerDao.addPlayer(journey);
+            Connection.getConnection("/api/v1/player/addPlayers", Connection.POST, JsonExploiter.toJson(journey));
         }
-        TeamDao.updateTeam(App.getTeam(), true);
-        if(checkPurchase()) {
-            TeamDao.updateTeam(App.getTeam(), false);
-        }
+        Connection.getConnection("api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
 
         App.setRoot("team/team_management");
     }

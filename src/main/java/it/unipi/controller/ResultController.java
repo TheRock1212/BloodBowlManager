@@ -54,7 +54,7 @@ public class ResultController {
     public void initialize() {
         switch (stato) {
             case FIXTURE: {
-                for(int i = 2; i < App.getLeague().getNTeams(); i++)
+                for(int i = 2; i < App.getLeague().getTeams(); i++)
                     rounds.getItems().add(i);
                 mode.getItems().add("Round Robin");
                 mode.getItems().add("RR Collapse Groups");
@@ -455,7 +455,7 @@ public class ResultController {
                                     kh += ", ";
                                 kh += p.name;
                                 p.kill++;
-                                if(star_active.isSelected() && App.getLeague().isSppStar()) {
+                                if(star_active.isSelected() && App.getLeague().isSppstar()) {
                                     p.spp += 2;
                                     p.unspentSPP += 2;
                                 }
@@ -507,7 +507,7 @@ public class ResultController {
                                     ka += ", ";
                                 ka += p.name;
                                 p.kill++;
-                                if(star_active.isSelected() && App.getLeague().isSppStar()) {
+                                if(star_active.isSelected() && App.getLeague().isSppstar()) {
                                     p.spp += 2;
                                     p.unspentSPP += 2;
                                 }
@@ -904,35 +904,35 @@ public class ResultController {
         if(App.getResult().tdh > App.getResult().tda) {
             App.getResult().gettH().w++;
             App.getResult().gettA().l++;
-            App.getResult().gettH().points += App.getLeague().getPtsWin();
-            App.getResult().gettA().points += App.getLeague().getPtsLose();
+            App.getResult().gettH().points += App.getLeague().getWin();
+            App.getResult().gettA().points += App.getLeague().getLoss();
         }
         else if (App.getResult().tdh < App.getResult().tda) {
             App.getResult().gettA().w++;
             App.getResult().gettH().l++;
-            App.getResult().gettA().points += App.getLeague().getPtsWin();
-            App.getResult().gettH().points += App.getLeague().getPtsLose();
+            App.getResult().gettA().points += App.getLeague().getWin();
+            App.getResult().gettH().points += App.getLeague().getLoss();
         }
         else {
             App.getResult().gettA().n++;
             App.getResult().gettH().n++;
-            App.getResult().gettA().points += App.getLeague().getPtsTie();
-            App.getResult().gettH().points += App.getLeague().getPtsTie();
+            App.getResult().gettA().points += App.getLeague().getTie();
+            App.getResult().gettH().points += App.getLeague().getTie();
         }
         //Gestione Punti Secondari
-        if(App.getLeague().isPtsTD()) {
+        if(App.getLeague().isPtsTd()) {
             if(App.getResult().tdh > 2)
                 App.getResult().gettH().points++;
             if(App.getResult().tda > 2)
                 App.getResult().gettA().points++;
         }
-        if(App.getLeague().isPtsCAS()) {
+        if(App.getLeague().isPtsCas()) {
             if(App.getResult().cash > 2)
                 App.getResult().gettH().points++;
             if(App.getResult().casa > 2)
                 App.getResult().gettA().points++;
         }
-        if(App.getLeague().isPtsTDConceded()) {
+        if(App.getLeague().isPtsTdCon()) {
             if(App.getResult().tdh == 0)
                 App.getResult().gettA().points++;
             if(App.getResult().tda == 0)

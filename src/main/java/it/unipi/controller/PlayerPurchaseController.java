@@ -9,6 +9,8 @@ import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Race;
 import it.unipi.utility.TemplateImage;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -23,6 +25,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,11 +50,13 @@ public class PlayerPurchaseController {
     private Scene scene;
 
     private static Player[] p = new Player[16];
-    private int[] nrs = new int[App.getTeam().ngiocatori];
-    private String[] names = new String[App.getTeam().ngiocatori];
+    private List<Integer> nrs = new ArrayList<>();
+    private List<String> names = new ArrayList<>();
+
+    private String data;
     //private TemplateImage[] pt2 = new TemplateImage[16];
 
-    @FXML public void initialize() throws SQLException {
+    @FXML public void initialize() throws Exception {
         TableColumn pos = new TableColumn("Position");
         pos.setCellValueFactory(new PropertyValueFactory<>("position"));
 
@@ -109,12 +115,19 @@ public class PlayerPurchaseController {
 
 
             if (!App.isNewTeam()) {
-                nrs = PlayerDao.getPlayerNumbers(App.getTeam());
-                names = PlayerDao.getPlayerNames(App.getTeam());
+                Connection.params.put("team", App.getTeam().getId());
+                data = Connection.getConnection("/api/v1/player/numbers", Connection.GET, null);
+                nrs = JsonExploiter.getListFromJson(Integer.class, data);
+                Connection.params.put("team", App.getTeam().getId());
+                data = Connection.getConnection("/api/v1/player/numbers", Connection.GET, null);
+                names = JsonExploiter.getListFromJson(String.class, data);
                 cards.setText(Integer.toString(App.getTeam().getCards()));
             }
 
-            if (PlayerDao.getOutsideTeam(App.getTeam()) >= 3 || App.getTeam().getCards() < 2) {
+            Connection.params.put("team", App.getTeam().getId());
+            Connection.params.put("race", App.getTeam().getRace());
+            if (Integer.parseInt(Connection.getConnection("/api/v1/player/outside", Connection.GET, null)) >= 3
+                    || App.getTeam().getCards() < 2) {
                 family.setVisible(false);
             }
 
@@ -129,9 +142,11 @@ public class PlayerPurchaseController {
 
     }
 
-    private void getTable() throws SQLException {
+    private void getTable() throws Exception {
         PlayerTemplate p = new PlayerTemplate();
-        List<PlayerTemplate> templates = PlayerTemplateDao.getTemplate(App.getTeam().getRace());
+        Connection.params.put("race", App.getTeam().getRace());
+        data = Connection.getConnection("/api/v1/playerTemplate/template", Connection.GET, null);
+        List<PlayerTemplate> templates = JsonExploiter.getListFromJson(PlayerTemplate.class, data);
         for(PlayerTemplate t : templates) {
             TemplateImage ti = new TemplateImage(t);
             ti.img = new ImageView();
@@ -140,7 +155,9 @@ public class PlayerPurchaseController {
             int j = 0;
             if (!App.isNewTeam()) {
                 //Qualcosa per settare j
-                j = PlayerDao.getPositional(ti.getId(), App.getTeam().getId());
+                Connection.params.put("template", ti.getId());
+                Connection.params.put("team", App.getTeam().getId());
+                j = Integer.parseInt(Connection.getConnection("/api/v1/player/positional", Connection.GET, null));
             }
             for (; j <= ti.getMaxQty(); j++)
                 ti.cb.getItems().add(j);
@@ -167,13 +184,15 @@ public class PlayerPurchaseController {
             error.setVisible(true);
             return;
         }
-        boolean rules = RaceDao.hasLowCostLineman(App.getTeam().getRace());
+        Connection.params.put("id", App.getTeam().getRace());
+        boolean rules = Boolean.getBoolean(Connection.getConnection("/api/v1/race/lcl", Connection.GET, null));
         int value = 0, cont = 0;
         Player[] players = new Player[16];
         for(int i = 0; i < pt.size(); i++) {
             if(App.isNewTeam()) {
                 for(int j = 0; j < pt.get(i).cb.getValue(); j++) {
-                    int loner = PlayerTemplateDao.getLonerForOutsidePlayer(pt.get(i).getId(), App.getTeam());
+                    Connection.params.put("id", pt.get(i).getId());
+                    int loner = Integer.parseInt(Connection.getConnection("/api/v1/playerTemplate/outside", Connection.GET, JsonExploiter.toJson(App.getTeam())));
                     players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, loner == 0 ? "" : ",Loner(" + loner + "+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
                     if(pt.get(i).getMaxQty() > 10 && rules)
                         value += 0;
@@ -183,7 +202,8 @@ public class PlayerPurchaseController {
             }
             else{
                 for(int j = 0; j < (pt.get(i).cb.getValue() - (int)pt.get(i).cb.getItems().get(0)); j++) {
-                    int loner = PlayerTemplateDao.getLonerForOutsidePlayer(pt.get(i).getId(), App.getTeam());
+                    Connection.params.put("id", pt.get(i).getId());
+                    int loner = Integer.parseInt(Connection.getConnection("/api/v1/playerTemplate/outside", Connection.GET, JsonExploiter.toJson(App.getTeam())));
                     players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, loner == 0 ? "" : ",Loner(" + loner + "+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
                     if(pt.get(i).getMaxQty() > 10 && rules)
                         value += 0;
@@ -195,7 +215,7 @@ public class PlayerPurchaseController {
         App.getTeam().setNgiocatori(App.getTeam().getNgiocatori() + cont);
         App.getTeam().setTreasury(Integer.valueOf(treasuryPlayer.getText()));
         App.getTeam().value += value;
-        TeamDao.updateTeam(App.getTeam(), true);
+        Connection.getConnection("/api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
         setP(players);
         App.setNaming(true);
         Stage stage = (Stage) purchase.getScene().getWindow();
@@ -240,8 +260,10 @@ public class PlayerPurchaseController {
         treasuryPlayer.setText(Integer.toString(tmp));
     }
 
-    private void getPlayers() throws SQLException {
-        List<PlayerTemplate> templates = PlayerTemplateDao.getTemplate(App.getTeam().getRace());
+    private void getPlayers() throws Exception {
+        Connection.params.put("race", App.getTeam().getRace());
+        data = Connection.getConnection("/api/v1/playerTemplate/template", Connection.GET, null);
+        List<PlayerTemplate> templates = JsonExploiter.getListFromJson(PlayerTemplate.class, data);
         for(PlayerTemplate template : templates) {
             for(int i = 0; i <= 16; i++) {
                 if(getP()[i] == null) {
@@ -335,7 +357,7 @@ public class PlayerPurchaseController {
         List<Player> tmp = new ArrayList<>();
         //tmp.addAll(players);
         Collections.addAll(tmp, getP());
-        PlayerDao.addPlayer(tmp);
+        Connection.getConnection("/api/v1/player/addPlayers", Connection.POST, JsonExploiter.toJson(tmp));
         setP(null);
         //TeamDao.updateTeam(App.getTeam(), true);
         Stage stage = (Stage) error.getScene().getWindow();
@@ -348,9 +370,10 @@ public class PlayerPurchaseController {
         }
     }
 
-    @FXML public void populateRaces() throws IOException, SQLException {
+    @FXML public void populateRaces() throws Exception {
         if(!"Reset".equals(family.getText())) {
-            List<Race> races = RaceDao.getRaces(App.getTeam());
+            data = Connection.getConnection("/api/v1/race/family", Connection.GET, JsonExploiter.toJson(App.getTeam()));
+            List<Race> races = JsonExploiter.getListFromJson(Race.class, data);
             races.forEach(race -> otherRace.getItems().add(race.getName()));
             otherRace.setVisible(true);
             family.setText("Reset");
@@ -368,8 +391,12 @@ public class PlayerPurchaseController {
         if(name == null || name.equals("")) {
             return;
         }
-        Race r = RaceDao.getRace(name);
-        List<PlayerTemplate> templates = PlayerTemplateDao.getTemplate(r.getId());
+        Connection.params.put("name", URLEncoder.encode(name, StandardCharsets.UTF_8));
+        data = Connection.getConnection("/api/v1/race/raceName", Connection.GET, null);
+        Race r = JsonExploiter.getObjectFromJson(Race.class, data);
+        Connection.params.put("race", r.getId());
+        data = Connection.getConnection("/api/v1/playerTemplate/template", Connection.GET, null);
+        List<PlayerTemplate> templates = JsonExploiter.getListFromJson(PlayerTemplate.class, data);
         pt.clear();
         templates.forEach(template -> {
             TemplateImage ti = new TemplateImage(template);
@@ -380,7 +407,9 @@ public class PlayerPurchaseController {
             if (!App.isNewTeam()) {
                 //Qualcosa per settare j
                 try {
-                    j = PlayerDao.getPositional(ti.getId(), App.getTeam().getId());
+                    Connection.params.put("template", ti.getId());
+                    Connection.params.put("team", App.getTeam().getId());
+                    j = Integer.parseInt(Connection.getConnection("/api/v1/player/positional", Connection.GET, null));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

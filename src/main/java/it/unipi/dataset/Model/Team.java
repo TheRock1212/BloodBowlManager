@@ -41,6 +41,7 @@ public class Team {
     private boolean active;
     private int cards;
     private String stadium;
+    private int group;
 
     public Team() {
 
@@ -115,41 +116,6 @@ public class Team {
         this.stadium = stadium;
     }
 
-    public Team(ResultSet rs) throws SQLException {
-        this.id = rs.getInt("id");
-        this.coach = rs.getString("coach");
-        this.name = rs.getString("name");
-        this.race = rs.getInt("race");
-        this.league = rs.getInt("league");
-        this.ngiocatori = rs.getInt("ngiocatori");
-        this.nreroll = rs.getInt("nreroll");
-        this.apothecary = rs.getBoolean("apothecary");
-        this.cheerleader = rs.getInt("cheerleader");
-        this.assistant = rs.getInt("assistant");
-        this.df = rs.getInt("DF");
-        this.treasury = rs.getInt("treasury");
-        this.g = rs.getInt("G");
-        this.w = rs.getInt("W");
-        this.n = rs.getInt("N");
-        this.l = rs.getInt("L");
-        this.tdScored = rs.getInt("TDscored");
-        this.tdConceded = rs.getInt("TDconceded");
-        this.tdNet = tdScored - tdConceded;
-        this.casInflicted = rs.getInt("CASinflicted");
-        this.casSuffered = rs.getInt("CASsuffered");
-        this.casNet = casInflicted - casSuffered;
-        this.points = rs.getInt("PTS");
-        this.value = rs.getInt("value");
-        this.round = rs.getInt("round");
-        this.journeyman = rs.getInt("journeyman");
-        this.sponsor = rs.getString("sponsor");
-        this.ready = rs.getBoolean("ready");
-        this.active = rs.getBoolean("active");
-        this.cards = rs.getInt("cards");
-        this.stadium = rs.getString("stadium");
-        this.delta = this.tdScored * 3 + this.casInflicted * 2;
-        this.discr = this.points + ((double) this.delta / 10000) + ((double) this.tdNet / 100000) + ((double) this.casNet / 1000000);
-    }
 
     public int getId() {
         return id;
@@ -413,5 +379,12 @@ public class Team {
 
     public void setStadium(String stadium) {
         this.stadium = stadium;
+    }
+
+    public void setDeltas() {
+        this.tdNet = this.tdScored - this.tdConceded;
+        this.casNet = this.casInflicted - this.casSuffered;
+        this.delta = this.tdScored * 3 + this.casInflicted * 2;
+        this.discr = this.points + ((double) this.delta / 10000) + ((double) this.tdNet / 100000) + ((double) this.casNet / 1000000);
     }
 }

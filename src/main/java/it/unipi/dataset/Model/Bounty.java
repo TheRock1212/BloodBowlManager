@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Bounty {
+    private int league;
     private int team;
     private int player;
     private int reward;
@@ -15,10 +16,25 @@ public class Bounty {
 
     }
 
+    public Bounty(int league, int team, int player, int reward) {
+        this.league = league;
+        this.team = team;
+        this.player = player;
+        this.reward = reward;
+    }
+
     public Bounty(ResultSet rs) throws SQLException {
         this.team = rs.getInt("team");
         this.player = rs.getInt("player");
         this.reward = rs.getInt("reward");
+    }
+
+    public int getLeague() {
+        return league;
+    }
+
+    public void setLeague(int league) {
+        this.league = league;
     }
 
     public int getTeam() {

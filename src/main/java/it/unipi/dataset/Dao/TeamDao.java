@@ -34,7 +34,7 @@ public class TeamDao {
         ResultSet rs = ps.executeQuery();
         List<Team> teams = new ArrayList<>();
         while (rs.next()) {
-            teams.add(new Team(rs));
+            //teams.add(new Team(rs));
         }
         ps.close();
         rs.close();
@@ -167,7 +167,7 @@ public class TeamDao {
         String sql = "SELECT id FROM team WHERE league = ?";
         int nteam = 0;
         if(gr == 0)
-            nteam = l.getNTeams();
+            nteam = l.getTeams();
         else {
             PreparedStatement ps = App.getConnection().prepareStatement("SELECT COUNT(*) FROM team WHERE league = ? AND round = ?");
             ResultSet rs = ps.executeQuery();
@@ -283,7 +283,7 @@ public class TeamDao {
         ps.setString(++i, name);
         ResultSet rs = ps.executeQuery();
         rs.next();
-        Team team = new Team(rs);
+        Team team = new Team();
         rs.close();
         ps.close();
         return team;

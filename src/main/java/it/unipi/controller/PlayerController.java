@@ -6,6 +6,8 @@ import it.unipi.dataset.Dao.SkillDao;
 import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.Skill;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -17,6 +19,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerController {
     @FXML
@@ -35,15 +39,17 @@ public class PlayerController {
     private static boolean lUp = false;
     private static boolean naming = false;
 
-    private int[] nrs = new int[App.getTeam().ngiocatori];
-    private String[] names = new String[App.getTeam().ngiocatori];
+    private List<Integer> nrs = new ArrayList<>();
+    private List<String> names = new ArrayList<>();
 
     public Stage sta = new Stage();
     public Scene sc;
     public int spent = 0, sppRequired = 0, value;
 
+    private String data;
+
     @FXML
-    public void initialize() throws SQLException {
+    public void initialize() throws Exception {
         //Se levelUp è true effettua l'inizializzazione della scena per i level up
         if(islUp()) {
             error.setVisible(false);
@@ -92,8 +98,12 @@ public class PlayerController {
             return;
         }
         else if(isNaming()) {
-            nrs = PlayerDao.getPlayerNumbers(App.getTeam());
-            names = PlayerDao.getPlayerNames(App.getTeam());
+            Connection.params.put("team", App.getTeam().getId());
+            data = Connection.getConnection("/api/v1/player/numbers", Connection.GET, null);
+            nrs = JsonExploiter.getListFromJson(Integer.class, data);
+            Connection.params.put("team", App.getTeam().getId());
+            data = Connection.getConnection("/api/v1/player/names", Connection.GET, null);
+            names = JsonExploiter.getListFromJson(String.class, data);
             SpinnerValueFactory<Integer> numbs = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99, 1);
             numbs.setValue(App.getPlayer().number);
             number.setValueFactory(numbs);
@@ -190,7 +200,7 @@ public class PlayerController {
     @FXML
     public void switchToTeam() throws IOException, SQLException {
         Player p = new Player(App.getPlayer());
-        PlayerDao.updatePlayer(p, true);
+        Connection.getConnection("/api/v1/player/add", Connection.POST, JsonExploiter.toJson(p));
         Stage stage = (Stage) ma.getScene().getWindow();
         stage.close();
         App.setRoot("team/team_management");
@@ -212,7 +222,7 @@ public class PlayerController {
 
 
     @FXML
-    public void select() throws IOException, SQLException {
+    public void select() throws Exception {
         //Cambia il valore di spp spesi in base alla scelta di level up
         switch(cb.getSelectionModel().getSelectedIndex()) {
             case 0:
@@ -257,14 +267,16 @@ public class PlayerController {
      * @param pri se è true, allora riempe le ComboBox con le primarie, altrimenti con le skill secondarie
      * @throws IOException
      */
-    public void getSkill(boolean pri) throws SQLException {
+    public void getSkill(boolean pri) throws Exception {
         cb.getItems().removeAll(cb.getItems());
         int i = 0;
         Skill s = new Skill();
         String[] skills;
         if(pri) {
             String[] primary;
-            if("Farblast & Sons".equals(App.getTeam().getSponsor()) && TeamDao.isLineman(App.getTeam().getId(), App.getPlayer().getTemplateId()) && App.getPlayer().getNewSkills().contains("Bombardier")) {
+            Connection.params.put("team", App.getTeam().getId());
+            Connection.params.put("template", App.getPlayer().getTemplateId());
+            if("Farblast & Sons".equals(App.getTeam().getSponsor()) && Boolean.getBoolean(Connection.getConnection("/api/v1/team/lineman", Connection.GET, null)) && App.getPlayer().getNewSkills().contains("Bombardier")) {
                 primary = new String[App.getPlayer().getPrimary().length() + 1];
                 for(; i < App.getPlayer().getPrimary().length(); i++)
                     primary[i] = Character.toString(App.getPlayer().getPrimary().charAt(i));
@@ -276,14 +288,16 @@ public class PlayerController {
             }
 
             skills = new String[App.getPlayer().getPrimary().length()];
-            skills = SkillDao.getSkill(primary);
+            data = Connection.getConnection("/api/v1/skill/get", Connection.GET, JsonExploiter.toJson(primary));
+            skills = JsonExploiter.getArrayFromJson(String.class, data);
         }
         else {
             String[] secondary = new String[App.getPlayer().getSecondary().length()];
             for(; i < App.getPlayer().getSecondary().length(); i++)
                 secondary[i] = Character.toString(App.getPlayer().getSecondary().charAt(i));
             skills = new String[App.getPlayer().getPrimary().length()];
-            skills = SkillDao.getSkill(secondary);
+            data = Connection.getConnection("/api/v1/skill/get", Connection.GET, JsonExploiter.toJson(secondary));
+            skills = JsonExploiter.getArrayFromJson(String.class, data);
         }
         for(int j = 0; j < skills.length; j++) {
             cb.getItems().add(skills[j]);

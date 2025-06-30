@@ -3,6 +3,8 @@ package it.unipi.controller;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.PlayerDao;
 import it.unipi.dataset.Model.Player;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -20,6 +22,8 @@ public class SponsorController {
     @FXML private ComboBox<String> mag;
     @FXML private ComboBox<Integer> player;
     @FXML private Button card;
+
+    private String data;
 
 
     @FXML public void initialize() {
@@ -62,9 +66,9 @@ public class SponsorController {
         else {
             App.getTeam().sponsor = mag.getValue();
             if("Farblast & Sons".equals(mag.getValue())) {
-                Player p = PlayerDao.getPlayerByNumber(App.getTeam().getId(), player.getValue(), null);
-                p.skill += "Bombardier,Loner(4+),Secret Weapon,";
-                PlayerDao.updatePlayer(p, true);
+                Connection.params.put("team", App.getTeam().getId());
+                Connection.params.put("number", player.getValue());
+                Connection.getConnection("/api/v1/player/bombardier", Connection.POST, null);
             }
         }
         Stage stage = (Stage) labelCont.getScene().getWindow();
@@ -74,7 +78,9 @@ public class SponsorController {
 
     @FXML public void checkMag() throws IOException, SQLException {
         if("Farblast & Sons".equals(mag.getValue())) {
-            List<Player> lineman = PlayerDao.getLinemans(App.getTeam().getId());
+            Connection.params.put("team", App.getTeam().getId());
+            data = Connection.getConnection("/api/v1/player/lineman", Connection.GET, null);
+            List<Player> lineman = JsonExploiter.getListFromJson(Player.class, data);
             for(Player p : lineman) {
                 player.getItems().add(p.number);
             }

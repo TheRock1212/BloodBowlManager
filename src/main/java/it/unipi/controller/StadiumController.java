@@ -2,6 +2,8 @@ package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.StadiumDao;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
@@ -12,14 +14,18 @@ import java.sql.SQLException;
 public class StadiumController {
 
     @FXML private ComboBox<String> stadium, type;
+    private String data;
 
-    @FXML public void initialize() throws SQLException {
-        type.getItems().addAll(StadiumDao.getTipologie());
+    @FXML public void initialize() throws Exception {
+        data = Connection.getConnection("/api/v1/stadium/categories", Connection.GET, null);
+        type.getItems().addAll(JsonExploiter.getListFromJson(String.class, data));
     }
 
-    @FXML public void setStadiums() throws SQLException {
+    @FXML public void setStadiums() throws Exception {
         stadium.getItems().clear();
-        stadium.getItems().addAll(StadiumDao.getStadiums(type.getValue()));
+        Connection.params.put("cat", type.getValue());
+        data = Connection.getConnection("/api/v1/stadium/stadium", Connection.GET, null);
+        stadium.getItems().addAll(JsonExploiter.getListFromJson(String.class, data));
         stadium.getSelectionModel().select(0);
     }
 

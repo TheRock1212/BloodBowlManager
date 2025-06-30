@@ -22,12 +22,13 @@ public class PlayerTemplate {
     public int cost;
     private String url;
     private boolean bigGuy;
+    private boolean selectable;
 
     public PlayerTemplate() {
 
     }
 
-    public PlayerTemplate(int id, String position, int race, int ma, int st, int ag, int pa, int av, String skill, int maxQty, String primary, String secondary, int cost, String url, boolean bigGuy) {
+    public PlayerTemplate(int id, String position, int race, int ma, int st, int ag, int pa, int av, String skill, int maxQty, String primary, String secondary, int cost, String url, boolean bigGuy, boolean selectable) {
         this.id = id;
         this.position = position;
         this.race = race;
@@ -43,6 +44,7 @@ public class PlayerTemplate {
         this.cost = cost;
         this.url = url;
         this.bigGuy = bigGuy;
+        this.selectable = selectable;
     }
 
     public PlayerTemplate(PlayerTemplate pt) {
@@ -61,6 +63,7 @@ public class PlayerTemplate {
         this.cost = pt.getCost();
         this.url = pt.getUrl();
         this.bigGuy = pt.isBigGuy();
+        this.selectable = pt.isSelectable();
     }
 
     public PlayerTemplate(ResultSet rs) throws SQLException {
@@ -201,4 +204,11 @@ public class PlayerTemplate {
         this.bigGuy = bigGuy;
     }
 
+    public boolean isSelectable() {
+        return selectable;
+    }
+
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
+    }
 }

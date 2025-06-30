@@ -7,6 +7,8 @@ import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Race;
 import it.unipi.dataset.Model.Team;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -27,15 +29,18 @@ public class TeamController {
     @FXML private CheckBox apo;
     @FXML private RadioButton zombie, skeleton;
 
-    private Stage stage = new Stage();
-    private Scene scene;
+    private final Stage stage = new Stage();
 
-    private Team t = new Team();
+    private final Team t = new Team();
     private Race r = new Race();
 
-    @FXML public void initialize() throws SQLException {
+    private String data;
+
+    @FXML public void initialize() throws Exception {
         //ResultSet rs = r.getNames();
-        List<String> names = RaceDao.getNames(false);
+        Connection.params.put("secret", false);
+        data = Connection.getConnection("/api/v1/race/name", Connection.GET, null);
+        List<String> names = JsonExploiter.getListFromJson(String.class, data);
         Collections.sort(names);
         for(String name: names)
             race.getItems().add(name);
@@ -73,8 +78,10 @@ public class TeamController {
         treasury.setText(Integer.toString(tmp));
     }
 
-    @FXML public void changeOptions() throws SQLException {
-        r = RaceDao.getRace(race.getValue());
+    @FXML public void changeOptions() throws Exception {
+        Connection.params.put("name", race.getValue());
+        data = Connection.getConnection("/api/v1/race/raceName", Connection.GET, null);
+        r = JsonExploiter.getObjectFromJson(Race.class, data);
         apo.setVisible(false);
         noApo.setVisible(false);
         if(r.isApothecary())
@@ -102,14 +109,14 @@ public class TeamController {
     }
 
     @FXML public void purchasePlayer() throws IOException, SQLException {
-        if(teamName.getText().equals("")) {
+        if(teamName.getText().isEmpty()) {
             error.setVisible(true);
             error.setText("Error: Team name cannot be empty");
             return;
         }
         t.setCoach(coach.getText());
         t.setName(teamName.getText());
-        t.setTreasury(Integer.valueOf(treasury.getText()));
+        t.setTreasury(Integer.parseInt(treasury.getText()));
         t.value = App.getLeague().getTreasury() - Integer.parseInt(treasury.getText()) - (t.df - 1) * 10;
         t.setLeague(App.getLeague().getId());
         t.setRound(0);
@@ -121,17 +128,18 @@ public class TeamController {
                 t.setJourneyman(15);
         }
         else {
-            PlayerTemplate pt = new PlayerTemplate();
-            t.setJourneyman(PlayerTemplateDao.getLineman(t.getRace()));
+            Connection.params.put("race", t.getRace());
+            data = Connection.getConnection("/api/v1/playerTemplate/lineman", Connection.GET, null);
+            t.setJourneyman(JsonExploiter.getObjectFromJson(PlayerTemplate.class, data).getId());
         }
         t.setReady(true);
-        TeamDao.addTeam(t);
+        Connection.getConnection("/api/v1/team/add", Connection.GET, JsonExploiter.toJson(t));
         App.setTeam(t);
         App.setNewTeam(true);
         App.setNaming(false);
         Stage old = (Stage)df.getScene().getWindow();
         old.close();
-        scene = new Scene(App.load("player/player_purchase"), 600, 400);
+        Scene scene = new Scene(App.load("player/player_purchase"), 600, 400);
         stage.setScene(scene);
         stage.setTitle("Purchase Players");
         stage.setResizable(false);

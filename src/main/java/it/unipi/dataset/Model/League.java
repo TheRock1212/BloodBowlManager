@@ -1,97 +1,84 @@
 package it.unipi.dataset.Model;
 
-import it.unipi.bloodbowlmanager.App;
-
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Date;
 
 public class League {
     private Integer id;
 
     private String name;
 
-    private int nTeams;
+    private int teams;
 
-    private int ptsWin;
+    private int win;
 
-    private int ptsTie;
+    private int tie;
 
-    private int ptsLose;
+    private int loss;
 
-    private boolean ptsTD;
+    private boolean ptsTd;
 
-    private boolean ptsCAS;
+    private boolean ptsCas;
 
-    private boolean ptsTDConceded;
+    private boolean ptsTdCon;
 
     private int treasury;
 
-    private int groups;
+    private int round;
 
     private int playoff;
 
-    public boolean tvr;
+    private boolean tvr;
 
-    public boolean sppStar;
+    private boolean sppstar;
 
     private boolean perennial;
+
+    private int fixture;
+
+    private Date expire;
 
     public League() {
     }
 
-    public League(Integer id, String name, Integer nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr, boolean sppStar, boolean perennial) {
+    public League(Integer id, String name, int teams, int win, int tie, int loss, boolean ptstd, boolean ptscas, boolean ptstdcon, int treasury, int round, int playoff, boolean tvr, boolean sppstar, boolean perennial, int fixture, Date expire) {
         this.id = id;
         this.name = name;
-        this.nTeams = nTeams;
-        this.ptsWin = ptsWin;
-        this.ptsTie = ptsTie;
-        this.ptsLose = ptsLose;
-        this.ptsTD = ptsTD;
-        this.ptsCAS = ptsCAS;
-        this.ptsTDConceded = ptsTDConceded;
+        this.teams = teams;
+        this.win = win;
+        this.tie = tie;
+        this.loss = loss;
+        this.ptsTd = ptstd;
+        this.ptsCas = ptscas;
+        this.ptsTdCon = ptstdcon;
         this.treasury = treasury;
-        this.groups = groups;
+        this.round = round;
         this.playoff = playoff;
         this.tvr = tvr;
-        this.sppStar = sppStar;
+        this.sppstar = sppstar;
         this.perennial = perennial;
+        this.fixture = fixture;
+        this.expire = expire;
     }
 
-    public League(String name, int nTeams, int ptsWin, int ptsTie, int ptsLose, boolean ptsTD, boolean ptsCAS, boolean ptsTDConceded, int treasury, int groups, int playoff, boolean tvr, boolean sppStar, boolean perennial) {
+    public League(String name, int teams, int win, int tie, int loss, boolean ptstd, boolean ptscas, boolean ptstdcon, int treasury, int round, int playoff, boolean tvr, boolean sppstar, boolean perennial, int fixture, Date expire) {
         this.name = name;
-        this.nTeams = nTeams;
-        this.ptsWin = ptsWin;
-        this.ptsTie = ptsTie;
-        this.ptsLose = ptsLose;
-        this.ptsTD = ptsTD;
-        this.ptsCAS = ptsCAS;
-        this.ptsTDConceded = ptsTDConceded;
+        this.teams = teams;
+        this.win = win;
+        this.tie = tie;
+        this.loss = loss;
+        this.ptsTd = ptstd;
+        this.ptsCas = ptscas;
+        this.ptsTdCon = ptstdcon;
         this.treasury = treasury;
-        this.groups = groups;
+        this.round = round;
         this.playoff = playoff;
         this.tvr = tvr;
-        this.sppStar = sppStar;
+        this.sppstar = sppstar;
         this.perennial = perennial;
-    }
-
-    public League(ResultSet rs) throws SQLException {
-        this.id = rs.getInt("id");
-        this.name = rs.getString("name");
-        this.nTeams = rs.getInt("nteams");
-        this.ptsWin = rs.getInt("pts_win");
-        this.ptsTie = rs.getInt("pts_tie");
-        this.ptsLose = rs.getInt("pts_loss");
-        this.ptsTD = rs.getBoolean("pts_td");
-        this.ptsCAS = rs.getBoolean("pts_cas");
-        this.ptsTDConceded = rs.getBoolean("pts_td_conceded");
-        this.treasury = rs.getInt("treasury");
-        this.groups = rs.getInt("round");
-        this.playoff = rs.getInt("playoff");
-        this.tvr = rs.getBoolean("tvr");
-        this.sppStar = rs.getBoolean("spp_star");
-        this.perennial = rs.getBoolean("perennial");
+        this.fixture = fixture;
+        this.expire = expire;
     }
 
     public Integer getId() {
@@ -110,60 +97,60 @@ public class League {
         this.name = name;
     }
 
-    public Integer getNTeams() {
-        return nTeams;
+    public int getTeams() {
+        return teams;
     }
 
-    public void setNTeams(Integer nTeams) {
-        this.nTeams = nTeams;
+    public void setTeams(int teams) {
+        this.teams = teams;
     }
 
-    public int getPtsWin() {
-        return ptsWin;
+    public int getWin() {
+        return win;
     }
 
-    public void setPtsWin(int ptsWin) {
-        this.ptsWin = ptsWin;
+    public void setWin(int win) {
+        this.win = win;
     }
 
-    public int getPtsTie() {
-        return ptsTie;
+    public int getTie() {
+        return tie;
     }
 
-    public void setPtsTie(int ptsTie) {
-        this.ptsTie = ptsTie;
+    public void setTie(int tie) {
+        this.tie = tie;
     }
 
-    public int getPtsLose() {
-        return ptsLose;
+    public int getLoss() {
+        return loss;
     }
 
-    public void setPtsLose(int ptsLose) {
-        this.ptsLose = ptsLose;
+    public void setLoss(int loss) {
+        this.loss = loss;
     }
 
-    public boolean isPtsTD() {
-        return ptsTD;
+    public boolean isPtsTd() {
+        return ptsTd;
     }
 
-    public void setPtsTD(boolean ptsTD) {
-        this.ptsTD = ptsTD;
+    public void setPtsTd(boolean ptsTd) {
+        this.ptsTd = ptsTd;
     }
 
-    public boolean isPtsCAS() {
-        return ptsCAS;
+    public boolean isPtsCas() {
+        return ptsCas;
     }
 
-    public void setPtsCAS(boolean ptsCAS) {
-        this.ptsCAS = ptsCAS;
+    public void setPtsCas(boolean ptsCas) {
+        this.ptsCas = ptsCas;
     }
 
-    public boolean isPtsTDConceded() {
-        return ptsTDConceded;
+    public boolean isPtsTdCon() {
+        return ptsTdCon;
     }
 
-    public void setPtsTDConceded(boolean ptsTDConceded) {
-        this.ptsTDConceded = ptsTDConceded;
+    public void setPtsTdCon(boolean ptsTdCon) {
+        this.ptsTdCon = ptsTdCon;
     }
 
     public int getTreasury() {
@@ -174,12 +161,12 @@ public class League {
         this.treasury = treasury;
     }
 
-    public int getGroups() {
-        return groups;
+    public int getRound() {
+        return round;
     }
 
-    public void setGroups(int groups) {
-        this.groups = groups;
+    public void setRound(int round) {
+        this.round = round;
     }
 
     public int getPlayoff() {
@@ -198,12 +185,12 @@ public class League {
         this.tvr = tvr;
     }
 
-    public boolean isSppStar() {
-        return sppStar;
+    public boolean isSppstar() {
+        return sppstar;
     }
 
-    public void setSppStar(boolean sppStar) {
-        this.sppStar = sppStar;
+    public void setSppstar(boolean sppstar) {
+        this.sppstar = sppstar;
     }
 
     public boolean isPerennial() {
@@ -212,5 +199,21 @@ public class League {
 
     public void setPerennial(boolean perennial) {
         this.perennial = perennial;
+    }
+
+    public int getFixture() {
+        return fixture;
+    }
+
+    public void setFixture(int fixture) {
+        this.fixture = fixture;
+    }
+
+    public Date getExpire() {
+        return expire;
+    }
+
+    public void setExpire(Date expire) {
+        this.expire = expire;
     }
 }

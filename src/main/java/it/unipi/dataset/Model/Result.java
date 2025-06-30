@@ -31,8 +31,9 @@ public class Result {
     public boolean played;
     public Date date;
     private boolean playoff;
+    private int fixture;
 
-    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date, boolean playoff) {
+    public Result(int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date, boolean playoff, int fixture) {
         this.league = league;
         this.teamH = teamH;
         this.teamA = teamA;
@@ -55,6 +56,7 @@ public class Result {
         this.played = played;
         this.date = date;
         this.playoff = playoff;
+        this.fixture = fixture;
     }
 
     public Result() {
@@ -84,9 +86,10 @@ public class Result {
         this.played = r.played;
         this.date = r.date;
         this.playoff = r.playoff;
+        this.fixture = r.fixture;
     }
 
-    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date, boolean playoff) {
+    public Result(int id, int league, int teamH, int teamA, int tdh, int tda, int cash, int casa, int killh, int killa, int cph, int cpa, int dech, int deca, int inth, int inta, int dfh, int dfa, int winh, int wina, boolean played, Date date, boolean playoff, int fixture) {
         this.id = id;
         this.league = league;
         this.teamH = teamH;
@@ -110,32 +113,7 @@ public class Result {
         this.played = played;
         this.date = date;
         this.playoff = playoff;
-    }
-
-    public Result(ResultSet rs) throws SQLException {
-        this.id = rs.getInt("id");
-        this.league = rs.getInt("league");
-        this.teamH = rs.getInt("teamH");
-        this.teamA = rs.getInt("teamA");
-        this.tdh = rs.getInt("tdH");
-        this.tda = rs.getInt("tdA");
-        this.cash = rs.getInt("casH");
-        this.casa = rs.getInt("casA");
-        this.killh = rs.getInt("killH");
-        this.killa = rs.getInt("killA");
-        this.cph = rs.getInt("cpH");
-        this.cpa = rs.getInt("cpA");
-        this.dech = rs.getInt("decH");
-        this.deca = rs.getInt("decA");
-        this.inth = rs.getInt("intH");
-        this.inta = rs.getInt("intA");
-        this.dfh = rs.getInt("dfH");
-        this.dfa = rs.getInt("dfA");
-        this.winh = rs.getInt("winH");
-        this.wina = rs.getInt("winA");
-        this.played = rs.getBoolean("played");
-        this.date = rs.getDate("date");
-        this.playoff = rs.getBoolean("playoff");
+        this.fixture = fixture;
     }
 
     public Result(ResultGame rg) {
@@ -162,6 +140,7 @@ public class Result {
         this.played = rg.played;
         this.date = rg.date;
         this.playoff = rg.isPlayoff();
+        this.fixture = rg.getFixture();
     }
 
     public Result(int league, int teamH, int teamA) {
@@ -363,5 +342,13 @@ public class Result {
 
     public void setPlayoff(boolean playoff) {
         this.playoff = playoff;
+    }
+
+    public int getFixture() {
+        return fixture;
+    }
+
+    public void setFixture(int fixture) {
+        this.fixture = fixture;
     }
 }

@@ -43,7 +43,7 @@ public class ResultDao {
         ResultSet rs = s.executeQuery();
         List<Result> results = new ArrayList<>();
         while(rs.next()) {
-            results.add(new Result(rs));
+            //results.add(new Result(rs));
         }
         rs.close();
         s.close();

@@ -2,7 +2,10 @@ package it.unipi.utility;
 
 import it.unipi.dataset.Dao.PlayerDao;
 import it.unipi.dataset.Dao.RaceDao;
+import it.unipi.dataset.Model.Race;
 import it.unipi.dataset.Model.Team;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.scene.image.Image;
 
 import java.sql.SQLException;
@@ -20,18 +23,26 @@ public class TeamStatistic {
     public int inter;
     private int value;
 
-    public TeamStatistic(Team t) throws SQLException {
+    public TeamStatistic(Team t) throws Exception {
         this.name = t.getName();
         this.coach = t.getCoach();
         this.tdFor = t.tdScored;
         this.tdAgainst = t.tdConceded;
         this.casFor = t.casInflicted;
         this.casAgainst = t.casSuffered;
-        this.kill = PlayerDao.getStatistic(t.getId(), "kill");
-        this.cp = PlayerDao.getStatistic(t.getId(), "cp");
-        this.inter = PlayerDao.getStatistic(t.getId(), "int");
+        Connection.params.put("team", t.getId());
+        Connection.params.put("type", "kill");
+        this.kill = Integer.parseInt(Connection.getConnection("/api/v1/player/stats", Connection.GET, null));
+        Connection.params.put("team", t.getId());
+        Connection.params.put("type", "cp");
+        this.cp = Integer.parseInt(Connection.getConnection("/api/v1/player/stats", Connection.GET, null));
+        Connection.params.put("team", t.getId());
+        Connection.params.put("type", "int");
+        this.inter = Integer.parseInt(Connection.getConnection("/api/v1/player/stats", Connection.GET, null));
         this.value = this.tdFor;
-        this.img = new Image(getClass().getResource("/it/unipi/bloodbowlmanager/race/" + RaceDao.getRace(t.getRace()).url + ".png").toExternalForm());
+        Connection.params.put("id", t.getRace());
+        Race r = JsonExploiter.getObjectFromJson(Race.class, Connection.getConnection("/api/v1/race/race", Connection.GET, null));
+        this.img = new Image(getClass().getResource("/it/unipi/bloodbowlmanager/race/" + r.url + ".png").toExternalForm());
     }
 
     public String getName() {

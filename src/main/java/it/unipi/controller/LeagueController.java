@@ -1,8 +1,11 @@
 package it.unipi.controller;
 
+import com.google.gson.Gson;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.LeagueDao;
 import it.unipi.dataset.Model.League;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -15,9 +18,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import static it.unipi.bloodbowlmanager.App.load;
@@ -44,26 +48,28 @@ public class LeagueController {
     private Stage stage = new Stage();
     private Scene scene;
 
+    private Gson gson = new Gson();
+
     @FXML
-    public void initialize() throws SQLException {
+    public void initialize() throws Exception {
         if(!App.isNewTeam()) {
             TableColumn name = new TableColumn("Name");
             name.setCellValueFactory(new PropertyValueFactory<>("name"));
 
             TableColumn nteam = new TableColumn("NrTeam");
-            nteam.setCellValueFactory(new PropertyValueFactory<>("nTeams"));
+            nteam.setCellValueFactory(new PropertyValueFactory<>("teams"));
 
             TableColumn treasury = new TableColumn("StartTreasury");
             treasury.setCellValueFactory(new PropertyValueFactory<>("treasury"));
 
             TableColumn ptsW = new TableColumn("PtsWin");
-            ptsW.setCellValueFactory(new PropertyValueFactory<>("ptsWin"));
+            ptsW.setCellValueFactory(new PropertyValueFactory<>("win"));
 
             TableColumn ptsN = new TableColumn("PtsTie");
-            ptsN.setCellValueFactory(new PropertyValueFactory<>("ptsTie"));
+            ptsN.setCellValueFactory(new PropertyValueFactory<>("tie"));
 
             TableColumn ptsL = new TableColumn("PtsLost");
-            ptsL.setCellValueFactory(new PropertyValueFactory<>("ptsLose"));
+            ptsL.setCellValueFactory(new PropertyValueFactory<>("loss"));
 
             leagueTable.getColumns().addAll(name, nteam, treasury, ptsW, ptsN, ptsL);
             ol = FXCollections.observableArrayList();
@@ -104,8 +110,11 @@ public class LeagueController {
         }
     }
 
-    private void getLeagues() throws SQLException {
-        List<League> leagues = LeagueDao.getLeagues(0);
+    private void getLeagues() throws Exception {
+        //List<League> leagues = LeagueDao.getLeagues(0);
+        Connection.params.put("id", 0);
+        String data = Connection.getConnection("/api/v1/league/all", Connection.GET, null);
+        List<League> leagues = JsonExploiter.getListFromJson(League.class, data);
         ol.addAll(leagues);
     }
 
@@ -128,9 +137,11 @@ public class LeagueController {
     }
 
     @FXML
-    private void remove() throws SQLException{
+    private void remove() throws Exception{
         League league = leagueTable.getSelectionModel().getSelectedItem();
-        LeagueDao.removeLeague(league.getId());
+        Connection.params.put("id", league.getId());
+        Connection.getConnection("/api/v1/league/remove", Connection.GET, null);
+        //LeagueDao.removeLeague(league.getId());
         ol.remove(league);
     }
 
@@ -146,8 +157,9 @@ public class LeagueController {
                 pf = playoff.getValue();
             if(check.isSelected())
                 nGroups = groups.getValue();
-            League league = new League(leagueName.getText(), nTeam.getValue(), ptsWin.getValue(), ptsTie.getValue(), ptsLoss.getValue(), pts3TD.isSelected(), pts3CAS.isSelected(), pts0TD.isSelected(), (int)treasury.getValue(), nGroups, pf, tvr.isSelected(), spp.isSelected(), perennial.isSelected());
-            LeagueDao.addLeague(league);
+            League league = new League(leagueName.getText(), nTeam.getValue(), ptsWin.getValue(), ptsTie.getValue(), ptsLoss.getValue(), pts3TD.isSelected(), pts3CAS.isSelected(), pts0TD.isSelected(), (int)treasury.getValue(), nGroups, pf, tvr.isSelected(), spp.isSelected(), perennial.isSelected(), 1, null);
+            //LeagueDao.addLeague(league);
+            Connection.getConnection("/api/v1/league/add", Connection.POST, JsonExploiter.toJson(league));
             Stage stage = (Stage) error.getScene().getWindow();
             stage.close();
             App.setNewTeam(false);

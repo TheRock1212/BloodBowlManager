@@ -4,10 +4,12 @@ import it.unipi.dataset.Dao.RaceDao;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Race;
+import it.unipi.utility.connection.Connection;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class PlayerPreview {
@@ -48,7 +50,7 @@ public class PlayerPreview {
     public String position;
     public int season;
 
-    public PlayerPreview(TemplateImage ti, Player p) throws SQLException {
+    public PlayerPreview(TemplateImage ti, Player p) throws IOException {
         this.id = p.getId();
         this.templateId = p.getTemplate();
         this.number = p.getNumber();
@@ -69,7 +71,8 @@ public class PlayerPreview {
         this.AV = ti.getAv() + p.getAvInc() - p.getAvDec();
         this.NIG = p.getNig();
         this.MNG = p.isMng();
-        if(RaceDao.hasLowCostLineman(ti.getRace()) && ti.maxQty > 10)
+        Connection.params.put("id", ti.getRace());
+        if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null)) && ti.maxQty > 10)
             this.val = p.getValue();
         else
             this.val = ti.getCost() + p.getValue();

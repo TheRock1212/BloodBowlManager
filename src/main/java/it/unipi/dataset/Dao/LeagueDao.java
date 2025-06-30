@@ -15,7 +15,7 @@ public class LeagueDao {
     /**
      * Aggiunge la lega al database
      * @throws SQLException
-     */
+     *
     public static synchronized  void addLeague(League l) throws SQLException {
         PreparedStatement ps = App.getConnection().prepareStatement("INSERT INTO league(name, nteams, pts_win, pts_tie, pts_loss, pts_td, pts_cas, pts_td_conceded, treasury, round, playoff, tvr, spp_star, perennial) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         ps.setString(1, l.getName());
@@ -42,6 +42,7 @@ public class LeagueDao {
      * @return
      * @throws SQLException
      */
+    @Deprecated
     public static synchronized List<League> getLeagues(int id) throws SQLException {
         PreparedStatement st;
         String sql = "SELECT * FROM league";
@@ -54,7 +55,7 @@ public class LeagueDao {
         ResultSet rs = st.executeQuery();
         List<League> leagues = new ArrayList<>();
         while(rs.next()) {
-            leagues.add(new League(rs));
+            leagues.add(new League());
         }
         st.close();
         rs.close();

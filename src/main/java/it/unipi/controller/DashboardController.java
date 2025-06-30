@@ -4,6 +4,8 @@ import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.*;
 import it.unipi.utility.*;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -63,7 +65,8 @@ public class DashboardController {
     public Stage stage = new Stage();
     public Scene scene;
 
-    @FXML public void initialize() throws SQLException{
+
+    @FXML public void initialize() throws Exception{
         //Colonne per rankingTable
         TableColumn name = new TableColumn("Name");
         name.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -256,11 +259,11 @@ public class DashboardController {
             //fixture.setDisable(false);
             fixture.setVisible(false);
 
-        if(tl.size() == App.getLeague().getNTeams()) {
+        if(tl.size() == App.getLeague().getTeams()) {
             addTeam.setVisible(false);
             pdfs.setVisible(true);
             fixture.setDisable(false);
-            if(App.getLeague().getGroups() > 1)
+            if(App.getLeague().getRound() > 1)
                 groups.setVisible(true);
             if(App.getLeague().getPlayoff() > 2 && ResultDao.isAllPlayed(App.getLeague().getId()))
                 playoff.setVisible(true);
@@ -307,8 +310,11 @@ public class DashboardController {
 
     }
 
-    private void getTable() throws SQLException {
-        List<Team> teams = TeamDao.getTeam(0, App.getLeague().getId());
+    private void getTable() throws Exception {
+        Connection.params.put("league", App.getLeague().getId());
+        String data = Connection.getConnection("/api/v1/team/teams", Connection.GET, null);
+        List<Team> teams = JsonExploiter.getListFromJson(Team.class, data);
+        teams.forEach(Team::setDeltas);
         rl.addAll(teams);
         tl.addAll(teams);
 
@@ -317,16 +323,22 @@ public class DashboardController {
         FXCollections.sort(rl, comparator);
 
         //msg = Connection.getConnection("/league/listres", "POST", Integer.toString(App.getLeague().id));
-        List<Result> results = ResultDao.getResults();
+        Connection.params.put("league", App.getLeague().getId());
+        data = Connection.getConnection("/api/v1/result/results", Connection.GET, null);
+        List<Result> results = JsonExploiter.getListFromJson(Result.class, data);
         for(Result r : results) {
             String[] names = r.getNames();
             ResultTable reta = new ResultTable(r, names[0], names[1]);
             res.add(reta);
         }
 
-        List<Player> players = PlayerDao.getPlayers(App.getLeague().getId());
+        Connection.params.put("league", App.getLeague().getId());
+        data = Connection.getConnection("/api/v1/player/playerLeague", Connection.GET, null);
+        List<Player> players = JsonExploiter.getListFromJson(Player.class, data);
         for(Player p : players) {
-            PlayerTemplate pt = PlayerTemplateDao.getPlayer(p.getTemplate());
+            Connection.params.put("id", p.getTemplate());
+            data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
+            PlayerTemplate pt = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
             pl.add(new PlayerStatistic(p, pt));
         }
         Comparator<PlayerStatistic> comp = Comparator.comparingInt(PlayerStatistic::getValue);
@@ -341,10 +353,14 @@ public class DashboardController {
         FXCollections.sort(ts, comp2);
 
         if(App.getLeague().isPerennial()) {
-            List<Bounty> bounties = BountyDao.getAllBounties(App.getConnection());
+            Connection.params.put("league", App.getLeague().getId());
+            data = Connection.getConnection("/api/v1/bounty/all", Connection.GET, null);
+            List<Bounty> bounties = JsonExploiter.getListFromJson(Bounty.class, data);
             for(Bounty b : bounties) {
-                b.setNameTeam(TeamDao.getName(b.getTeam()));
-                b.setNamePlayer(PlayerDao.getPlayerById(b.getPlayer()).getName());
+                Connection.params.put("id", b.getTeam());
+                b.setNameTeam(Connection.getConnection("/api/v1/team/name", Connection.GET, null));
+                Connection.params.put("id", b.getPlayer());
+                b.setNamePlayer(Connection.getConnection("/api/v1/player/name", Connection.GET, null));
             }
             bo.addAll(bounties);
         }
@@ -360,9 +376,10 @@ public class DashboardController {
         stage.show();
     }
 
-    @FXML private void deleteTeam() throws SQLException {
+    @FXML private void deleteTeam() throws Exception {
         Team t = teamList.getSelectionModel().getSelectedItem();
-        TeamDao.removeTeam(t.getId());
+        Connection.params.put("id", t.getId());
+        Connection.getConnection("/api/v1/team/remove", Connection.GET, null);
         //elimina l'elemento dalla lista
         tl.remove(teamList.getSelectionModel().getSelectedItem());
         tl.remove(t);
@@ -408,10 +425,10 @@ public class DashboardController {
         int riga = resultList.getSelectionModel().getSelectedIndex();
         if(res.get(riga).played)
             return false;
-        int giornate = (riga / (App.getLeague().getNTeams() / 2));
+        int giornate = (riga / (App.getLeague().getTeams() / 2));
         int cont = 1;
         for(int i = 0; i <= riga; i++) {
-            if(i % (App.getLeague().getNTeams() / 2) == 0)
+            if(i % (App.getLeague().getTeams() / 2) == 0)
                 cont++;
             if(cont < giornate && !res.get(i).played)
                 return false;
@@ -482,15 +499,21 @@ public class DashboardController {
         stage.show();
     }
 
-    @FXML public void removeBounty() throws SQLException {
+    @FXML public void removeBounty() throws Exception {
         Bounty bounty = bountyList.getSelectionModel().getSelectedItem();
         bo.remove(bounty);
-        List<Team> teams = TeamDao.getTeam(bounty.getTeam(), App.getLeague().getId());
+        Connection.params.put("id", bounty.getTeam());
+        Connection.params.put("league", App.getLeague().getId());
+        String data = Connection.getConnection("/api/v1/team/teams", Connection.GET, null);
+        List<Team> teams = JsonExploiter.getListFromJson(Team.class, data);
         if(!teams.isEmpty()) {
             Team t = teams.getFirst();
             t.treasury += bounty.getReward();
         }
-        BountyDao.delete(App.getConnection(), bounty);
+        //BountyDao.delete(App.getConnection(), bounty);
+        Connection.params.put("team", bounty.getTeam());
+        Connection.params.put("player", bounty.getPlayer());
+        Connection.getConnection("/api/v1/bounty/remove", Connection.GET, null);
     }
 
 }

@@ -362,7 +362,13 @@ public class PDFManager {
                 table.addCell(second);
             }
         }
-        Cell rulesH = new Cell(1, 5).add(new Paragraph("SPECIAL RULES")).addStyle(h);
+        if(App.getLeague().isPerennial()) {
+            Cell stadH = new Cell(1, 2).add(new Paragraph("STADIUM")).addStyle(h);
+            table.addCell(stadH);
+            Cell stad = new Cell(1, 1).add(new Paragraph(t.getStadium())).addStyle(b);
+            table.addCell(stad);
+        }
+        Cell rulesH = new Cell(1, App.getLeague().isPerennial() ? 2 : 5).add(new Paragraph(App.getLeague().isPerennial() ? "RULES" : "SPECIAL RULES")).addStyle(h);
         table.addCell(rulesH);
         Race r = RaceDao.getRace(t.getRace());
         String res = r.special1;
@@ -781,7 +787,7 @@ public class PDFManager {
             table.addCell(new Paragraph("#").addStyle(sh));
 
             int best = 0;
-            for (int i = 0; i < App.getLeague().getNTeams(); i++) {
+            for (int i = 0; i < App.getLeague().getTeams(); i++) {
                 if (i == 0)
                     best = ts.get(i).getValue();
                 if (ts.get(i).getValue() == 0)
@@ -802,7 +808,7 @@ public class PDFManager {
     }
 
     private static void setBodySP(ObservableList<TeamStatistic> ts, Style first, Table table, int i) throws MalformedURLException {
-        if (i == App.getLeague().getNTeams() - 1 || ts.get(i + 1).getValue() == 0) {
+        if (i == App.getLeague().getTeams() - 1 || ts.get(i + 1).getValue() == 0) {
             table.addCell(new Cell().add(new Image(ImageDataFactory.create(ts.get(i).getImg().getUrl())).setAutoScale(true)).setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(0.5f)).setBorderBottom(new SolidBorder(0.5f)));
             table.addCell(new Cell().add(new Paragraph(ts.get(i).name).addStyle(first)).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(0.5f)));
             table.addCell(new Cell().add(new Paragraph(ts.get(i).coach).addStyle(first)).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(0.5f)));
@@ -877,7 +883,7 @@ public class PDFManager {
         table.addCell(new Cell().add(new Paragraph()).addStyle(h));
 
         //Corpo
-        for(int i = 0; i < App.getLeague().getNTeams(); i++) {
+        for(int i = 0; i < App.getLeague().getTeams(); i++) {
             if(i < App.getLeague().getPlayoff()) {
                 setBody(rl, images, playoff, table, i);
             }
@@ -892,7 +898,7 @@ public class PDFManager {
     }
 
     private static void setBody(ObservableList<Team> rl, List<javafx.scene.image.Image> images, Style b, Table table, int i) throws SQLException, IOException{
-        if(i == App.getLeague().getNTeams() - 1) {
+        if(i == App.getLeague().getTeams() - 1) {
             table.addCell(new Cell().add(new Paragraph(rl.get(i).name)).addStyle(b).setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(0.5f)).setBorderBottom(new SolidBorder(0.5f)));
             table.addCell(new Cell().add(new Paragraph(rl.get(i).coach)).addStyle(b).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(0.5f)));
             table.addCell(new Cell().add(new Image(ImageDataFactory.create(images.get(i).getUrl())).setAutoScale(true)).addStyle(b).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(0.5f)));
