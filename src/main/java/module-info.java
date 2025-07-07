@@ -18,7 +18,7 @@ module it.unipi.bloodbowlmanager {
     requires java.sql;
     //requires styled.xml.parser;
 
-    opens it.unipi.controller to javafx.fxml;
+    opens it.unipi.controller to javafx.fxml, com.google.gson;
     opens it.unipi.bloodbowlmanager to javafx.fxml;
     opens it.unipi.dataset.Dao to javafx.base;
     opens it.unipi.utility to javafx.base;

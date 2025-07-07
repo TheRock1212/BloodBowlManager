@@ -12,5 +12,5 @@ Class-Path: javafx-graphics-21.0.2.jar formsfx-core-11.6.0.jar javafx-sw
  -aarch64.jar bcutil-jdk18on-1.75.jar log4j-slf4j-impl-2.20.0.jar ant-1.
  9.3.jar kernel-7.2.6.jar layout-7.2.6.jar bcpkix-jdk18on-1.75.jar log4j
  -api-2.20.0.jar javafx-fxml-21.0.2-mac-aarch64.jar tilesfx-21.0.3.jar c
- ontrolsfx-11.2.1.jar javafx-base-21.0.2.jar ant-launcher-1.9.3.jar
+ ontrolsfx-11.2.1.jar javafx-base-21.0.2.jar ant-launcher-1.9.3.jar gson-2.11.0.jar
 

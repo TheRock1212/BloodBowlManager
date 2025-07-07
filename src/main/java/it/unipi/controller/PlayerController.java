@@ -1,9 +1,6 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Dao.PlayerDao;
-import it.unipi.dataset.Dao.SkillDao;
-import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.Skill;
 import it.unipi.utility.connection.Connection;

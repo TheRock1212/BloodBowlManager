@@ -1,7 +1,5 @@
 package it.unipi.utility;
 
-import it.unipi.dataset.Dao.PlayerDao;
-import it.unipi.dataset.Dao.RaceDao;
 import it.unipi.dataset.Model.Race;
 import it.unipi.dataset.Model.Team;
 import it.unipi.utility.connection.Connection;

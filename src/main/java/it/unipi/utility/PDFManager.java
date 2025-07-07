@@ -23,6 +23,8 @@ import com.itextpdf.layout.properties.VerticalAlignment;
 import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.*;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -45,10 +47,12 @@ public class PDFManager {
     public static final String[] catStatPlayer = {"Best Players", "Best Scorers", "Most Vicious", "Best Killers", "Best Passers", "Best Interceptors"};
     public static final String[] catStatTeam = {"Best Offence", "Best Defence", "Most Roughtest", "Most Toughtest", "Best Killers", "Most Passes", "Most Interceptions"};
 
+    private static String data;
+
     public PDFManager() {
     }
 
-    public static void generatePDF(Team t) throws IOException, SQLException {
+    public static void generatePDF(Team t) throws Exception {
         //PdfWriter writer = new PdfWriter("/Users/aleroc/Desktop/Blood Bowl/GSBowl III/Prova Roster/" + t.coach + ".pdf");
         PdfWriter writer;
         try {
@@ -87,17 +91,11 @@ public class PDFManager {
                 .setBold()
                 .setFontColor(ColorConstants.GREEN);
 
-        List<Result> results =  ResultDao.getResults();
-        Team foe = null;
-        List<Team> teams = null;
-        for(Result r : results) {
-            if((r.teamH == t.getId() || r.teamA == t.getId()) && !r.isPlayed()) {
-                teams = TeamDao.getTeam(r.teamH == t.getId() ? r.teamA : r.teamH, App.getLeague().getId());
-                break;
-            }
-        }
-        if(teams != null && !teams.isEmpty())
-            foe = teams.getFirst();
+        Connection.params.put("team", t.getId());
+        Connection.params.put("fixture", App.getLeague().getFixture());
+        Connection.params.put("league", App.getLeague().getId());
+        data = Connection.getConnection("/api/v1/team/foe", Connection.GET, null);
+        Team foe = JsonExploiter.getObjectFromJson(Team.class, data);
         Table table = null;
         if(App.getLeague().isPerennial())
             table =new Table(UnitValue.createPercentArray(new float[] {2.56f, 11.82f, 12.85f, 3.06f, 2.56f, 2.56f, 2.56f, 3.06f, 37.7f, 5.00f, 6.69f, 4.69f, 3.64f}));
@@ -122,8 +120,12 @@ public class PDFManager {
             table.addHeaderCell(new Cell().add(new Paragraph(header)).addStyle(h));
         }
         //Generazione Corpo tabella
-        List<Player> p = PlayerDao.getStarting(t.getId());
-        List<PlayerTemplate> pt = PlayerTemplateDao.getTemplate(t.getRace());
+        Connection.params.put("team", t.getId());
+        data = Connection.getConnection("/api/v1/player/starting", Connection.GET, null);
+        List<Player> p = JsonExploiter.getListFromJson(Player.class, data);
+        Connection.params.put("race", t.getRace());
+        data = Connection.getConnection("/api/v1/playerTemplate/template", Connection.GET, null);
+        List<PlayerTemplate> pt = JsonExploiter.getListFromJson(PlayerTemplate.class, data);
         List<PlayerPreview> pp = new ArrayList<>();
         for(Player pla : p) {
             for(PlayerTemplate temp : pt) {
@@ -135,7 +137,7 @@ public class PDFManager {
         Comparator<PlayerPreview> comp = Comparator.comparingInt(PlayerPreview::getNumber);
         pp.sort(comp);
         for(PlayerPreview player : pp) {
-            PlayerTemplate temp = PlayerTemplateDao.getPlayer(player.getTemplateId());
+            PlayerTemplate temp = pt.stream().filter(template -> template.getId() == player.getTemplateId()).findFirst().orElse(null);
             for(int i = 0; i < nrColumn; i++) {
                 if(!App.getLeague().isPerennial() && i == (nrColumn - 1))
                     break;
@@ -219,10 +221,14 @@ public class PDFManager {
                 }
             }
         }
+
+        Connection.params.put("id", t.getRace());
+        data = Connection.getConnection("/api/v1/race/id", Connection.GET, null);
+        Race r = JsonExploiter.getObjectFromJson(Race.class, data);
         //table.setSkipFirstHeader()
         Cell raceH = new Cell(1, 2).add(new Paragraph("RACE")).addStyle(h);
         table.addCell(raceH);
-        Cell sponsor = new Cell(1, 3).add(new Paragraph(RaceDao.getRace(t.getRace()).name)).addStyle(b);
+        Cell sponsor = new Cell(1, 3).add(new Paragraph(r.name)).addStyle(b);
         table.addCell(sponsor);
        /* Cell teamH = new Cell(1, 4).add(new Paragraph("TEAM NAME")).addStyle(h);
         table.addCell(teamH);
@@ -338,7 +344,8 @@ public class PDFManager {
                 }
             }
             if(i < pt.size()) {
-                Cell qty = new Cell(1, 2).add(new Paragraph(PlayerDao.getQty(t.getId(), pt.get(i))));
+                Connection.params.put("team", t.getId());
+                Cell qty = new Cell(1, 2).add(new Paragraph(Connection.getConnection("/api/v1/player/qty", Connection.GET, JsonExploiter.toJson(pt.get(i)))));
                 table.addCell(qty);
                 Cell pl = new Cell(1, 2).add(new Paragraph(pt.get(i).position)).addStyle(b);
                 table.addCell(pl);
@@ -370,7 +377,6 @@ public class PDFManager {
         }
         Cell rulesH = new Cell(1, App.getLeague().isPerennial() ? 2 : 5).add(new Paragraph(App.getLeague().isPerennial() ? "RULES" : "SPECIAL RULES")).addStyle(h);
         table.addCell(rulesH);
-        Race r = RaceDao.getRace(t.getRace());
         String res = r.special1;
         if(!r.special2.isEmpty())
             res += ", " + r.special2;
@@ -386,13 +392,13 @@ public class PDFManager {
         table.addCell(reroll);
 
 
-        if(PlayerDao.hasMNG(t.getId())) {
+        Connection.params.put("team", t.getId());
+        data = Connection.getConnection("/api/v1/playersMng", Connection.GET, null);
+        List<Player> pm = JsonExploiter.getListFromJson(Player.class, data);
+        if(!pm.isEmpty()) {
             Cell numbersH = new Cell(1, App.getLeague().isPerennial() ? 13 : 12).add(new Paragraph("MISSING PLAYERS")).addStyle(h);
             table.addCell(numbersH);
-
-
             //Generazione Corpo tabella
-            List<Player> pm = PlayerDao.getMNG(t.getId());
             List<PlayerPreview> ppm = new ArrayList<>();
             for (Player pla : pm) {
                 for (PlayerTemplate temp : pt) {
@@ -404,7 +410,7 @@ public class PDFManager {
             ppm.sort(comp);
 
             for(PlayerPreview player : ppm) {
-                PlayerTemplate temp = PlayerTemplateDao.getPlayer(player.getTemplateId());
+                PlayerTemplate temp = pt.stream().filter(template -> template.getId() == t.getJourneyman()).findFirst().orElse(null);
                 for (int i = 0; i < nrColumn; i++) {
                     if(!App.getLeague().isPerennial() && i == (nrColumn - 1))
                         break;
@@ -505,14 +511,19 @@ public class PDFManager {
             ind.addCell(new Cell().add(new Paragraph("COST")).addStyle(h));
             ind.addCell(new Cell().add(new Paragraph("QTY")).addStyle(h));
 
-            List<Inducements> inducements = InducementsDao.getInducements(t, foe.value - t.value);
+            Connection.params.put("petty", foe.value - t.value);
+            data = Connection.getConnection("/api/v1/inducements/inducements", Connection.GET, JsonExploiter.toJson(t));
+            List<Inducements> inducements = JsonExploiter.getListFromJson(Inducements.class, data);
             for(Inducements i : inducements) {
                 ind.addCell(new Cell(1, 7).add(new Paragraph(i.name)).addStyle(b));
                 ind.addCell(new Cell().add(new Paragraph(i.cost + ".000")).addStyle(b));
                 ind.addCell(new Cell().add(new Paragraph(Integer.toString(i.qty))).addStyle(b));
             }
 
-            List<StarPlayer> stars = StarPlayerDao.getStar(t.getRace(), foe.value - t.value);
+            Connection.params.put("race", t.getRace());
+            Connection.params.put("petty", foe.value - t.value);
+            data = Connection.getConnection("/api/v1/inducements/stars", Connection.GET, null);
+            List<StarPlayer> stars = JsonExploiter.getListFromJson(StarPlayer.class, data);
 
             if(!stars.isEmpty()) {
                 ind.addCell(new Cell(1, 2).add(new Paragraph("STAR PLAYER")).addStyle(h));

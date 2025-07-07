@@ -1,8 +1,10 @@
 package it.unipi.utility;
 
-import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.dataset.Model.Player;
 import it.unipi.dataset.Model.PlayerTemplate;
+import it.unipi.dataset.Model.Team;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,11 +26,14 @@ public class PlayerStatistic {
     @FXML public ImageView img;
     public int value;
 
-    public PlayerStatistic(Player p, PlayerTemplate ti) throws SQLException {
+    public PlayerStatistic(Player p, PlayerTemplate ti) throws Exception {
         this.img = new ImageView();
         this.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
-        this.teamName = TeamDao.getName(p.getTeam());
-        this.coach = TeamDao.getCoach(p.getTeam());
+        Connection.params.put("id", p.getTeam());
+        String data = Connection.getConnection("/api/v1/team/id", Connection.GET, null);
+        Team t = JsonExploiter.getObjectFromJson(Team.class, data);
+        this.teamName = t.name;
+        this.coach = t.coach;
         this.name = p.getName();
         this.spp = p.getSpp();
         this.td = p.getTd();

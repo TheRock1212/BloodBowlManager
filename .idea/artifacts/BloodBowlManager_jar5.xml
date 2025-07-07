@@ -43,6 +43,7 @@
       <element id="library" level="project" name="Maven: org.controlsfx:controlsfx:11.2.1" />
       <element id="library" level="project" name="Maven: org.openjfx:javafx-base:21.0.2" />
       <element id="library" level="project" name="Maven: org.apache.ant:ant-launcher:1.9.3" />
+      <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.11.0" />
     </root>
   </artifact>
 </component>

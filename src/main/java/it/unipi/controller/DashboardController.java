@@ -65,6 +65,8 @@ public class DashboardController {
     public Stage stage = new Stage();
     public Scene scene;
 
+    private String data;
+
 
     @FXML public void initialize() throws Exception{
         //Colonne per rankingTable
@@ -265,7 +267,8 @@ public class DashboardController {
             fixture.setDisable(false);
             if(App.getLeague().getRound() > 1)
                 groups.setVisible(true);
-            if(App.getLeague().getPlayoff() > 2 && ResultDao.isAllPlayed(App.getLeague().getId()))
+            Connection.params.put("league", App.getLeague().getId());
+            if(App.getLeague().getPlayoff() > 2 && Boolean.getBoolean(Connection.getConnection("/api/v1/result/playoff", Connection.GET, null)))
                 playoff.setVisible(true);
         }
 
@@ -312,7 +315,7 @@ public class DashboardController {
 
     private void getTable() throws Exception {
         Connection.params.put("league", App.getLeague().getId());
-        String data = Connection.getConnection("/api/v1/team/teams", Connection.GET, null);
+        data = Connection.getConnection("/api/v1/team/teams", Connection.GET, null);
         List<Team> teams = JsonExploiter.getListFromJson(Team.class, data);
         teams.forEach(Team::setDeltas);
         rl.addAll(teams);
@@ -402,7 +405,7 @@ public class DashboardController {
         stage.show();
     }
 
-    @FXML public void addResult() throws IOException, SQLException {
+    @FXML public void addResult() throws Exception {
         if(!checkResult()) {
             stage.setTitle("Error");
             scene = new Scene(App.load("error/result"), 200, 100);
@@ -485,7 +488,10 @@ public class DashboardController {
     @FXML public void printStandings() throws IOException, SQLException {
         List<Image> images = new ArrayList<>();
         for(Team t : rl) {
-            images.add(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/race/" + RaceDao.getRace(t.getRace()).url + ".png").toExternalForm()));
+            Connection.params.put("id", t.getRace());
+            data = Connection.getConnection("/api/v1/race/race", Connection.GET, null);
+            Race r = JsonExploiter.getObjectFromJson(Race.class, data);
+            images.add(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/race/" + r.url + ".png").toExternalForm()));
         }
         PDFManager.standings(rl, images);
     }

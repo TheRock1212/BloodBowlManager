@@ -4,6 +4,8 @@ import it.unipi.bloodbowlmanager.App;
 import it.unipi.dataset.Dao.ResultDao;
 import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.dataset.Model.Result;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.List;
 public class Fixture {
     private ArrayList<Integer> teams;
     private Pair[] giornata;
+    private String data;
 
     public Fixture() {
         teams = new ArrayList<>();
@@ -23,22 +26,29 @@ public class Fixture {
      * @param n il numero di giornate da generare
      * @throws SQLException
      */
-    public void RoundRobin(int n, boolean collapse) throws SQLException {
+    public void RoundRobin(int n, boolean collapse) throws Exception {
         Result r = new Result();
         int gironi = App.getLeague().getRound();
         if(collapse)
             gironi = 1;
         for(int gr = 0; gr < gironi; gr++) {
-            int[] tms;
-            if(gironi == 1)
-                tms = TeamDao.getTeams(gr, App.getLeague());
-            else
-                tms = TeamDao.getTeams(gr + 1, App.getLeague());
+            List<Integer> tms;
+            if(gironi == 1) {
+                Connection.params.put("gr", gr);
+                Connection.params.put("league", App.getLeague().getId());
+                data = Connection.getConnection("/api/v1/team/id", Connection.GET, null);
+                tms = JsonExploiter.getListFromJson(Integer.class, data);
+            } else {
+                Connection.params.put("gr", gr + 1);
+                Connection.params.put("league", App.getLeague().getId());
+                data = Connection.getConnection("/api/v1/team/id", Connection.GET, null);
+                tms = JsonExploiter.getListFromJson(Integer.class, data);
+            }
 
             for(int team : tms) {
                 teams.add(team);
             }
-            if(tms.length % 2 != 0)
+            if(tms.size() % 2 != 0)
                 teams.add(0);
             Collections.shuffle(teams);
             giornata = new Pair[App.getLeague().getTeams() / 2];
@@ -51,7 +61,8 @@ public class Fixture {
                changePairings();
                giornate.add(giornata);
             }
-            ResultDao.addResult(giornate);
+            Connection.params.put("league", App.getLeague().getId());
+            Connection.getConnection("/api/v1/result/insert", Connection.POST, JsonExploiter.toJson(giornate));
         }
     }
 

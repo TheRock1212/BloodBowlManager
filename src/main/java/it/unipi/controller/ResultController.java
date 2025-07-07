@@ -5,6 +5,8 @@ import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.*;
 import it.unipi.utility.Fixture;
 import it.unipi.utility.State;
+import it.unipi.utility.connection.Connection;
+import it.unipi.utility.json.JsonExploiter;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -50,6 +52,7 @@ public class ResultController {
 
     private static Scene overview;
     private static boolean raisedH = true, raisedA = true;
+    private String data;
 
     public void initialize() {
         switch (stato) {
@@ -193,7 +196,7 @@ public class ResultController {
         ResultController.stato = stato;
     }
 
-    @FXML public void setFixture() throws SQLException, IOException {
+    @FXML public void setFixture() throws Exception {
         Fixture fixture = new Fixture();
         boolean collapse = mode.getValue().contains("Collapse");
         fixture.RoundRobin(rounds.getValue(), collapse);
@@ -371,7 +374,7 @@ public class ResultController {
         stage.show();
     }
 
-    @FXML public void  set() throws IOException, SQLException {
+    @FXML public void  set() throws Exception {
         switch(getStato()) {
             case SETTD: {
                 if(team.getValue().equals(App.getResult().home)) {
@@ -725,21 +728,27 @@ public class ResultController {
         overview.setRoot(App.load("result/overview"));
     }
 
-    private void addInf(int i, boolean home) throws SQLException {
+    private void addInf(int i, boolean home) throws Exception {
         Player p;
         if(home)
             p = App.getResult().getPlayersH().get(i);
         else
             p = App.getResult().getPlayersA().get(i);
-        PlayerTemplate pt = PlayerTemplateDao.getPlayer(p.getTemplate());
+        Connection.params.put("id", p.getTemplate());
+        data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
+        PlayerTemplate pt = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
         if(home) {
-            if(RaceDao.hasLowCostLineman(App.getResult().gettH().getRace()) && PlayerTemplateDao.getLineman(App.getResult().gettH().getRace()) == p.getTemplate())
+            Connection.params.put("id", App.getResult().gettH().getRace());
+            if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null))
+                    && App.getResult().gettH().getJourneyman() == p.getTemplate())
                 App.getResult().gettH().value -= p.value;
             else
                 App.getResult().gettH().value -= (p.value + pt.cost);
         }
         else {
-            if(RaceDao.hasLowCostLineman(App.getResult().gettA().getRace()) && PlayerTemplateDao.getLineman(App.getResult().gettA().getRace()) == p.getTemplate())
+            Connection.params.put("id", App.getResult().gettA().getRace());
+            if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null))
+                    && App.getResult().gettA().getJourneyman() == p.getTemplate())
                 App.getResult().gettA().value -= p.value;
             else
                 App.getResult().gettA().value -= (p.value + pt.cost);
@@ -816,30 +825,39 @@ public class ResultController {
                 break;
             }
             case "DEAD": {
-                //PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
                 if(home) {
                     if(App.getLeague().isPerennial()) {
-                        List<Bounty> bounties = BountyDao.getBountyByPlayer(App.getConnection(), p.getId());
+                        Connection.params.put("player", p.getId());
+                        data = Connection.getConnection("/api/v1/bounty/player", Connection.GET, null);
+                        List<Bounty> bounties = JsonExploiter.getListFromJson(Bounty.class, data);
                         if(!bounties.isEmpty()) {
+                            List<Bounty> eliminare = new ArrayList<>();
                             bounties.forEach(bounty -> {
                                 App.getResult().gettA().treasury += bounty.getReward();
-                                try {
-                                    BountyDao.delete(App.getConnection(), bounty);
-                                } catch (SQLException e) {
-                                    throw new RuntimeException(e);
-                                }
+                                eliminare.add(bounty);
                             });
+                            if(!eliminare.isEmpty()) {
+                                Connection.getConnection("/api/v1/bounty/removeAll", Connection.DELETE, JsonExploiter.toJson(eliminare));
+                            }
                         }
                     }
                     App.getResult().getKilledH().add(p.getId());
                     App.getResult().gettH().ngiocatori--;
-                    if(RaceDao.hasRaisedRule(App.getResult().gettA().getRace()) && raisedA) {
-                        PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
+                    p.setStatus(false);
+                    Connection.params.put("id", App.getResult().gettA().getRace());
+                    if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/raised", Connection.GET, null))
+                            && raisedA) {
+                        Connection.params.put("id", p.getTemplate());
+                        data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
+                        PlayerTemplate template = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
                         String skills = template.skill + p.skill;
-                        if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && PlayerDao.countPlayers(App.getResult().gettA().getId(), false) < 16) {
+                        if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && (App.getResult().gettA().getNgiocatori() < 16)) {
                             raisedA = false;
-                            PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettA().getJourneyman(), App.getResult().gettA().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 0));
-                            PlayerTemplate newPlayer = PlayerTemplateDao.getPlayer(App.getResult().gettA().getJourneyman());
+                            Player risorto = new Player(200, p.name, App.getResult().gettA().getJourneyman(), App.getResult().gettA().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 0);
+                            Connection.getConnection("/api/v1/player/add", Connection.POST, JsonExploiter.toJson(risorto));
+                            Connection.params.put("id", App.getResult().gettA().getJourneyman());
+                            data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
+                            PlayerTemplate newPlayer = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
                             App.getResult().gettA().value += newPlayer.cost;
                             App.getResult().gettA().ngiocatori++;
                         }
@@ -848,27 +866,37 @@ public class ResultController {
                 }
                 else {
                     if(App.getLeague().isPerennial()) {
-                        List<Bounty> bounties = BountyDao.getBountyByPlayer(App.getConnection(), p.getId());
+                        Connection.params.put("player", p.getId());
+                        data = Connection.getConnection("/api/v1/bounty/player", Connection.GET, null);
+                        List<Bounty> bounties = JsonExploiter.getListFromJson(Bounty.class, data);
                         if(!bounties.isEmpty()) {
+                            List<Bounty> eliminare = new ArrayList<>();
                             bounties.forEach(bounty -> {
                                 App.getResult().gettH().treasury += bounty.getReward();
-                                try {
-                                    BountyDao.delete(App.getConnection(), bounty);
-                                } catch (SQLException e) {
-                                    throw new RuntimeException(e);
-                                }
+                                eliminare.add(bounty);
                             });
+                            if(!eliminare.isEmpty()) {
+                                Connection.getConnection("/api/v1/bounty/removeAll", Connection.DELETE, JsonExploiter.toJson(eliminare));
+                            }
                         }
                     }
                     App.getResult().getKilledA().add(p.getId());
                     App.getResult().gettA().ngiocatori--;
-                    if(RaceDao.hasRaisedRule(App.getResult().gettH().getRace()) && raisedH) {
-                        PlayerTemplate template = PlayerTemplateDao.getPlayer(p.getTemplate());
+                    p.setStatus(false);
+                    Connection.params.put("id", App.getResult().gettH().getRace());
+                    if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/raised", Connection.GET, null))
+                            && raisedH) {
+                        Connection.params.put("id", p.getTemplate());
+                        data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
+                        PlayerTemplate template = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
                         String skills = template.skill + p.skill;
-                        if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && PlayerDao.countPlayers(App.getResult().gettH().getId(), false) < 16) {
+                        if((template.st + p.getStInc() - p.getStDec()) <= 4 && !skills.contains("Stunty") && !skills.contains("Regeneration") && App.getResult().gettH().getNgiocatori() < 16) {
                             raisedH = false;
-                            PlayerDao.addPlayer(new Player(200, p.name, App.getResult().gettH().getJourneyman(), App.getResult().gettH().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 0));
-                            PlayerTemplate newPlayer = PlayerTemplateDao.getPlayer(App.getResult().gettH().getJourneyman());
+                            Player risorto = new Player(200, p.name, App.getResult().gettH().getJourneyman(), App.getResult().gettH().getId(), 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 0);
+                            Connection.getConnection("/api/v1/player/add", Connection.POST, JsonExploiter.toJson(risorto));
+                            Connection.params.put("id", App.getResult().gettH().getJourneyman());
+                            data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
+                            PlayerTemplate newPlayer = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
                             App.getResult().gettH().value += newPlayer.cost;
                             App.getResult().gettH().ngiocatori++;
                         }
@@ -880,17 +908,16 @@ public class ResultController {
 
     @FXML public void sendResult() throws IOException, SQLException {
         setResult();
-        ResultDao.setResult(new Result(App.getResult()));
-        PlayerDao.updateResults(App.getResult().getPlayersH());
-        if(!App.getResult().getKilledH().isEmpty())
-            PlayerDao.setDead(App.getResult().getKilledH());
-        //setUpJourneyman(true);
-        if(!App.getResult().getKilledA().isEmpty())
-            PlayerDao.setDead(App.getResult().getKilledA());
-        PlayerDao.updateResults(App.getResult().getPlayersA());
+        Connection.getConnection("/api/v1/result/add", Connection.POST, JsonExploiter.toJson(App.getResult()));
+        List<Player> players = new ArrayList<>(App.getResult().getPlayersH());
+        players.addAll(App.getResult().getPlayersA());
+        Connection.getConnection("/api/v1/player/updateAll", Connection.POST, JsonExploiter.toJson(players));
+
         //setUpJourneyman(false);
-        TeamDao.updateResult(App.getResult().gettH());
-        TeamDao.updateResult(App.getResult().gettA());
+        List<Team> teams = new ArrayList<>();
+        teams.add(App.getResult().gettH());
+        teams.add(App.getResult().gettA());
+        Connection.getConnection("/api/v1/team/update", Connection.POST, JsonExploiter.toJson(teams));
         Stage stage = (Stage) homeTeam.getScene().getWindow();
         stage.close();
         raisedA = raisedH = true;
@@ -941,18 +968,19 @@ public class ResultController {
 
     }
 
-    @FXML public void setActive() throws SQLException {
+    @FXML public void setActive() throws Exception {
         if(star_active.isSelected()) {
             player.setVisible(false);
             star_active_combo.setVisible(true);
             star_active_combo.getItems().clear();
-            List<String> stars;
-            if(team.getValue().equals(App.getResult().home))
-                stars = StarPlayerDao.getStar(App.getResult().gettH().getRace());
-            else
-                stars = StarPlayerDao.getStar(App.getResult().gettA().getRace());
-            for(String s : stars)
-                star_active_combo.getItems().add(s);
+            List<StarPlayer> stars;
+            if(team.getValue().equals(App.getResult().home)) {
+                stars = App.getResult().getStarsH();
+            } else {
+                stars = App.getResult().getStarsA();
+            }
+            for(StarPlayer s : stars)
+                star_active_combo.getItems().add(s.name);
         }
         else {
             star_active_combo.getItems().clear();
@@ -961,18 +989,19 @@ public class ResultController {
         }
     }
 
-    @FXML public void setVictim() throws SQLException {
+    @FXML public void setVictim() throws Exception {
         if(star_victim.isSelected()) {
             suff.setVisible(false);
             star_victim_combo.setVisible(true);
             star_victim_combo.getItems().clear();
-            List<String> stars;
-            if(team.getValue().equals(App.getResult().home))
-                stars = StarPlayerDao.getStar(App.getResult().gettA().getRace());
-            else
-                stars = StarPlayerDao.getStar(App.getResult().gettH().getRace());
-            for(String s : stars)
-                star_victim_combo.getItems().add(s);
+            List<StarPlayer> stars;
+            if(team.getValue().equals(App.getResult().home)) {
+                stars = App.getResult().getStarsA();
+            } else {
+                stars = App.getResult().getStarsH();
+            }
+            for(StarPlayer s : stars)
+                star_victim_combo.getItems().add(s.name);
         }
         else {
             star_victim_combo.getItems().clear();
