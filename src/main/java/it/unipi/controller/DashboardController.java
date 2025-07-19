@@ -28,8 +28,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 import java.util.List;
 
 public class DashboardController {
@@ -56,7 +60,7 @@ public class DashboardController {
 
     @FXML private MenuItem fixture, result;
 
-    @FXML private Button addTeam, groups, playoff, close, pdfs;
+    @FXML private Button addTeam, groups, playoff, close, pdfs, matchday;
 
     @FXML private Tab bounty;
 
@@ -175,7 +179,10 @@ public class DashboardController {
         TableColumn datePlayed = new TableColumn("Date");
         datePlayed.setCellValueFactory(new PropertyValueFactory<>("datePlayed"));
 
-        resultList.getColumns().addAll(datePlayed, homeTeam, awayTeam, homeTD, awayTD, homeCAS, awayCAS);
+        TableColumn fix = new TableColumn("Fixture");
+        fix.setCellValueFactory(new PropertyValueFactory<>("fixture"));
+
+        resultList.getColumns().addAll(datePlayed, homeTeam, awayTeam, homeTD, awayTD, homeCAS, awayCAS, fix);
         res = FXCollections.observableArrayList();
         resultList.setItems(res);
 
@@ -238,6 +245,8 @@ public class DashboardController {
         bounty.setDisable(true);
         playoff.setVisible(false);
 
+        matchday.setDisable(true);
+
         if(App.getLeague().isPerennial()) {
             TableColumn team = new TableColumn("Team");
             team.setCellValueFactory(new PropertyValueFactory<>("nameTeam"));
@@ -256,6 +265,12 @@ public class DashboardController {
         }
 
         getTable();
+
+        Connection.params.put("league", App.getLeague().getId());
+        data = Connection.getConnection("/api/v1/result/newFixture", Connection.GET, null);
+        if(res.isEmpty() || "true".equals(data)) {
+            matchday.setDisable(false);
+        }
 
         if(!res.isEmpty())
             //fixture.setDisable(false);
@@ -382,7 +397,7 @@ public class DashboardController {
     @FXML private void deleteTeam() throws Exception {
         Team t = teamList.getSelectionModel().getSelectedItem();
         Connection.params.put("id", t.getId());
-        Connection.getConnection("/api/v1/team/remove", Connection.GET, null);
+        Connection.getConnection("/api/v1/team/remove", Connection.DELETE, null);
         //elimina l'elemento dalla lista
         tl.remove(teamList.getSelectionModel().getSelectedItem());
         tl.remove(t);
@@ -406,7 +421,8 @@ public class DashboardController {
     }
 
     @FXML public void addResult() throws Exception {
-        if(!checkResult()) {
+
+        if(resultList.getSelectionModel().getSelectedItem().getFixture() != App.getLeague().getFixture()) {
             stage.setTitle("Error");
             scene = new Scene(App.load("error/result"), 200, 100);
             stage.setScene(scene);
@@ -460,11 +476,11 @@ public class DashboardController {
             FXCollections.sort(ts, Comparator.comparingInt(TeamStatistic::getValue).reversed());
     }
 
-    @FXML public void createPDF() throws IOException, SQLException {
+    @FXML public void createPDF() throws Exception {
         PDFManager.generatePDF(teamList.getSelectionModel().getSelectedItem());
     }
 
-    @FXML public void generatePDFs() throws IOException, SQLException {
+    @FXML public void generatePDFs() throws Exception {
         /*FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save PDF File");
         //fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF File", "*.pdf"));
@@ -520,6 +536,20 @@ public class DashboardController {
         Connection.params.put("team", bounty.getTeam());
         Connection.params.put("player", bounty.getPlayer());
         Connection.getConnection("/api/v1/bounty/remove", Connection.GET, null);
+    }
+
+    @FXML public void newGiornata() throws Exception {
+        LocalDate domenica = LocalDate.now();
+        if(domenica.getDayOfWeek() == DayOfWeek.MONDAY) {
+            domenica = domenica.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).plusWeeks(2);
+        } else {
+            domenica = domenica.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusWeeks(2);
+        }
+        Date scadenza = Date.from(domenica.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        App.getLeague().setExpire(scadenza);
+        App.getLeague().setFixture(App.getLeague().getFixture() + 1);
+        Connection.getConnection("/api/v1/league/newGiornata", Connection.POST, JsonExploiter.toJson(App.getLeague()));
+        matchday.setDisable(true);
     }
 
 }

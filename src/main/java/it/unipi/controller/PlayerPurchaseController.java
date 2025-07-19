@@ -49,7 +49,7 @@ public class PlayerPurchaseController {
 
     private Scene scene;
 
-    private static Player[] p = new Player[16];
+    private static List<Player> p = new ArrayList<>(16);
     private List<Integer> nrs = new ArrayList<>();
     private List<String> names = new ArrayList<>();
 
@@ -185,16 +185,18 @@ public class PlayerPurchaseController {
             return;
         }
         Connection.params.put("id", App.getTeam().getRace());
-        boolean rules = Boolean.getBoolean(Connection.getConnection("/api/v1/race/lcl", Connection.GET, null));
+        data = Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null);
+        boolean rules = "true".equals(data);
         int value = 0, cont = 0;
-        Player[] players = new Player[16];
+        List<Player> players = new ArrayList<>();
         for(int i = 0; i < pt.size(); i++) {
             if(App.isNewTeam()) {
                 for(int j = 0; j < pt.get(i).cb.getValue(); j++) {
                     Connection.params.put("id", pt.get(i).getId());
-                    int loner = Integer.parseInt(Connection.getConnection("/api/v1/playerTemplate/outside", Connection.GET, JsonExploiter.toJson(App.getTeam())));
-                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, loner == 0 ? "" : ",Loner(" + loner + "+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
-                    if(pt.get(i).getMaxQty() > 10 && rules)
+                    int loner = Integer.parseInt(Connection.getConnection("/api/v1/playerTemplate/outside", Connection.POST, JsonExploiter.toJson(App.getTeam())));
+                    players.add(new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, loner == 0 ? "" : ",Loner(" + loner + "+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1));
+                    cont++;
+                    if(pt.get(i).getId() == App.getTeam().getJourneyman() && rules)
                         value += 0;
                     else
                         value += pt.get(i).getCost();
@@ -204,8 +206,9 @@ public class PlayerPurchaseController {
                 for(int j = 0; j < (pt.get(i).cb.getValue() - (int)pt.get(i).cb.getItems().get(0)); j++) {
                     Connection.params.put("id", pt.get(i).getId());
                     int loner = Integer.parseInt(Connection.getConnection("/api/v1/playerTemplate/outside", Connection.GET, JsonExploiter.toJson(App.getTeam())));
-                    players[cont++] = new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, loner == 0 ? "" : ",Loner(" + loner + "+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1);
-                    if(pt.get(i).getMaxQty() > 10 && rules)
+                    players.add(new Player(pt.get(i).getId(), App.getTeam().getId(), 0, 0, loner == 0 ? "" : ",Loner(" + loner + "+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, false, 1));
+                    cont++;
+                    if(pt.get(i).getId() == App.getTeam().getJourneyman() && rules)
                         value += 0;
                     else
                         value += pt.get(i).getCost();
@@ -265,11 +268,8 @@ public class PlayerPurchaseController {
         data = Connection.getConnection("/api/v1/playerTemplate/template", Connection.GET, null);
         List<PlayerTemplate> templates = JsonExploiter.getListFromJson(PlayerTemplate.class, data);
         for(PlayerTemplate template : templates) {
-            for(int i = 0; i <= 16; i++) {
-                if(getP()[i] == null) {
-                    break;
-                }
-                if(getP()[i].getTemplate() == template.getId()) {
+            for(Player player1 : getP()) {
+                if(player1.getTemplate() == template.getId()) {
                     TemplateImage ti = new TemplateImage(template);
                     ti.img = new ImageView();
                     ti.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
@@ -351,14 +351,14 @@ public class PlayerPurchaseController {
     @FXML public void addPlayers() throws SQLException, IOException {
         App.setNaming(false);
         for(int i = 0; i < pt2.size(); i++) {
-            getP()[i].setName(pt2.get(i).namePlayer.getText());
-            getP()[i].setNumber(pt2.get(i).number.getValue());
+            getP().get(i).setName(pt2.get(i).namePlayer.getText());
+            getP().get(i).setNumber(pt2.get(i).number.getValue());
         }
-        List<Player> tmp = new ArrayList<>();
+        //List<Player> tmp = new ArrayList<>();
         //tmp.addAll(players);
-        Collections.addAll(tmp, getP());
-        Connection.getConnection("/api/v1/player/addPlayers", Connection.POST, JsonExploiter.toJson(tmp));
-        setP(null);
+        //Collections.addAll(tmp, getP());
+        Connection.getConnection("/api/v1/player/addPlayers", Connection.POST, JsonExploiter.toJson(getP()));
+        setP(new ArrayList<>());
         //TeamDao.updateTeam(App.getTeam(), true);
         Stage stage = (Stage) error.getScene().getWindow();
         stage.close();
@@ -422,11 +422,11 @@ public class PlayerPurchaseController {
         });
     }
 
-    public static Player[] getP() {
+    public static List<Player> getP() {
         return p;
     }
 
-    public static void setP(Player[] p) {
+    public static void setP(List<Player> p) {
         PlayerPurchaseController.p = p;
     }
 }

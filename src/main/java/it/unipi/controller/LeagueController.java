@@ -157,7 +157,7 @@ public class LeagueController {
                 pf = playoff.getValue();
             if(check.isSelected())
                 nGroups = groups.getValue();
-            League league = new League(leagueName.getText(), nTeam.getValue(), ptsWin.getValue(), ptsTie.getValue(), ptsLoss.getValue(), pts3TD.isSelected(), pts3CAS.isSelected(), pts0TD.isSelected(), (int)treasury.getValue(), nGroups, pf, tvr.isSelected(), spp.isSelected(), perennial.isSelected(), 1, null);
+            League league = new League(leagueName.getText(), nTeam.getValue(), ptsWin.getValue(), ptsTie.getValue(), ptsLoss.getValue(), pts3TD.isSelected(), pts3CAS.isSelected(), pts0TD.isSelected(), (int)treasury.getValue(), nGroups, pf, tvr.isSelected(), spp.isSelected(), perennial.isSelected(), 0, null);
             //LeagueDao.addLeague(league);
             Connection.getConnection("/api/v1/league/add", Connection.POST, JsonExploiter.toJson(league));
             Stage stage = (Stage) error.getScene().getWindow();

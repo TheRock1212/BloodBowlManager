@@ -82,7 +82,7 @@ public class ResultController {
                     mvpH.getItems().add(p.number);
                 for(Player p : App.getResult().getPlayersA())
                     mvpA.getItems().add(p.number);
-                raisedH = raisedA =true;
+                raisedH = raisedA = true;
                 break;
             }
             case OVERVIEW: {
@@ -739,16 +739,16 @@ public class ResultController {
         PlayerTemplate pt = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
         if(home) {
             Connection.params.put("id", App.getResult().gettH().getRace());
-            if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null))
-                    && App.getResult().gettH().getJourneyman() == p.getTemplate())
+            data = Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null);
+            if("true".equals(data) && App.getResult().gettH().getJourneyman() == p.getTemplate())
                 App.getResult().gettH().value -= p.value;
             else
                 App.getResult().gettH().value -= (p.value + pt.cost);
         }
         else {
             Connection.params.put("id", App.getResult().gettA().getRace());
-            if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null))
-                    && App.getResult().gettA().getJourneyman() == p.getTemplate())
+            data = Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null);
+            if("true".equals(data) && App.getResult().gettA().getJourneyman() == p.getTemplate())
                 App.getResult().gettA().value -= p.value;
             else
                 App.getResult().gettA().value -= (p.value + pt.cost);
@@ -845,8 +845,8 @@ public class ResultController {
                     App.getResult().gettH().ngiocatori--;
                     p.setStatus(false);
                     Connection.params.put("id", App.getResult().gettA().getRace());
-                    if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/raised", Connection.GET, null))
-                            && raisedA) {
+                    data = Connection.getConnection("/api/v1/race/raised", Connection.GET, null);
+                    if("true".equals(data) && raisedA) {
                         Connection.params.put("id", p.getTemplate());
                         data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
                         PlayerTemplate template = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
@@ -884,8 +884,8 @@ public class ResultController {
                     App.getResult().gettA().ngiocatori--;
                     p.setStatus(false);
                     Connection.params.put("id", App.getResult().gettH().getRace());
-                    if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/raised", Connection.GET, null))
-                            && raisedH) {
+                    data = Connection.getConnection("/api/v1/race/raised", Connection.GET, null);
+                    if("true".equals(data) && raisedH) {
                         Connection.params.put("id", p.getTemplate());
                         data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
                         PlayerTemplate template = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
@@ -908,7 +908,9 @@ public class ResultController {
 
     @FXML public void sendResult() throws IOException, SQLException {
         setResult();
-        Connection.getConnection("/api/v1/result/add", Connection.POST, JsonExploiter.toJson(App.getResult()));
+        App.getResult().played = true;
+        Result result = new Result(App.getResult());
+        Connection.getConnection("/api/v1/result/update", Connection.POST, JsonExploiter.toJson(result));
         List<Player> players = new ArrayList<>(App.getResult().getPlayersH());
         players.addAll(App.getResult().getPlayersA());
         Connection.getConnection("/api/v1/player/updateAll", Connection.POST, JsonExploiter.toJson(players));
@@ -920,6 +922,7 @@ public class ResultController {
         Connection.getConnection("/api/v1/team/update", Connection.POST, JsonExploiter.toJson(teams));
         Stage stage = (Stage) homeTeam.getScene().getWindow();
         stage.close();
+        App.setResult(null);
         raisedA = raisedH = true;
         App.setRoot("dashboard");
     }

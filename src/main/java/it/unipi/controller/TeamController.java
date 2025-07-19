@@ -1,9 +1,6 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Dao.PlayerTemplateDao;
-import it.unipi.dataset.Dao.RaceDao;
-import it.unipi.dataset.Dao.TeamDao;
 import it.unipi.dataset.Model.PlayerTemplate;
 import it.unipi.dataset.Model.Race;
 import it.unipi.dataset.Model.Team;
@@ -15,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +66,7 @@ public class TeamController {
             }
         }
         tmp -= cheer.getValue() * 10 + assi.getValue() * 10 + df.getValue() * 10 - 10;
-        tmp -= reroll.getValue() * r.getReroll();
+        tmp -= reroll.getValue() * r.getCostreroll();
         t.setNreroll(reroll.getValue());
         t.setAssistant(assi.getValue());
         t.setCheerleader(cheer.getValue());
@@ -79,7 +75,7 @@ public class TeamController {
     }
 
     @FXML public void changeOptions() throws Exception {
-        Connection.params.put("name", race.getValue());
+        Connection.params.put("name", race.getValue().replace(" ", "+"));
         data = Connection.getConnection("/api/v1/race/raceName", Connection.GET, null);
         r = JsonExploiter.getObjectFromJson(Race.class, data);
         apo.setVisible(false);
@@ -95,7 +91,7 @@ public class TeamController {
         df.getSelectionModel().select(0);
         apo.setSelected(false);
         treasury.setText(Integer.toString(App.getLeague().getTreasury()));
-        rrValue.setText(r.getReroll() + "k");
+        rrValue.setText(r.getCostreroll() + "k");
         if(race.getValue().equals("Shambling Undead")) {
             journeyman.setVisible(true);
             zombie.setVisible(true);
@@ -121,6 +117,8 @@ public class TeamController {
         t.setLeague(App.getLeague().getId());
         t.setRound(0);
         t.setRace(r.getId());
+        t.setId(0);
+        t.setActive(true);
         if(t.getRace() == 4) {
             if(journey.getSelectedToggle() == zombie)
                 t.setJourneyman(16);
@@ -133,7 +131,8 @@ public class TeamController {
             t.setJourneyman(JsonExploiter.getObjectFromJson(PlayerTemplate.class, data).getId());
         }
         t.setReady(true);
-        Connection.getConnection("/api/v1/team/add", Connection.GET, JsonExploiter.toJson(t));
+        int id = Integer.parseInt(Connection.getConnection("/api/v1/team/add", Connection.GET, JsonExploiter.toJson(t)));
+        t.setId(id);
         App.setTeam(t);
         App.setNewTeam(true);
         App.setNaming(false);

@@ -15,24 +15,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ResultGame extends ResultTable {
-    private Team tH;
-    private Team tA;
-    private List<Player> playersH;
-    private List<Player> playersA;
+    protected Team tH;
+    protected Team tA;
+    protected List<Player> playersH;
+    protected List<Player> playersA;
     private List<Integer> killedH, killedA;
-    private List<StarPlayer> starsH, starsA;
+    protected List<StarPlayer> starsH, starsA;
 
     public ResultGame(ResultTable rt) throws Exception {
         super(rt.getR(), rt.home, rt.away);
-        this.tH = TeamDao.getTeam(this.teamH, App.getLeague().getId()).getFirst();
-        this.tA = TeamDao.getTeam(this.teamA, App.getLeague().getId()).getFirst();
-        this.playersH = PlayerDao.getStarting(this.tH.getId());
-        this.playersA = PlayerDao.getStarting(this.tA.getId());
-        PlayerDao.setMng(this.tH);
-        PlayerDao.setMng(this.tA);
+        String data;
+        Connection.params.put("id", this.teamH);
+        data = Connection.getConnection("/api/v1/team/teamId", Connection.GET, null);
+        this.tH = JsonExploiter.getObjectFromJson(Team.class, data);
+        Connection.params.put("id", this.teamA);
+        data = Connection.getConnection("/api/v1/team/teamId", Connection.GET, null);
+        this.tA = JsonExploiter.getObjectFromJson(Team.class, data);
+        Connection.params.put("team", this.teamH);
+        data = Connection.getConnection("/api/v1/player/starting", Connection.GET, null);
+        this.playersH = JsonExploiter.getListFromJson(Player.class, data);
+        Connection.params.put("team", this.teamA);
+        data = Connection.getConnection("/api/v1/player/starting", Connection.GET, null);
+        this.playersA = JsonExploiter.getListFromJson(Player.class, data);
+        data = Connection.getConnection("/api/v1/player/mng", Connection.POST, JsonExploiter.toJson(this.tH));
+        this.tH = JsonExploiter.getObjectFromJson(Team.class, data);
+        data = Connection.getConnection("/api/v1/player/mng", Connection.POST, JsonExploiter.toJson(this.tA));
+        this.tA = JsonExploiter.getObjectFromJson(Team.class, data);
         this.killedH = new ArrayList<>();
         this.killedA = new ArrayList<>();
-        String data = "";
         Connection.params.put("race", this.tH.getRace());
         Connection.params.put("petty", this.tA.value - this.tH.value);
         data = Connection.getConnection("/api/v1/inducements/stars", Connection.GET, null);

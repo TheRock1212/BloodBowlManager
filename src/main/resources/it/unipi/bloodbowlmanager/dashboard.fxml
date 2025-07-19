@@ -47,6 +47,7 @@
                         <Button fx:id="groups" contentDisplay="CENTER" layoutX="820.0" layoutY="5.0" mnemonicParsing="false" text="Set Groups" visible="false" />
                         <Button fx:id="playoff" contentDisplay="CENTER" layoutX="908.0" layoutY="5.0" mnemonicParsing="false" text="Set Playoff" visible="false" />
                         <Button fx:id="pdfs" layoutX="456.0" layoutY="5.0" mnemonicParsing="false" onAction="#generatePDFs" prefHeight="26.0" prefWidth="87.0" text="Create PDFs" visible="false" />
+                        <Button fx:id="matchday" layoutX="14.0" layoutY="4.0" mnemonicParsing="false" onAction="#newGiornata" text="Start new matchday" />
                      </children>
                   </Pane>
                </children>

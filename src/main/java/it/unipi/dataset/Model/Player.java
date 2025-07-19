@@ -169,6 +169,7 @@ public class Player {
         this.def = pp.D;
         this.inter = pp.I;
         this.level = pp.getLev();
+        this.status = pp.status;
     }
 
     public Player(ResultSet rs) throws SQLException {

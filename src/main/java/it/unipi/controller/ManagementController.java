@@ -1,7 +1,6 @@
 package it.unipi.controller;
 
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.*;
 import it.unipi.utility.PlayerPreview;
 import it.unipi.utility.TemplateImage;
@@ -110,7 +109,7 @@ public class ManagementController {
 
         sponsor.setText(App.getTeam().getSponsor());
 
-        costRr.setText(Integer.toString(r.getReroll() * 2) + " k");
+        costRr.setText(Integer.toString(r.getCostreroll() * 2) + " k");
         if(r.isApothecary()) {
             apoUn.setVisible(false);
             if(App.getTeam().isApothecary()) {
@@ -215,7 +214,7 @@ public class ManagementController {
     public void switchToDashboard() throws Exception {
         //Controllo se è stato acquistato qualcosa. In caso positivo, salvo il nuovo contenuto
             //App.getTeam().updateStaff();
-        Connection.getConnection("api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
+        Connection.getConnection("/api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
         //Connection.getConnection("api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
         App.setRoot("dashboard");
     }
@@ -228,7 +227,7 @@ public class ManagementController {
         if(option.isSelected())
             tmp -= 50;
         tmp -= (ch.getValue() - App.getTeam().getCheerleader()) * 10 + (ac.getValue() - App.getTeam().getAssistant()) * 10;
-        tmp -= (rr.getValue() - App.getTeam().getNreroll()) * r.getReroll() * 2;
+        tmp -= (rr.getValue() - App.getTeam().getNreroll()) * r.getCostreroll() * 2;
         if(tmp < 0) {
             error.setVisible(true);
             ch.getSelectionModel().select(0);
@@ -264,8 +263,8 @@ public class ManagementController {
                 App.getTeam().treasury -= 50;
                 App.getTeam().value += 50;
             }
-            App.getTeam().setTreasury(App.getTeam().getTreasury() - (dac * 10) - (dch * 10) - (drr * r.getReroll()) * 2);
-            App.getTeam().value += dac * 10 + dch * 10 + (drr * r.getReroll());
+            App.getTeam().setTreasury(App.getTeam().getTreasury() - (dac * 10) - (dch * 10) - (drr * r.getCostreroll()) * 2);
+            App.getTeam().value += dac * 10 + dch * 10 + (drr * r.getCostreroll());
             return true;
         }
         return false;
@@ -360,43 +359,55 @@ public class ManagementController {
     }
 
     @FXML public void setReady() throws SQLException, IOException {
-        //List<Player> listPlayers = PlayerDao.getStarting(App.getTeam().getId());
         App.getTeam().setReady(true);
+        checkPurchase();
+        Connection.params.put("id", App.getTeam().getRace());
+        data = Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null);
+        boolean lcl = "true".equals(data);
         Connection.params.put("league", App.getLeague().getId());
         Connection.params.put("team", App.getTeam().getId());
-        if(Boolean.getBoolean(Connection.getConnection("/api/v1/result/lastOfRegular", Connection.GET, null))) {
-            data = Connection.getConnection("/api/v1/player/mng", Connection.POST, JsonExploiter.toJson(App.getTeam()));
-            App.setTeam(JsonExploiter.getObjectFromJson(Team.class, data));
+        data = Connection.getConnection("/api/v1/result/lastOfRegular", Connection.GET, null);
+        if("true".equals(data)) {
+            List<Player> playerList = new ArrayList<>();
+            for(PlayerPreview pla : p) {
+                if(pla.MNG) {
+                    pla.MNG = false;
+                    App.getTeam().value += pla.val;
+                }
+            }
         }
-        Connection.params.put("team", App.getTeam().getId());
-        data = Connection.getConnection("/api/v1/player/journey", Connection.GET, null);
-        List<Player> jrm = JsonExploiter.getListFromJson(Player.class, data);
+        List<Player> jrm = new ArrayList<>();
+        for(PlayerPreview pla : p) {
+            if(pla.isJourney()) {
+                jrm.add(new Player(pla));
+            }
+        }
         Connection.params.put("id", App.getTeam().getJourneyman());
         data = Connection.getConnection("/api/v1/playerTemplate/id", Connection.GET, null);
         PlayerTemplate pt = JsonExploiter.getObjectFromJson(PlayerTemplate.class, data);
         if(!jrm.isEmpty()) {
+            p.removeIf(PlayerPreview::isJourney);
             for(Player p : jrm) {
-                if(!p.mng)
+                if(!p.mng && !lcl)
                     App.getTeam().value -= pt.cost;
                 Connection.params.put("id", p.getId());
-                Connection.getConnection("/api/v1/player/delete", Connection.GET, null);
+                Connection.getConnection("/api/v1/player/delete", Connection.DELETE, null);
             }
         }
-        //List<Player> listPlayers = PlayerDao.getStarting(App.getTeam().getId());
-        Connection.params.put("team", App.getTeam().getId());
-        Connection.params.put("journey", true);
-        int nPlayer = Integer.parseInt(Connection.getConnection("/api/v1/player/count", Connection.GET, null));
+
+        int nPlayer = (int) p.stream().filter(pla -> !pla.MNG).count();
         List<Player> journey = new ArrayList<>();
         int number = 100;
         while(nPlayer < 11) {
             journey.add(new Player(number++, "Journeyman", App.getTeam().getJourneyman(), App.getTeam().getId(), 0, 0, "Loner(4+)", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0, 0, 0, 0, 0, true, true, 0));
-            App.getTeam().value += pt.cost;
+            if(!lcl)
+                App.getTeam().value += pt.cost;
             nPlayer++;
         }
         if(!journey.isEmpty()) {
             Connection.getConnection("/api/v1/player/addPlayers", Connection.POST, JsonExploiter.toJson(journey));
         }
-        Connection.getConnection("api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
+        Connection.getConnection("/api/v1/team/add", Connection.POST, JsonExploiter.toJson(App.getTeam()));
 
         App.setRoot("team/team_management");
     }

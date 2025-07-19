@@ -15,13 +15,11 @@ import com.itextpdf.layout.Style;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.properties.AreaBreakType;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import it.unipi.bloodbowlmanager.App;
-import it.unipi.dataset.Dao.*;
 import it.unipi.dataset.Model.*;
 import it.unipi.utility.connection.Connection;
 import it.unipi.utility.json.JsonExploiter;
@@ -29,10 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -388,7 +383,7 @@ public class PDFManager {
         Cell rerollH = new Cell(1, 1).add(new Paragraph("COST REROLL")).addStyle(h);
         table.addCell(rerollH);
 
-        Cell reroll = new Cell(1, App.getLeague().isPerennial() ? 2 : 1).add(new Paragraph(r.reroll * 2 + ".000")).addStyle(b);
+        Cell reroll = new Cell(1, App.getLeague().isPerennial() ? 2 : 1).add(new Paragraph(r.costreroll * 2 + ".000")).addStyle(b);
         table.addCell(reroll);
 
 

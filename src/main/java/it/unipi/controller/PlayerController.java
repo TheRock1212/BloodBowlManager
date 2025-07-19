@@ -271,9 +271,7 @@ public class PlayerController {
         String[] skills;
         if(pri) {
             String[] primary;
-            Connection.params.put("team", App.getTeam().getId());
-            Connection.params.put("template", App.getPlayer().getTemplateId());
-            if("Farblast & Sons".equals(App.getTeam().getSponsor()) && Boolean.getBoolean(Connection.getConnection("/api/v1/team/lineman", Connection.GET, null)) && App.getPlayer().getNewSkills().contains("Bombardier")) {
+            if("Farblast & Sons".equals(App.getTeam().getSponsor()) && App.getPlayer().getTemplateId() == App.getTeam().getJourneyman() && App.getPlayer().getNewSkills().contains("Bombardier")) {
                 primary = new String[App.getPlayer().getPrimary().length() + 1];
                 for(; i < App.getPlayer().getPrimary().length(); i++)
                     primary[i] = Character.toString(App.getPlayer().getPrimary().charAt(i));
@@ -285,7 +283,7 @@ public class PlayerController {
             }
 
             skills = new String[App.getPlayer().getPrimary().length()];
-            data = Connection.getConnection("/api/v1/skill/get", Connection.GET, JsonExploiter.toJson(primary));
+            data = Connection.getConnection("/api/v1/skill/get", Connection.POST, JsonExploiter.toJson(primary));
             skills = JsonExploiter.getArrayFromJson(String.class, data);
         }
         else {

@@ -47,6 +47,7 @@ public class PlayerPreview {
     private boolean journey;
     public String position;
     public int season;
+    public boolean status;
 
     public PlayerPreview(TemplateImage ti, Player p) throws IOException {
         this.id = p.getId();
@@ -70,7 +71,8 @@ public class PlayerPreview {
         this.NIG = p.getNig();
         this.MNG = p.isMng();
         Connection.params.put("id", ti.getRace());
-        if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null)) && ti.maxQty > 10)
+        String data = Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null);
+        if("true".equals(data) && ti.maxQty > 10)
             this.val = p.getValue();
         else
             this.val = ti.getCost() + p.getValue();
@@ -93,6 +95,7 @@ public class PlayerPreview {
         this.journey = p.isJourney();
         this.team = p.getTeam();
         this.season = p.getSeason();
+        this.status = p.isStatus();
     }
 
     public PlayerPreview(PlayerPreview pp) {
@@ -130,6 +133,7 @@ public class PlayerPreview {
         this.journey = pp.isJourney();
         this.team = pp.getTeam();
         this.season = pp.getSeason();
+        this.status = pp.isStatus();
     }
 
     public PlayerPreview(PlayerTemplate pt, Player p) throws Exception {
@@ -152,8 +156,8 @@ public class PlayerPreview {
         this.NIG = p.getNig();
         this.MNG = p.isMng();
         Connection.params.put("id", pt.getRace());
-        if(Boolean.getBoolean(Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null))
-                && pt.maxQty > 10)
+        String data = Connection.getConnection("/api/v1/race/haslcl", Connection.GET, null);
+        if("true".equals(data) && pt.maxQty > 10)
             this.val = p.getValue();
         else
             this.val = pt.getCost() + p.getValue();
@@ -176,6 +180,7 @@ public class PlayerPreview {
         this.journey = p.isJourney();
         this.team = p.getTeam();
         this.season = p.getSeason();
+        this.status = p.isStatus();
     }
 
     public int getId() {
@@ -464,5 +469,13 @@ public class PlayerPreview {
 
     public void setSeason(int season) {
         this.season = season;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

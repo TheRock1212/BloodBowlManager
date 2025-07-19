@@ -21,7 +21,7 @@ module it.unipi.bloodbowlmanager {
     opens it.unipi.controller to javafx.fxml, com.google.gson;
     opens it.unipi.bloodbowlmanager to javafx.fxml;
     opens it.unipi.dataset.Dao to javafx.base;
-    opens it.unipi.utility to javafx.base;
+    opens it.unipi.utility to javafx.base, com.google.gson;
     opens it.unipi.dataset.Model to javafx.base, com.google.gson;
     exports it.unipi.bloodbowlmanager;
 

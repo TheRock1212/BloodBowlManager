@@ -30,7 +30,7 @@ public class PlayerStatistic {
         this.img = new ImageView();
         this.img.setImage(new Image(getClass().getResource("/it/unipi/bloodbowlmanager/img/" + ti.getUrl() + ".png").toExternalForm()));
         Connection.params.put("id", p.getTeam());
-        String data = Connection.getConnection("/api/v1/team/id", Connection.GET, null);
+        String data = Connection.getConnection("/api/v1/team/teamId", Connection.GET, null);
         Team t = JsonExploiter.getObjectFromJson(Team.class, data);
         this.teamName = t.name;
         this.coach = t.coach;

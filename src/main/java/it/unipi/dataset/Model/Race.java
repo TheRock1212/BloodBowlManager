@@ -1,16 +1,13 @@
 package it.unipi.dataset.Model;
 
-import it.unipi.bloodbowlmanager.App;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Race {
     private int id;
     public String name;
     public int positional;
-    public int reroll;
+    public int costreroll;
     public boolean apothecary;
     public String special1, special2, special3;
     public String url;
@@ -20,11 +17,11 @@ public class Race {
 
     }
 
-    public Race(int id, String name, int positional, int reroll, boolean apothecary, String special1, String special2, String special3, String url, String family) {
+    public Race(int id, String name, int positional, int costreroll, boolean apothecary, String special1, String special2, String special3, String url, String family) {
         this.id = id;
         this.name = name;
         this.positional = positional;
-        this.reroll = reroll;
+        this.costreroll = costreroll;
         this.apothecary = apothecary;
         this.special1 = special1;
         this.special2 = special2;
@@ -37,7 +34,7 @@ public class Race {
         this.id = rs.getInt("id");
         this.name = rs.getString("name");
         this.positional = rs.getInt("positional");
-        this.reroll = rs.getInt("cost_reroll");
+        this.costreroll = rs.getInt("cost_reroll");
         this.apothecary = rs.getBoolean("apothecary");
         this.special1 = rs.getString("special_1");
         this.special2 = rs.getString("special_2");
@@ -70,12 +67,12 @@ public class Race {
         this.positional = positional;
     }
 
-    public int getReroll() {
-        return reroll;
+    public int getCostreroll() {
+        return costreroll;
     }
 
-    public void setReroll(int reroll) {
-        this.reroll = reroll;
+    public void setCostreroll(int costreroll) {
+        this.costreroll = costreroll;
     }
 
     public boolean isApothecary() {
