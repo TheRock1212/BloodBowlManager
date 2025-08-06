@@ -9,6 +9,7 @@ import it.unipi.utility.json.JsonExploiter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,22 +46,29 @@ public class Fixture {
                 tms = JsonExploiter.getListFromJson(Integer.class, data);
             }
 
-            for(int team : tms) {
-                teams.add(team);
-            }
+            teams.addAll(tms);
             if(tms.size() % 2 != 0)
                 teams.add(0);
             Collections.shuffle(teams);
             giornata = new Pair[App.getLeague().getTeams() / 2];
             List<Pair[]> giornate = new ArrayList<>();
             for(int i = 0; i < n; i++) {
-               for(int home = 0, away = teams.size() - 1; home < teams.size() / 2; home++, away--) {
-                   giornata[home] = new Pair(teams.get(home), teams.get(away));
-                   System.out.println(giornata[home].toString());
-               }
-               changePairings();
-               giornate.add(giornata);
+                giornata = new Pair[App.getLeague().getTeams() / 2];
+                int match = 0;
+                for(int home = 0, away = teams.size() - 1; home < teams.size() / 2; home++, away--) {
+                    if(teams.get(home) != 0 && teams.get(away) != 0) {
+                        giornata[match] = new Pair(teams.get(home), teams.get(away));
+                        System.out.println(giornata[match].toString());
+                        match++;
+                    }
+                }
+                List<Pair> list = Arrays.asList(giornata);
+                Collections.shuffle(list);
+                giornata = list.toArray(new Pair[0]);
+                changePairings();
+                giornate.add(giornata);
             }
+            Collections.shuffle(giornate);
             Connection.params.put("league", App.getLeague().getId());
             Connection.getConnection("/api/v1/result/insert", Connection.POST, JsonExploiter.toJson(giornate));
         }
